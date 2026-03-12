@@ -11,11 +11,22 @@ export default function AdminUpload() {
   const [bookFile, setBookFile] = useState(null);
   const [coverPreview, setCoverPreview] = useState(null);
 
+  const [books, setBooks] = useState([]);
+  const [fetchingBooks, setFetchingBooks] = useState(false);
+
   // Audio chapter state
   const [bookId, setBookId] = useState('');
   const [chapterTitle, setChapterTitle] = useState('');
   const [chapterFile, setChapterFile] = useState(null);
   const [isSample, setIsSample] = useState(false);
+
+  useState(() => {
+    setFetchingBooks(true);
+    API.get('/books')
+      .then(res => setBooks(res.data))
+      .catch(() => toast.error('Failed to load books for dropdown'))
+      .finally(() => setFetchingBooks(false));
+  }, []);
 
   const handleChange = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
 
@@ -151,9 +162,23 @@ export default function AdminUpload() {
             <h3 style={{ fontSize: '1rem', marginBottom: '1.25rem' }}>🎵 Add Audio Chapter</h3>
             <form onSubmit={handleAddChapter} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div className="form-group">
-                <label className="form-label">Book ID</label>
-                <input className="form-input" value={bookId} onChange={e => setBookId(e.target.value)} placeholder="Paste Book ID after creating" required />
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>Create the audiobook on the left first, then ID will appear here</span>
+                <label className="form-label">Select Audiobook *</label>
+                <select 
+                  className="form-input" 
+                  value={bookId} 
+                  onChange={e => setBookId(e.target.value)} 
+                  required
+                >
+                  <option value="">-- Choose a book --</option>
+                  {books.filter(b => b.type === 'audiobook').map(b => (
+                    <option key={b._id} value={b._id}>
+                      {b.title} ({b._id.slice(-6)})
+                    </option>
+                  ))}
+                </select>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                  {fetchingBooks ? 'Loading books...' : 'Select the audiobook you want to add chapters to'}
+                </span>
               </div>
               <div className="form-group">
                 <label className="form-label">Chapter Title</label>
