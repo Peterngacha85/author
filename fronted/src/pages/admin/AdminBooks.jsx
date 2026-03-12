@@ -74,7 +74,7 @@ export default function AdminBooks() {
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                       <img 
-                        src={book.coverImage || 'https://via.placeholder.com/40x60'} 
+                        src={book.coverImage?.url || book.coverImage || 'https://via.placeholder.com/40x60'} 
                         alt={book.title} 
                         style={{ width: 40, height: 60, objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border-color)' }}
                       />
@@ -97,7 +97,11 @@ export default function AdminBooks() {
                   <td>
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
                       <button 
-                        onClick={() => window.open(book.type === 'ebook' ? book.pdfUrl : book.audioUrl, '_blank')}
+                        onClick={() => {
+                          const url = book.type === 'ebook' ? book.fileUrl?.url : book.chapters?.[0]?.url;
+                          if (url) window.open(url, '_blank');
+                          else toast.error('File not found');
+                        }}
                         className="btn btn-sm btn-outline" 
                         title="View File"
                       >
