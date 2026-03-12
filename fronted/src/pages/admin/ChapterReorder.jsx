@@ -16,17 +16,21 @@ import {
   useSortable
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Save, ArrowLeft, Headphones } from 'lucide-react';
+import { GripVertical, Save, ArrowLeft, Headphones, Edit2, Check } from 'lucide-react';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
 
-function SortableItem({ id, chapter }) {
+function SortableItem({ id, chapter, onUpdate }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [tempTitle, setTempTitle] = useState(chapter.title);
+
   const {
     attributes,
     listeners,
     setNodeRef,
     transform,
     transition,
+    isDragging
   } = useSortable({ id });
 
   const style = {
@@ -36,11 +40,21 @@ function SortableItem({ id, chapter }) {
     alignItems: 'center',
     gap: '1rem',
     padding: '1rem',
-    background: 'var(--bg-card)',
-    border: '1px solid var(--border-color)',
+    background: isDragging ? 'var(--bg-card)' : 'var(--bg-card)',
+    border: isDragging ? '1px solid var(--color-primary)' : '1px solid var(--border-color)',
     borderRadius: 'var(--radius-md)',
     marginBottom: '0.5rem',
-    cursor: 'default'
+    cursor: 'default',
+    zIndex: isDragging ? 2 : 1,
+    boxShadow: isDragging ? '0 10px 20px rgba(0,0,0,0.1)' : 'none',
+    opacity: isDragging ? 0.8 : 1
+  };
+
+  const handleToggleEdit = () => {
+    if (isEditing) {
+      onUpdate(id, tempTitle);
+    }
+    setIsEditing(!isEditing);
   };
 
   return (
@@ -49,9 +63,26 @@ function SortableItem({ id, chapter }) {
         <GripVertical size={20} />
       </div>
       <div style={{ flex: 1 }}>
-        <div style={{ fontWeight: 600 }}>{chapter.title}</div>
+        {isEditing ? (
+          <input 
+            className="form-input"
+            value={tempTitle}
+            onChange={(e) => setTempTitle(e.target.value)}
+            style={{ padding: '0.25rem 0.5rem', fontSize: '0.95rem', height: 'auto', width: '100%' }}
+            autoFocus
+          />
+        ) : (
+          <div style={{ fontWeight: 600 }}>{chapter.title}</div>
+        )}
         {chapter.isSample && <span className="badge badge-purple" style={{ fontSize: '0.65rem' }}>Sample</span>}
       </div>
+      <button 
+        onClick={handleToggleEdit}
+        className="btn btn-sm btn-outline"
+        style={{ padding: '0.4rem', border: 'none', background: 'transparent' }}
+      >
+        {isEditing ? <Check size={18} color="var(--success)" /> : <Edit2 size={16} color="var(--text-muted)" />}
+      </button>
     </div>
   );
 }
@@ -155,7 +186,14 @@ export default function ChapterReorder() {
           strategy={verticalListSortingStrategy}
         >
           {chapters.map((chapter) => (
-            <SortableItem key={chapter._id} id={chapter._id} chapter={chapter} />
+            <SortableItem 
+              key={chapter._id} 
+              id={chapter._id} 
+              chapter={chapter} 
+              onUpdate={(id, newTitle) => {
+                setChapters(prev => prev.map(ch => ch._id === id ? { ...ch, title: newTitle } : ch));
+              }}
+            />
           ))}
         </SortableContext>
       </DndContext>
