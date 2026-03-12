@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { submitPayment, verifyPayment, stkPush, getAllPayments } = require('../controllers/paymentController');
+const { submitPayment, verifyPayment, stkPush, getAllPayments, handleCallback, checkStatus } = require('../controllers/paymentController');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 
@@ -59,6 +59,9 @@ router.post('/verify', [auth, admin], verifyPayment);
  *         description: All transactions
  */
 router.get('/all', [auth, admin], getAllPayments);
+
+router.post('/callback', handleCallback);
+router.get('/status/:checkoutRequestId', auth, checkStatus);
 
 module.exports = router;
 

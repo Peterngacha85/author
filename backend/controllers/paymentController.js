@@ -148,3 +148,21 @@ exports.handleCallback = async (req, res) => {
         res.status(500).json({ msg: 'Internal server error' });
     }
 };
+
+// Check Transaction Status (User)
+exports.checkStatus = async (req, res) => {
+  try {
+    const { checkoutRequestId } = req.params;
+    const transaction = await Transaction.findOne({ mpesaCode: checkoutRequestId });
+
+    if (!transaction) return res.status(404).json({ msg: 'Transaction not found' });
+
+    res.json({ 
+      status: transaction.status,
+      bookId: transaction.bookId
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
