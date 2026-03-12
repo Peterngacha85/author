@@ -10,10 +10,9 @@ const NAV = [
   { to: '/dashboard/profile', icon: User,       label: 'My Profile' },
 ];
 
-export default function UserSidebar() {
+export default function UserSidebar({ open, setOpen }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
 
   const initials = user?.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
 
@@ -21,16 +20,6 @@ export default function UserSidebar() {
 
   return (
     <>
-      {/* Mobile Toggle */}
-      <button onClick={() => setOpen(true)} style={{
-        display: 'none', position: 'fixed', top: '1rem', left: '1rem',
-        zIndex: 200, background: 'var(--bg-card)', border: '1px solid var(--border-color)',
-        borderRadius: 'var(--radius-md)', padding: '0.5rem', color: 'var(--text-primary)',
-        '@media(maxWidth:900px)': { display: 'flex' }
-      }} className="mobile-menu-btn">
-        <Menu size={20} />
-      </button>
-
       {/* Overlay */}
       {open && <div onClick={() => setOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 99 }} />}
 

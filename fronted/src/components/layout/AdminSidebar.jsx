@@ -11,10 +11,9 @@ const NAV = [
   { to: '/admin/users',     icon: Users,             label: 'Users' },
 ];
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ open, setOpen }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
 
   const initials = user?.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'A';
 

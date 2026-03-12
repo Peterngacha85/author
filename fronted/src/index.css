@@ -632,15 +632,40 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
    Responsive
    ======================== */
 @media (max-width: 900px) {
-  .sidebar { transform: translateX(-100%); }
+  .sidebar { 
+    transform: translateX(-100%); 
+    box-shadow: var(--shadow-lg);
+  }
   .sidebar.open { transform: translateX(0); }
   .dashboard-main { margin-left: 0; }
-  .books-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  .mobile-menu-btn { display: flex !important; }
+  .books-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 }
+
 @media (max-width: 600px) {
   .auth-card { padding: 1.75rem; }
   .dashboard-content { padding: 1rem; }
-  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .user-info-text { display: none !important; }
+  
+  /* Table Responsiveness */
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .data-table {
+    min-width: 600px; /* Force scroll for cramped tables */
+  }
+
+  /* Admin Layout fixes */
+  .dashboard-topbar { padding: 0 1rem; }
+  .modal-box { padding: 1.5rem; }
+}
+
+/* Fix for mobile card sizing */
+@media (max-width: 480px) {
+  .books-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+  .book-card-cover, .book-card-cover-placeholder { height: 160px; }
 }
 
 /* ========================
