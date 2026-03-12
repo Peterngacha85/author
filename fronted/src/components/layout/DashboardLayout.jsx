@@ -60,6 +60,25 @@ export default function DashboardLayout({ role = 'user' }) {
 
         {/* Page Content */}
         <main className="dashboard-content">
+          {user?.disabled && (
+            <div style={{ 
+              background: 'rgba(225, 44, 50, 0.1)', 
+              border: '1px solid rgba(225, 44, 50, 0.2)', 
+              borderRadius: 'var(--radius-md)', 
+              padding: '1rem', 
+              marginBottom: '1.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              color: '#D12C32'
+            }}>
+              <span style={{ fontSize: '1.2rem' }}>⚠️</span>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>Account Restricted</div>
+                <div style={{ fontSize: '0.8rem', opacity: 0.9 }}>Your account has been disabled by an administrator. Access to premium content is currently restricted.</div>
+              </div>
+            </div>
+          )}
           <Outlet />
         </main>
       </div>

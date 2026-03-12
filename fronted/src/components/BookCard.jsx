@@ -3,7 +3,16 @@ import { Lock, BookOpen, Headphones } from 'lucide-react';
 export default function BookCard({ book, isPurchased, onBuy, onRead, onListen }) {
   const isAudio = book.type === 'audiobook';
 
+  const { user } = useAuth();
+
   const handleCardClick = () => {
+    if (user?.disabled) {
+      import('react-hot-toast').then(({ default: toast }) => {
+        toast.error('Account restricted. Please contact admin.');
+      });
+      return;
+    }
+
     if (isPurchased) {
       if (isAudio) onListen();
       else onRead();
