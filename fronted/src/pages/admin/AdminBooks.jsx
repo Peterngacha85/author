@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Book, Headphones, Trash2, ExternalLink } from 'lucide-react';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
 
 export default function AdminBooks() {
+  const navigate = useNavigate();
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -98,16 +100,11 @@ export default function AdminBooks() {
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
                       <button 
                         onClick={() => {
-                          const getFileUrl = (b) => {
-                            if (b.type === 'ebook') return b.fileUrl?.url || b.fileUrl;
-                            return b.chapters?.[0]?.url || b.fileUrl?.url || b.fileUrl;
-                          };
-                          const url = getFileUrl(book);
-                          if (url) window.open(url, '_blank');
-                          else toast.error('File not found');
+                          if (book.type === 'ebook') navigate(`/reader/read/${book._id}`);
+                          else navigate(`/reader/listen/${book._id}`);
                         }}
                         className="btn btn-sm btn-outline" 
-                        title="View File"
+                        title="View reader"
                       >
                         <ExternalLink size={14} />
                       </button>

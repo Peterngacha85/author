@@ -61,6 +61,14 @@ export default function App() {
             <Route path="ebooks"  element={<BooksPage type="ebook" />} />
             <Route path="audio"   element={<BooksPage type="audiobook" />} />
             <Route path="profile" element={<UserProfile />} />
+          </Route>
+
+          {/* ── Shared Reader Routes ─────────────────── */}
+          <Route path="/reader" element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }>
             <Route path="read/:id" element={<EbookReader />} />
             <Route path="listen/:id" element={<AudioPlayer />} />
           </Route>
