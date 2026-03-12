@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createBook, addChapter, getBooks, getBook } = require('../controllers/bookController');
+const { createBook, addChapter, getBooks, getBook, reorderChapters } = require('../controllers/bookController');
 const { uploadBook, uploadAudio } = require('../utils/cloudinary');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
@@ -66,5 +66,7 @@ router.get('/', getBooks);
  *         description: Book details
  */
 router.get('/:id', auth, getBook);
+
+router.post('/reorder', [auth, admin], reorderChapters);
 
 module.exports = router;

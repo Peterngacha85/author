@@ -117,3 +117,23 @@ exports.getBook = async (req, res) => {
     res.status(500).json({ msg: 'Server error' });
   }
 };
+
+// Reorder Chapters (Admin only)
+exports.reorderChapters = async (req, res) => {
+  try {
+    const { bookId, chapters } = req.body;
+    const book = await Book.findById(bookId);
+
+    if (!book) return res.status(404).json({ msg: 'Book not found' });
+    if (book.type !== 'audiobook') return res.status(400).json({ msg: 'Not an audiobook' });
+
+    // Update chapters array with the new order
+    book.chapters = chapters;
+    await book.save();
+
+    res.json({ msg: 'Chapters reordered successfully', chapters: book.chapters });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
