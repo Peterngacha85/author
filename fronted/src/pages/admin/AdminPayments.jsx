@@ -65,7 +65,7 @@ export default function AdminPayments() {
                   </td>
                   <td>{tx.bookId?.title || '—'}</td>
                   <td>
-                    <div style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                    <div style={{ wordBreak: 'break-all', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                       {tx.mpesaCode}
                     </div>
                   </td>
