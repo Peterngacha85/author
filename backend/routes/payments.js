@@ -62,6 +62,7 @@ router.get('/all', [auth, admin], getAllPayments);
 
 router.post('/callback', handleCallback);
 router.get('/status/:checkoutRequestId', auth, checkStatus);
+router.post('/simulate', auth, require('../controllers/paymentController').simulateSTKSuccess);
 
 module.exports = router;
 

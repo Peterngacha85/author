@@ -108,13 +108,29 @@ export default function PaymentModal({ book, onClose }) {
             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
               Please check your phone and enter your M-Pesa PIN to complete the payment for <strong>{book.title}</strong>.
             </p>
-            <button 
-              onClick={() => { setStatus('idle'); setMethod('manual'); }}
-              className="btn btn-sm btn-outline" 
-              style={{ marginTop: '1.5rem' }}
-            >
-              Having trouble? Use Manual Input
-            </button>
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', marginTop: '1.5rem' }}>
+              <button 
+                onClick={() => { setStatus('idle'); setMethod('manual'); }}
+                className="btn btn-sm btn-outline" 
+              >
+                Having trouble? Use Manual Input
+              </button>
+              {import.meta.env.DEV && (
+                <button 
+                  onClick={async () => {
+                    try {
+                      await API.post('/payments/simulate');
+                      toast.success('Simulation successful!');
+                    } catch (err) {
+                      toast.error('Simulation failed');
+                    }
+                  }}
+                  className="btn btn-sm btn-success" 
+                >
+                  Simulate STK Success
+                </button>
+              )}
+            </div>
           </div>
         ) : (
           <>

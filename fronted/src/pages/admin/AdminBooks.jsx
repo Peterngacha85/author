@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Book, Headphones, Trash2, ExternalLink, Plus, Edit2, Check, X } from 'lucide-react';
+import { Book, Headphones, Trash2, ExternalLink, Plus, Edit2, X, Save } from 'lucide-react';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
 
@@ -9,9 +9,9 @@ export default function AdminBooks() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Edit state
-  const [editingId, setEditingId] = useState(null);
-  const [editTitle, setEditTitle] = useState('');
+  // Edit Modal State
+  const [editingBook, setEditingBook] = useState(null);
+  const [editForm, setEditForm] = useState({ title: '', author: '', price: '', description: '' });
   const [savingEdit, setSavingEdit] = useState(false);
 
   useEffect(() => {
@@ -40,26 +40,35 @@ export default function AdminBooks() {
     }
   };
 
-  const startEdit = (book) => {
-    setEditingId(book._id);
-    setEditTitle(book.title);
+  const openEditModal = (book) => {
+    setEditingBook(book);
+    setEditForm({
+      title: book.title || '',
+      author: book.author || '',
+      price: book.price || '',
+      description: book.description || ''
+    });
   };
 
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditTitle('');
+  const closeEditModal = () => {
+    setEditingBook(null);
   };
 
-  const saveEdit = async (id) => {
-    if (!editTitle.trim()) return toast.error('Title cannot be empty');
+  const handleEditChange = (e) => {
+    setEditForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const saveEdit = async (e) => {
+    e.preventDefault();
+    if (!editForm.title.trim() || !editForm.price) return toast.error('Title and price are required');
     setSavingEdit(true);
     try {
-      const res = await API.put(`/books/${id}`, { title: editTitle.trim() });
-      setBooks(books.map(b => b._id === id ? { ...b, title: res.data.book.title } : b));
-      toast.success('Title updated');
-      cancelEdit();
+      const res = await API.put(`/books/${editingBook._id}`, editForm);
+      setBooks(books.map(b => b._id === editingBook._id ? { ...b, ...res.data.book } : b));
+      toast.success('Book updated successfully');
+      closeEditModal();
     } catch (err) {
-      toast.error('Failed to update title');
+      toast.error('Failed to update book');
     } finally {
       setSavingEdit(false);
     }
@@ -111,31 +120,9 @@ export default function AdminBooks() {
                         style={{ width: 40, height: 60, objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border-color)', flexShrink: 0 }}
                       />
                       <div style={{ flex: 1 }}>
-                        {editingId === book._id ? (
-                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                              <input 
-                                autoFocus
-                                className="form-input"
-                                style={{ padding: '0.3rem 0.6rem', fontSize: '0.9rem' }}
-                                value={editTitle}
-                                onChange={e => setEditTitle(e.target.value)}
-                                disabled={savingEdit}
-                              />
-                              <button onClick={() => saveEdit(book._id)} className="btn btn-sm btn-success" style={{ padding: '0.3rem' }} disabled={savingEdit}>
-                                {savingEdit ? <span className="spinner" style={{ width: 14, height: 14, borderWidth: 2 }}/> : <Check size={14}/>}
-                              </button>
-                              <button onClick={cancelEdit} className="btn btn-sm btn-outline" style={{ padding: '0.3rem' }} disabled={savingEdit}>
-                                <X size={14}/>
-                              </button>
-                           </div>
-                        ) : (
-                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
-                              {book.title}
-                              <button onClick={() => startEdit(book)} style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', display: 'flex', padding: 2, opacity: 0.7 }} title="Edit Title" className="edit-btn">
-                                <Edit2 size={12} />
-                              </button>
-                           </div>
-                        )}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
+                          {book.title}
+                        </div>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{book.author}</div>
                       </div>
                     </div>
@@ -152,6 +139,14 @@ export default function AdminBooks() {
                   </td>
                   <td>
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <button 
+                        onClick={() => openEditModal(book)}
+                        className="btn btn-sm btn-outline" 
+                        style={{ color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}
+                        title="Edit Book Details"
+                      >
+                        <Edit2 size={14} />
+                      </button>
                       <button 
                         onClick={() => {
                           if (book.type === 'ebook') navigate(`/reader/read/${book._id}`);
@@ -185,10 +180,77 @@ export default function AdminBooks() {
               ))}
             </tbody>
           </table>
-          <style>{`
-            .data-table tr:hover .edit-btn { opacity: 1; }
-            .edit-btn { transition: opacity 0.2s; }
-          `}</style>
+        </div>
+      )}
+
+      {/* Edit Book Modal */}
+      {editingBook && (
+        <div className="modal-overlay" onClick={closeEditModal}>
+          <div className="modal-box" onClick={e => e.stopPropagation()} style={{ maxWidth: 500 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h3 style={{ margin: 0 }}>Edit Book Details</h3>
+              <button onClick={closeEditModal} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
+                <X size={20} />
+              </button>
+            </div>
+            
+            <form onSubmit={saveEdit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div className="form-group">
+                <label className="form-label">Title *</label>
+                <input 
+                  className="form-input" 
+                  name="title" 
+                  value={editForm.title} 
+                  onChange={handleEditChange} 
+                  required 
+                />
+              </div>
+              
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label className="form-label">Author</label>
+                  <input 
+                    className="form-input" 
+                    name="author" 
+                    value={editForm.author} 
+                    onChange={handleEditChange} 
+                  />
+                </div>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label className="form-label">Price (KES) *</label>
+                  <input 
+                    type="number" 
+                    className="form-input" 
+                    name="price" 
+                    value={editForm.price} 
+                    onChange={handleEditChange} 
+                    required 
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Description</label>
+                <textarea 
+                  className="form-input" 
+                  name="description" 
+                  rows={4} 
+                  value={editForm.description} 
+                  onChange={handleEditChange} 
+                  style={{ resize: 'vertical' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
+                <button type="button" onClick={closeEditModal} className="btn btn-outline" disabled={savingEdit}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary" disabled={savingEdit}>
+                  {savingEdit ? <span className="spinner" /> : <><Save size={16} /> Save Changes</>}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>
