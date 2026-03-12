@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Viewer, Worker } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import { ArrowLeft } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import API from '../../api/axios';
 
 import '@react-pdf-viewer/core/lib/styles/index.css';
