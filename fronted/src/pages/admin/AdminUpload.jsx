@@ -20,7 +20,7 @@ export default function AdminUpload() {
   const [chapterFile, setChapterFile] = useState(null);
   const [isSample, setIsSample] = useState(false);
 
-  useState(() => {
+  useEffect(() => {
     setFetchingBooks(true);
     API.get('/books')
       .then(res => setBooks(res.data))
