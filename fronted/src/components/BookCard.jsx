@@ -1,4 +1,5 @@
 import { Lock, BookOpen, Headphones } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function BookCard({ book, isPurchased, onBuy, onRead, onListen }) {
   const isAudio = book.type === 'audiobook';
