@@ -24,6 +24,7 @@ import AdminBooks    from './pages/admin/AdminBooks';
 import AdminUpload   from './pages/admin/AdminUpload';
 import AdminPayments from './pages/admin/AdminPayments';
 import AdminUsers    from './pages/admin/AdminUsers';
+import ChapterReorder from './pages/admin/ChapterReorder';
 
 export default function App() {
   return (
@@ -84,6 +85,7 @@ export default function App() {
             <Route path="upload"  element={<AdminUpload />} />
             <Route path="payments" element={<AdminPayments />} />
             <Route path="users"   element={<AdminUsers />} />
+            <Route path="books/reorder/:id" element={<ChapterReorder />} />
           </Route>
 
           {/* Fallback */}

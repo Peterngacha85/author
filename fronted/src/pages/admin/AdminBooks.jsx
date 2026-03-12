@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Book, Headphones, Trash2, ExternalLink } from 'lucide-react';
+import { Book, Headphones, Trash2, ExternalLink, Plus } from 'lucide-react';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
 
@@ -108,6 +108,16 @@ export default function AdminBooks() {
                       >
                         <ExternalLink size={14} />
                       </button>
+                      {book.type === 'audiobook' && (
+                        <button 
+                          onClick={() => navigate(`/admin/books/reorder/${book._id}`)}
+                          className="btn btn-sm btn-outline" 
+                          style={{ color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}
+                          title="Reorder Chapters"
+                        >
+                          <Plus size={14} />
+                        </button>
+                      )}
                       <button 
                         onClick={() => deleteBook(book._id)}
                         className="btn btn-sm btn-danger" 
