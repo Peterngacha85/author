@@ -63,8 +63,8 @@ export default function BooksPage({ type }) {
               book={book}
               isPurchased={purchasedIds.includes(String(book._id))}
               onBuy={() => setSelectedBook(book)}
-              onRead={() => navigate(`/dashboard/read/${book._id}`)}
-              onListen={() => navigate(`/dashboard/listen/${book._id}`)}
+              onRead={() => navigate(`/reader/read/${book._id}`)}
+              onListen={() => navigate(`/reader/listen/${book._id}`)}
             />
           ))}
         </div>
