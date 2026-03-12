@@ -1,0 +1,14 @@
+now I got another client who need a website (web application/system)
+name +254 721 599535 Kabûrû Joseph.
+he is an authour and so he needs a system with both client side and admin side where hew will be aploading  ebook and audiobook.
+now on the customiuzation he want it in a way that when uservisit the website, they should sign up either using names, phone numer or email " he wants the email to be optional", after users have registered they should be able to see all the list of audio book and ebook on their dashbord.  NOW THE OWNER DOES NOT WANT ANY DOWNLOADING FUNCTIONALITY FROM THE USER END EITHER FOR THE AUDIO BOOK OR EBOOK HE WANT THEM TO ONLY READ, OR LISTEN WHILE IN THE SYSTEM TO PREVENT PIRACY
+ NOW HE WANTS THE  APPLICATION TO ENABLE ONLY THOSE PEOPLE WHO PAYS FOR EITHER EBOOK OR AUDIOBOOK TO HAVE THE ACCESS. "BUT ON THE AUDIOBOOK THERE WILL BE A SAMLE FOR THE USER TO LISTEN EVEN ID THEY HAVE NOT YET PURCHASED "FREE SAMPLE"
+
+
+NOW SINCE HE IS WORKING ON TRYONG TO FIND (API KEYS FROM SAFARICOM, PASSKEY , CUSUMER KEY ETC,) ON WHICH LATER WHEN HE WILL GET THEM WE WILL IMPLIMENT ON THE SYATEM FOR THE STK PUSH, SO AT THE MOMENT I WE WILL CREATE THE STSYEM IN A WAY THAT WHEN THE USER CLICKS BUY THE BOOK/PURCHASE NOW, THE WILL BE GIVEN THIS LIPA NA MPESA  TILL NUMBER : "07200145" AND ASKED TO PASTE A MESSAGE  AND THAT MESSAGE WILL BE SEND ON THE ADMIN DADHBORD FOR MANUAL CONFIRMATION, BUT IMMIDIETYLY THE USER SENDS THE PAYMENT MESSAGE  THEY WILL AUTOMATUCALLY HAVE THE ACCESS TO EITH THE EBOOK OR THE AUDIOBOOK "ONLY ONE OF THEM - THE ONE THEY'VE PAID FOR" BUT ON THE ADMIN EDN IF THEY FIND THAT THE MPESA CONFIRMATION MESSAGE FROM THE BUYER IS INCORRECT THEY DISABLE THE USER ACCESS TO THE BOOK MEANING THEY WILL AUTOMATICALLY SEE A POPUP ASKING THEM TO PAY FOR THE ACCESS THE MPESA MESSAGE THEY SENT, FUNDS WAS NOT RECEIVED...... but the system will have the stk push btn/functionaluty (we will put the keys in the .envs so that when the owner get the kets we will just shift (so we can have in the env Manual and automatic) (like how we do for development vs production)
+
+also on the admin end remember he is the one to fill everything about the book so that it will appear to the user on the other hand.
+
+he has the audui book in chapters, and aso for the pdf he has it for the ebook.
+
+REMEMBER BUYERS SHOULD NOT BE ABLE TO DOWNLOAD ANYTHING EVEN IF THEY HAVE PURCHASED.
