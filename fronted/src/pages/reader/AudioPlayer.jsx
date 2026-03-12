@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Howl } from 'howler';
-import { Play, Pause, SkipBack, SkipForward, ArrowLeft, Volume2, VolumeX } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, ArrowLeft, Volume2, VolumeX, Download } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import API from '../../api/axios';
 
 export default function AudioPlayer() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -303,6 +306,19 @@ export default function AudioPlayer() {
                     </div>
                   </div>
                   {isActive && <div style={{ fontSize: '0.7rem', color: 'var(--color-primary)', fontWeight: 600 }}>Playing</div>}
+                  {isAdmin && (
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.open(ch.url, '_blank');
+                      }}
+                      className="btn btn-sm btn-outline"
+                      style={{ padding: '0.25rem', border: 'none', background: 'transparent' }}
+                      title="Download Chapter"
+                    >
+                      <Download size={16} />
+                    </button>
+                  )}
                 </button>
               );
             })}
