@@ -1,7 +1,11 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Headphones, ShieldCheck, CreditCard, ArrowRight, Star } from 'lucide-react';
+import { BookOpen, Headphones, ShieldCheck, CreditCard, ArrowRight, Star, Menu, X } from 'lucide-react';
+import './LandingPage.css';
 
 export default function LandingPage() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   // Premium Aesthetic Palette (derived from screenshot)
   const colors = {
     charcoal: '#0A0A0B',
@@ -50,17 +54,40 @@ export default function LandingPage() {
             KabûrûReads
           </span>
         </div>
-        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-          <Link to="/login" style={{ color: colors.textPrimary, fontWeight: 500, textDecoration: 'none', fontSize: '0.9rem' }}>Sign In</Link>
-          <Link to="/register" style={{ 
-            background: colors.brightRed, 
-            color: 'white',
-            padding: '0.6rem 1.2rem', 
-            borderRadius: '6px',
-            fontSize: '0.9rem',
-            fontWeight: 600,
-            textDecoration: 'none'
-          }}>Create Account</Link>
+
+        {/* Hamburger Toggle */}
+        <button 
+          className="landing-menu-toggle" 
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+        >
+          {menuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        {/* Nav Links */}
+        <div className={`landing-nav-links ${menuOpen ? 'open' : ''}`}>
+          <Link 
+            to="/login" 
+            style={{ color: colors.textPrimary, fontWeight: 500, textDecoration: 'none', fontSize: '0.9rem' }}
+            onClick={() => setMenuOpen(false)}
+          >
+            Sign In
+          </Link>
+          <Link 
+            to="/register" 
+            style={{ 
+              background: colors.brightRed, 
+              color: 'white',
+              padding: '0.6rem 1.2rem', 
+              borderRadius: '6px',
+              fontSize: '0.9rem',
+              fontWeight: 600,
+              textDecoration: 'none'
+            }}
+            onClick={() => setMenuOpen(false)}
+          >
+            Create Account
+          </Link>
         </div>
       </nav>
 
@@ -77,17 +104,20 @@ export default function LandingPage() {
           flexWrap: 'wrap'
         }}>
           <div style={{ flex: '1 1 500px', maxWidth: 550 }}>
-            <h1 style={{ 
-              fontSize: 'clamp(3rem, 5vw, 4.2rem)', lineHeight: 1.1, marginBottom: '1.5rem', 
-              color: colors.textPrimary, fontWeight: 800, letterSpacing: '-1.5px' 
-            }}>
+            <h1 
+              className="landing-hero-heading"
+              style={{ 
+                fontSize: 'clamp(3rem, 5vw, 4.2rem)', lineHeight: 1.1, marginBottom: '1.5rem', 
+                color: colors.textPrimary, fontWeight: 800, letterSpacing: '-1.5px' 
+              }}
+            >
               Your premium digital library, <br />
               <span style={{ color: colors.accentRed }}>right in your pocket.</span>
             </h1>
             <p style={{ fontSize: '1.1rem', color: colors.textSecondary, marginBottom: '2.5rem', lineHeight: 1.6, maxWidth: 480 }}>
               Discover thousands of inspiring eBooks and Audiobooks. Written for Kenyans, by Kenyans. Secure your copy today and read anywhere, anytime.
             </p>
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <div className="landing-hero-buttons">
               <Link to="/register" style={{ 
                 fontSize: '1rem', padding: '1rem 2rem', background: colors.brightRed,
                 color: 'white', borderRadius: '6px', fontWeight: 700, textDecoration: 'none'
@@ -103,7 +133,7 @@ export default function LandingPage() {
               </Link>
             </div>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: '2.5rem', marginTop: '4rem' }}>
+            <div className="landing-stats">
               <div><div style={{ fontSize: '1.5rem', fontWeight: 800, color: colors.textPrimary }}>10K+</div><div style={{ fontSize: '0.8rem', color: colors.textSecondary }}>Active Readers</div></div>
               <div><div style={{ fontSize: '1.5rem', fontWeight: 800, color: colors.textPrimary }}>500+</div><div style={{ fontSize: '0.8rem', color: colors.textSecondary }}>Premium Books</div></div>
               <div><div style={{ fontSize: '1.5rem', fontWeight: 800, color: colors.textPrimary }}>4.9/5</div><div style={{ fontSize: '0.8rem', color: colors.textSecondary }}>Average Rating</div></div>
@@ -168,7 +198,7 @@ export default function LandingPage() {
         borderTop: `1px solid ${colors.border}`,
         display: 'flex', justifyContent: 'center'
       }}>
-        <div style={{ maxWidth: 1100, display: 'flex', alignItems: 'center', gap: '4rem', flexWrap: 'wrap' }}>
+        <div className="landing-featured-inner">
           <div style={{ flex: '1 1 350px' }}>
             <div style={{ 
               position: 'relative', 
@@ -191,7 +221,10 @@ export default function LandingPage() {
             </div>
           </div>
           <div style={{ flex: '2 1 500px' }}>
-            <h2 style={{ fontSize: '3rem', fontWeight: 800, marginBottom: '1.5rem', lineHeight: 1.1, color: colors.textPrimary }}>
+            <h2 
+              className="landing-featured-title"
+              style={{ fontSize: '3rem', fontWeight: 800, marginBottom: '1.5rem', lineHeight: 1.1, color: colors.textPrimary }}
+            >
               Just One Text
             </h2>
             <p style={{ fontSize: '1.2rem', color: colors.textSecondary, lineHeight: 1.7, marginBottom: '2rem' }}>
@@ -213,7 +246,7 @@ export default function LandingPage() {
 
       {/* Footer (Screenshot Style) */}
       <footer style={{ padding: '5rem 5% 3rem', borderTop: `1px solid ${colors.border}`, background: '#000' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '3rem' }}>
+        <div className="landing-footer-inner">
           <div style={{ flex: '1 1 300px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
                <div style={{ width: 24, height: 24, background: colors.brightRed, borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem' }}>📚</div>
@@ -223,7 +256,7 @@ export default function LandingPage() {
               Empowering Kenyan authors and readers with a secure, premium digital library.
             </p>
           </div>
-          <div style={{ display: 'flex', gap: '4rem' }}>
+          <div className="landing-footer-columns">
             <div>
               <h4 style={{ color: 'white', marginBottom: '1.25rem', fontSize: '1rem' }}>Platform</h4>
               <Link to="/login" style={{ display: 'block', color: '#888', textDecoration: 'none', marginBottom: '0.75rem', fontSize: '0.9rem' }}>Browse eBooks</Link>
