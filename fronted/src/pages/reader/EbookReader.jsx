@@ -88,13 +88,29 @@ export default function EbookReader() {
       {/* PDF Viewport */}
       <div style={{ flex: 1, overflow: 'hidden', position: 'relative', display: 'flex', justifyContent: 'center' }}>
         <div style={{ width: '100%', maxWidth: 1000, height: '100%' }} className="pdf-container-secure">
-          <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-            <Viewer
-              fileUrl={book?.fileUrl?.url || book?.fileUrl}
-              plugins={[defaultLayoutPluginInstance]}
-              theme="light"
-            />
-          </Worker>
+          {!book?.fileUrl ? (
+            <div style={{ 
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
+              height: '100%', color: 'var(--text-muted)', textAlign: 'center', padding: '2rem'
+            }}>
+              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔒</div>
+              <h3 style={{ color: 'var(--text-primary)' }}>Access Restricted</h3>
+              <p style={{ maxWidth: 300, fontSize: '0.9rem' }}>
+                This content is not available. This usually happens if your account is restricted or the purchase is not confirmed.
+              </p>
+              <button onClick={() => navigate(-1)} className="btn btn-primary" style={{ marginTop: '1.5rem' }}>
+                Go Back
+              </button>
+            </div>
+          ) : (
+            <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+              <Viewer
+                fileUrl={book?.fileUrl?.url || book?.fileUrl}
+                plugins={[defaultLayoutPluginInstance]}
+                theme="light"
+              />
+            </Worker>
+          )}
         </div>
         {/* Transparent overlay blocks deep-click interactions on the canvas */}
         <div style={{ position: 'absolute', inset: 0, zIndex: 10, pointerEvents: 'none', userSelect: 'none' }} />

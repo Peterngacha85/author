@@ -99,12 +99,12 @@ exports.login = async (req, res) => {
       (err, token) => {
         if (err) throw err;
         
-        // If disabled, treat as new user (hide purchases)
         const userData = {
           id: user.id,
           name: user.name,
           role: user.role,
           profilePhoto: user.profilePhoto,
+          disabled: user.disabled,
           purchasedItems: user.disabled ? [] : user.purchasedItems
         };
 
@@ -124,6 +124,9 @@ exports.getMe = async (req, res) => {
     if (!user) return res.status(404).json({ msg: 'User not found' });
 
     const userData = user.toObject();
+    // Ensure 'disabled' field is present
+    userData.disabled = !!userData.disabled;
+    
     if (userData.disabled) {
       userData.purchasedItems = [];
     }
