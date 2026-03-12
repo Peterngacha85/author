@@ -1,0 +1,136 @@
+/* ===== Landing Page Responsive Styles ===== */
+
+/* Mobile Menu Toggle Button */
+.landing-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.4rem;
+  line-height: 1;
+}
+
+/* Mobile Menu Overlay */
+.landing-nav-links {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+/* Hero Stats Row */
+.landing-stats {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  margin-top: 4rem;
+}
+
+/* Hero Buttons */
+.landing-hero-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Featured Book Container */
+.landing-featured-inner {
+  max-width: 1100px;
+  display: flex;
+  align-items: center;
+  gap: 4rem;
+  flex-wrap: wrap;
+}
+
+/* Footer Columns */
+.landing-footer-columns {
+  display: flex;
+  gap: 4rem;
+}
+
+/* Footer Inner */
+.landing-footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 3rem;
+}
+
+
+/* ===== Tablet (≤768px) ===== */
+@media (max-width: 768px) {
+  .landing-menu-toggle {
+    display: block;
+  }
+
+  .landing-nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background: rgba(10, 10, 11, 0.97);
+    backdrop-filter: blur(20px);
+    padding: 1.5rem 5%;
+    gap: 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    z-index: 99;
+  }
+
+  .landing-nav-links.open {
+    display: flex;
+  }
+
+  .landing-nav-links a {
+    width: 100%;
+    text-align: center;
+    padding: 0.75rem 1rem !important;
+  }
+
+  .landing-stats {
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .landing-hero-buttons {
+    flex-direction: column;
+  }
+  .landing-hero-buttons a {
+    text-align: center;
+  }
+
+  .landing-featured-inner {
+    gap: 2.5rem;
+  }
+
+  .landing-footer-columns {
+    flex-direction: column;
+    gap: 2rem;
+  }
+}
+
+
+/* ===== Small Mobile (≤480px) ===== */
+@media (max-width: 480px) {
+  .landing-stats {
+    gap: 0;
+    justify-content: space-between;
+    margin-top: 2.5rem;
+  }
+
+  .landing-stats > div {
+    flex: 1;
+    text-align: center;
+  }
+
+  .landing-featured-title {
+    font-size: 2rem !important;
+  }
+
+  .landing-hero-heading {
+    font-size: clamp(2rem, 8vw, 3rem) !important;
+  }
+}
