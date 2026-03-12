@@ -137,3 +137,24 @@ exports.reorderChapters = async (req, res) => {
     res.status(500).json({ msg: 'Server error' });
   }
 };
+
+// Update Book details (Admin only)
+exports.updateBook = async (req, res) => {
+  try {
+    const { title, description, price, author } = req.body;
+    const book = await Book.findById(req.params.id);
+
+    if (!book) return res.status(404).json({ msg: 'Book not found' });
+
+    if (title) book.title = title;
+    if (description) book.description = description;
+    if (price) book.price = price;
+    if (author) book.author = author;
+
+    await book.save();
+    res.json({ msg: 'Book updated successfully', book });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server error while updating book' });
+  }
+};
