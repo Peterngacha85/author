@@ -98,15 +98,17 @@ exports.login = async (req, res) => {
       { expiresIn: '7d' },
       (err, token) => {
         if (err) throw err;
-        res.json({ 
-          token, 
-          user: { 
-            id: user.id, 
-            name: user.name, 
-            role: user.role, 
-            profilePhoto: user.profilePhoto 
-          } 
-        });
+        
+        // If disabled, treat as new user (hide purchases)
+        const userData = {
+          id: user.id,
+          name: user.name,
+          role: user.role,
+          profilePhoto: user.profilePhoto,
+          purchasedItems: user.disabled ? [] : user.purchasedItems
+        };
+
+        res.json({ token, user: userData });
       }
     );
   } catch (err) {
