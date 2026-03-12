@@ -166,3 +166,28 @@ exports.checkStatus = async (req, res) => {
     res.status(500).json({ msg: 'Server error' });
   }
 };
+
+// SIMULATION: Manually approve the last pending STK for testing
+exports.simulateSTKSuccess = async (req, res) => {
+    try {
+        const transaction = await Transaction.findOne({ userId: req.user.id, status: 'pending' }).sort({ createdAt: -1 });
+        if (!transaction) return res.status(404).json({ msg: 'No pending STK transaction found for your user' });
+
+        transaction.status = 'verified';
+        transaction.mpesaCode = 'SIMULATED' + Math.random().toString(36).substring(7).toUpperCase();
+        transaction.adminComment = 'Sandbox Simulation Success';
+        await transaction.save();
+
+        // Grant access
+        const user = await User.findById(req.user.id);
+        if (!user.purchasedItems.includes(transaction.bookId)) {
+            user.purchasedItems.push(transaction.bookId);
+            await user.save();
+        }
+
+        res.json({ msg: 'Payment SIMULATED successfully. The modal should close now.', transaction });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: 'Simulation failed' });
+    }
+};
