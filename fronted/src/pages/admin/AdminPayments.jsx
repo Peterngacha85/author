@@ -26,7 +26,7 @@ export default function AdminPayments() {
   };
 
   const statusBadge = (s) => {
-    const map = { pending: 'badge-yellow', confirmed: 'badge-green', rejected: 'badge-red' };
+    const map = { pending: 'badge-yellow', verified: 'badge-green', confirmed: 'badge-green', rejected: 'badge-red' };
     return <span className={`badge ${map[s] || 'badge-yellow'}`}>{s}</span>;
   };
 
@@ -84,7 +84,7 @@ export default function AdminPayments() {
                   <td>
                     {tx.status === 'pending' && (
                       <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <button onClick={() => verify(tx._id, 'confirmed')} className="btn btn-success btn-sm" title="Confirm">
+                        <button onClick={() => verify(tx._id, 'verified')} className="btn btn-success btn-sm" title="Confirm">
                           <CheckCircle size={14} />
                         </button>
                         <button onClick={() => verify(tx._id, 'rejected')} className="btn btn-danger btn-sm" title="Reject">
