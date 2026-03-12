@@ -98,7 +98,11 @@ export default function AdminBooks() {
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
                       <button 
                         onClick={() => {
-                          const url = book.type === 'ebook' ? book.fileUrl?.url : book.chapters?.[0]?.url;
+                          const getFileUrl = (b) => {
+                            if (b.type === 'ebook') return b.fileUrl?.url || b.fileUrl;
+                            return b.chapters?.[0]?.url || b.fileUrl?.url || b.fileUrl;
+                          };
+                          const url = getFileUrl(book);
                           if (url) window.open(url, '_blank');
                           else toast.error('File not found');
                         }}

@@ -15,13 +15,19 @@ export default function EbookReader() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Customize toolbar to remove download/print buttons for security
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
+
+  // Customize toolbar to remove download/print buttons for regular users
   const defaultLayoutPluginInstance = defaultLayoutPlugin({
     sidebarTabs: (defaultTabs) => [],
     renderToolbar: (Toolbar) => (
       <Toolbar>
         {(slots) => {
-          const { ZoomOut, Zoom, ZoomIn, GoToPreviousPage, CurrentPageInput, NumberOfPages, GoToNextPage, EnterFullScreen } = slots;
+          const { 
+            ZoomOut, Zoom, ZoomIn, GoToPreviousPage, CurrentPageInput, 
+            NumberOfPages, GoToNextPage, EnterFullScreen, Download, Print 
+          } = slots;
           return (
             <div style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '4px' }}>
               <div style={{ padding: '0 2px' }}><ZoomOut /></div>
@@ -35,6 +41,12 @@ export default function EbookReader() {
                 <GoToNextPage />
               </div>
               <div style={{ padding: '0 2px' }}><EnterFullScreen /></div>
+              {isAdmin && (
+                <>
+                  <div style={{ padding: '0 2px' }}><Download /></div>
+                  <div style={{ padding: '0 2px' }}><Print /></div>
+                </>
+              )}
             </div>
           );
         }}
