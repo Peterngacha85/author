@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Upload, X, Plus } from 'lucide-react';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
