@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Star, Send, Trash2 } from 'lucide-react';
+import ConfirmModal from './common/ConfirmModal';
 import API from '../api/axios';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
@@ -12,6 +13,8 @@ export default function ReviewSection({ bookId }) {
   const [hover, setHover] = useState(0);
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [reviewToDelete, setReviewToDelete] = useState(null);
 
   useEffect(() => {
     fetchReviews();
@@ -47,14 +50,21 @@ export default function ReviewSection({ bookId }) {
     }
   };
 
-  const deleteReview = async (reviewId) => {
-    if (!window.confirm('Delete this review?')) return;
+  const handleDeleteClick = (reviewId) => {
+    setReviewToDelete(reviewId);
+    setIsConfirmOpen(true);
+  };
+
+  const deleteReview = async () => {
+    if (!reviewToDelete) return;
     try {
-      await API.delete(`/books/reviews/${reviewId}`);
-      setReviews(prev => prev.filter(r => r._id !== reviewId));
+      await API.delete(`/books/reviews/${reviewToDelete}`);
+      setReviews(prev => prev.filter(r => r._id !== reviewToDelete));
       toast.success('Review deleted');
     } catch (err) {
       toast.error('Failed to delete review');
+    } finally {
+      setReviewToDelete(null);
     }
   };
 
@@ -137,7 +147,7 @@ export default function ReviewSection({ bookId }) {
 
               {user?.role === 'admin' && (
                 <button
-                  onClick={() => deleteReview(rev._id)}
+                  onClick={() => handleDeleteClick(rev._id)}
                   className="delete-review-btn"
                   title="Delete Review"
                 >
@@ -148,6 +158,15 @@ export default function ReviewSection({ bookId }) {
           ))
         )}
       </div>
+
+      <ConfirmModal 
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={deleteReview}
+        title="Delete Review"
+        message="Are you sure you want to delete this review? This action cannot be undone."
+        confirmText="Delete Review"
+      />
     </div>
   );
 }
