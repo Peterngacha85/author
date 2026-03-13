@@ -16,9 +16,10 @@ module.exports = async function(req, res, next) {
     req.user = decoded.user;
 
     // Check user status but don't block (controllers will handle permissions)
-    const user = await User.findById(req.user.id).select('disabled');
+    const user = await User.findById(req.user.id).select('disabled name');
     if (user) {
       req.user.disabled = user.disabled;
+      req.user.name = user.name;
     }
 
     next();
