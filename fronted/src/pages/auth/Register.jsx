@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { User, Phone, Lock, Eye, EyeOff, Mail } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -7,12 +7,19 @@ import API from '../../api/axios';
 
 export default function Register() {
   const navigate = useNavigate();
-  const { register, updateUser } = useAuth();
+  const { register, updateUser, user, loading: authLoading } = useAuth();
   const [showPass, setShowPass] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [photoFile, setPhotoFile] = useState(null);
   const [form, setForm] = useState({ name: '', phone: '', email: '', password: '' });
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate(user.role === 'admin' ? '/admin' : '/dashboard');
+    }
+  }, [user, authLoading, navigate]);
 
   const handleChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
@@ -31,7 +38,7 @@ export default function Register() {
       toast.error('Name, phone and password are required');
       return;
     }
-    setLoading(true);
+    setIsSubmitting(true);
     try {
       const fd = new FormData();
       fd.append('name', form.name);
@@ -50,7 +57,7 @@ export default function Register() {
       console.error('Registration Error:', err);
       toast.error(err.response?.data?.msg || 'Registration failed');
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -132,8 +139,8 @@ export default function Register() {
             </div>
           </div>
 
-          <button type="submit" className="btn btn-primary btn-full btn-lg glow-pulse" disabled={loading} style={{ marginTop: '0.5rem' }}>
-            {loading ? <span className="spinner" /> : 'Create Account'}
+          <button type="submit" className="btn btn-primary btn-full btn-lg glow-pulse" disabled={isSubmitting} style={{ marginTop: '0.5rem' }}>
+            {isSubmitting ? <span className="spinner" /> : 'Create Account'}
           </button>
         </form>
 

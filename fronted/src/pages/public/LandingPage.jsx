@@ -1,10 +1,15 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { BookOpen, Headphones, ShieldCheck, CreditCard, ArrowRight, Star, Menu, X } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { BookOpen, Headphones, ShieldCheck, CreditCard, ArrowRight, Star, Menu, X, LayoutDashboard } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import './LandingPage.css';
 
 export default function LandingPage() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const dashboardPath = user?.role === 'admin' ? '/admin' : '/dashboard';
 
   // Premium Aesthetic Palette (derived from screenshot)
   const colors = {
@@ -66,28 +71,52 @@ export default function LandingPage() {
 
         {/* Nav Links */}
         <div className={`landing-nav-links ${menuOpen ? 'open' : ''}`}>
-          <Link 
-            to="/login" 
-            style={{ color: colors.textPrimary, fontWeight: 500, textDecoration: 'none', fontSize: '0.9rem' }}
-            onClick={() => setMenuOpen(false)}
-          >
-            Sign In
-          </Link>
-          <Link 
-            to="/register" 
-            style={{ 
-              background: colors.brightRed, 
-              color: 'white',
-              padding: '0.6rem 1.2rem', 
-              borderRadius: '6px',
-              fontSize: '0.9rem',
-              fontWeight: 600,
-              textDecoration: 'none'
-            }}
-            onClick={() => setMenuOpen(false)}
-          >
-            Create Account
-          </Link>
+          {user ? (
+            <Link 
+              to={dashboardPath}
+              style={{ 
+                background: colors.brightRed, 
+                color: 'white',
+                padding: '0.6rem 1.2rem', 
+                borderRadius: '6px',
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                textDecoration: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}
+              onClick={() => setMenuOpen(false)}
+            >
+              <LayoutDashboard size={16} />
+              My Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link 
+                to="/login" 
+                style={{ color: colors.textPrimary, fontWeight: 500, textDecoration: 'none', fontSize: '0.9rem' }}
+                onClick={() => setMenuOpen(false)}
+              >
+                Sign In
+              </Link>
+              <Link 
+                to="/register" 
+                style={{ 
+                  background: colors.brightRed, 
+                  color: 'white',
+                  padding: '0.6rem 1.2rem', 
+                  borderRadius: '6px',
+                  fontSize: '0.9rem',
+                  fontWeight: 600,
+                  textDecoration: 'none'
+                }}
+                onClick={() => setMenuOpen(false)}
+              >
+                Create Account
+              </Link>
+            </>
+          )}
         </div>
       </nav>
 
@@ -118,18 +147,18 @@ export default function LandingPage() {
               Discover thousands of inspiring eBooks and Audiobooks. Written for Kenyans, by Kenyans. Secure your copy today and read anywhere, anytime.
             </p>
             <div className="landing-hero-buttons">
-              <Link to="/register" style={{ 
+              <Link to={user ? dashboardPath : "/register"} style={{ 
                 fontSize: '1rem', padding: '1rem 2rem', background: colors.brightRed,
                 color: 'white', borderRadius: '6px', fontWeight: 700, textDecoration: 'none'
               }}>
-                Start Reading
+                {user ? 'Go to Dashboard' : 'Start Reading'}
               </Link>
-              <Link to="/login" style={{ 
+              <Link to={user ? dashboardPath : "/login"} style={{ 
                 fontSize: '1rem', padding: '1rem 2rem', color: colors.textPrimary, 
                 border: `1px solid ${colors.border}`, borderRadius: '6px', fontWeight: 600, textDecoration: 'none',
                 background: 'rgba(255,255,255,0.02)'
               }}>
-                View Catalog
+                {user ? 'View Catalog' : 'Sign In'}
               </Link>
             </div>
             
@@ -233,12 +262,12 @@ export default function LandingPage() {
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2.5rem' }}>
               {[1,2,3,4,5].map(i => <Star key={i} size={18} fill={colors.accentRed} color={colors.accentRed} />)}
             </div>
-            <Link to="/login" style={{ 
+            <Link to={user ? dashboardPath : "/login"} style={{ 
               display: 'inline-flex', alignItems: 'center', gap: '0.75rem', 
               color: 'white', background: colors.brightRed, 
               padding: '1rem 2rem', borderRadius: '6px', fontWeight: 700, textDecoration: 'none'
             }}>
-              START READING <ArrowRight size={20} />
+              {user ? 'CONTINUE READING' : 'START READING'} <ArrowRight size={20} />
             </Link>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Phone, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -6,16 +6,23 @@ import toast from 'react-hot-toast';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user, loading } = useAuth();
   const [showPass, setShowPass] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({ phone: '', password: '' });
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!loading && user) {
+      navigate(user.role === 'admin' ? '/admin' : '/dashboard');
+    }
+  }, [user, loading, navigate]);
 
   const handleChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setIsSubmitting(true);
     try {
       const user = await login(form.phone, form.password);
       toast.success('Welcome back!');
@@ -23,7 +30,7 @@ export default function Login() {
     } catch (err) {
       toast.error(err.response?.data?.msg || 'Login failed. Check your credentials.');
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -65,8 +72,8 @@ export default function Login() {
             </div>
           </div>
 
-          <button type="submit" className="btn btn-primary btn-full btn-lg glow-pulse" disabled={loading} style={{ marginTop: '0.5rem' }}>
-            {loading ? <span className="spinner" /> : 'Sign In'}
+          <button type="submit" className="btn btn-primary btn-full btn-lg glow-pulse" disabled={isSubmitting} style={{ marginTop: '0.5rem' }}>
+            {isSubmitting ? <span className="spinner" /> : 'Sign In'}
           </button>
         </form>
 
