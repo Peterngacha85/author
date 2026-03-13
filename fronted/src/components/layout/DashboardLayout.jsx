@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, Link } from 'react-router-dom';
 import UserSidebar from './UserSidebar';
 import AdminSidebar from './AdminSidebar';
 import { useAuth } from '../../context/AuthContext';
@@ -46,7 +46,7 @@ export default function DashboardLayout({ role = 'user' }) {
                 {role === 'admin' ? 'Administrator' : 'Member'}
               </div>
             </div>
-            <div className={`avatar avatar-sm ${!user?.profilePhoto ? 'avatar-initials' : ''}`}>
+            <Link to={`${role === 'admin' ? '/admin' : '/dashboard'}/profile`} className={`avatar avatar-sm ${!user?.profilePhoto ? 'avatar-initials' : ''}`}>
               {user?.profilePhoto
                 ? <img src={user.profilePhoto} alt={user.name}
                     style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
@@ -54,7 +54,7 @@ export default function DashboardLayout({ role = 'user' }) {
                     {user?.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U'}
                   </span>
               }
-            </div>
+            </Link>
           </div>
         </header>
 
