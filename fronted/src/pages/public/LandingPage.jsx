@@ -55,9 +55,7 @@ export default function LandingPage() {
             display: 'flex', alignItems: 'center', justifyContent: 'center', 
             fontSize: '1rem'
           }}>📚</div>
-          <span style={{ fontSize: '1.25rem', fontWeight: 700, color: colors.textPrimary }}>
-            KabûrûReads
-          </span>
+            Joe Books
         </div>
 
         {/* Hamburger Toggle */}
@@ -191,7 +189,7 @@ export default function LandingPage() {
         padding: '6rem 5%', 
         textAlign: 'center'
       }}>
-        <h2 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem', color: colors.textPrimary }}>Why choose KabûrûReads?</h2>
+        <h2 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem', color: colors.textPrimary }}>Why choose Joe Books?</h2>
         <p style={{ color: colors.textSecondary, fontSize: '1rem', maxWidth: 600, margin: '0 auto 4rem', lineHeight: 1.5 }}>
           We built a platform that respects authors and provides an unmatched reading experience.
         </p>
@@ -277,10 +275,7 @@ export default function LandingPage() {
       <footer style={{ padding: '5rem 5% 3rem', borderTop: `1px solid ${colors.border}`, background: '#000' }}>
         <div className="landing-footer-inner">
           <div style={{ flex: '1 1 300px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
-               <div style={{ width: 24, height: 24, background: colors.brightRed, borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem' }}>📚</div>
-               <span style={{ fontSize: '1.1rem', fontWeight: 700 }}>KabûrûReads</span>
-            </div>
+               <span style={{ fontSize: '1.1rem', fontWeight: 700 }}>Joe Books</span>
             <p style={{ color: '#888', fontSize: '0.9rem', maxWidth: 300, lineHeight: 1.5 }}>
               Empowering Kenyan authors and readers with a secure, premium digital library.
             </p>
@@ -298,9 +293,7 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-        <div style={{ textAlign: 'center', color: '#444', fontSize: '0.8rem', marginTop: '4rem' }}>
-          © 2026 KabûrûReads. All rights reserved.
-        </div>
+          © 2026 Joe Books. All rights reserved.
       </footer>
     </div>
   );

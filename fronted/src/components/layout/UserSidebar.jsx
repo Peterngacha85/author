@@ -28,7 +28,7 @@ export default function UserSidebar({ open, setOpen }) {
         <div className="sidebar-logo">
           <div className="sidebar-logo-icon">📚</div>
           <div>
-            <div className="sidebar-logo-text">KabûrûReads</div>
+            <div className="sidebar-logo-text">Joe Books</div>
             <div className="sidebar-logo-sub">Digital Library</div>
           </div>
           {open && <button onClick={() => setOpen(false)} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}><X size={18} /></button>}

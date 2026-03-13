@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 export default function AdminUpload() {
   const [tab, setTab] = useState('ebook'); // 'ebook' | 'audio'
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ title: '', description: '', author: 'Kabûrû Joseph', price: '', type: 'ebook' });
+  const [form, setForm] = useState({ title: '', description: '', author: 'Joe Joseph', price: '', type: 'ebook' });
   const [coverFile, setCoverFile] = useState(null);
   const [bookFile, setBookFile] = useState(null);
   const [coverPreview, setCoverPreview] = useState(null);
@@ -50,7 +50,7 @@ export default function AdminUpload() {
       const res = await API.post('/books', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
       toast.success('Book created!');
       setBookId(res.data._id);
-      setForm({ title: '', description: '', author: 'Kabûrû Joseph', price: '', type: tab });
+      setForm({ title: '', description: '', author: 'Joe Joseph', price: '', type: tab });
       setCoverFile(null); setCoverPreview(null); setBookFile(null);
     } catch (err) {
       toast.error(err.response?.data?.msg || 'Upload failed');
@@ -124,10 +124,7 @@ export default function AdminUpload() {
               <label className="form-label">Title *</label>
               <input className="form-input" name="title" value={form.title} onChange={handleChange} placeholder="Book title" required />
             </div>
-            <div className="form-group">
-              <label className="form-label">Author</label>
               <input className="form-input" name="author" value={form.author} onChange={handleChange} />
-            </div>
             <div className="form-group">
               <label className="form-label">Description</label>
               <textarea className="form-input" name="description" value={form.description} onChange={handleChange} rows={3} style={{ resize: 'vertical' }} placeholder="Short description..." />
