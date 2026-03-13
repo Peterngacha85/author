@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Book, Headphones, Trash2, ExternalLink, Plus, Edit2, X, Save } from 'lucide-react';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/common/ConfirmModal';
 
 export default function AdminBooks() {
   const navigate = useNavigate();
@@ -13,6 +14,10 @@ export default function AdminBooks() {
   const [editingBook, setEditingBook] = useState(null);
   const [editForm, setEditForm] = useState({ title: '', author: '', price: '', description: '' });
   const [savingEdit, setSavingEdit] = useState(false);
+
+  // Confirm Modal State
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [bookToDelete, setBookToDelete] = useState(null);
 
   useEffect(() => {
     fetchBooks();
@@ -29,14 +34,21 @@ export default function AdminBooks() {
     }
   };
 
-  const deleteBook = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this book? This action cannot be undone.')) return;
+  const handleDeleteClick = (id) => {
+    setBookToDelete(id);
+    setIsConfirmOpen(true);
+  };
+
+  const deleteBook = async () => {
+    if (!bookToDelete) return;
     try {
-      await API.delete(`/admin/books/${id}`);
-      setBooks(books.filter(b => b._id !== id));
+      await API.delete(`/admin/books/${bookToDelete}`);
+      setBooks(books.filter(b => b._id !== bookToDelete));
       toast.success('Book deleted successfully');
     } catch (err) {
       toast.error('Failed to delete book');
+    } finally {
+      setBookToDelete(null);
     }
   };
 
@@ -168,7 +180,7 @@ export default function AdminBooks() {
                         </button>
                       )}
                       <button 
-                        onClick={() => deleteBook(book._id)}
+                        onClick={() => handleDeleteClick(book._id)}
                         className="btn btn-sm btn-danger" 
                         title="Delete Book"
                       >
@@ -253,6 +265,16 @@ export default function AdminBooks() {
           </div>
         </div>
       )}
+
+      {/* Reusable Confirm Modal */}
+      <ConfirmModal 
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={deleteBook}
+        title="Delete Book"
+        message="Are you sure you want to delete this book? This action cannot be undone and will remove it from all users' libraries."
+        confirmText="Delete Book"
+      />
     </div>
   );
 }

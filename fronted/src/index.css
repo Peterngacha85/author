@@ -793,3 +793,31 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
 .slide-up {
   animation: slideUp 0.3s ease-out forwards;
 }
+
+/* Confirm Modal Specifics */
+.confirm-icon-bg {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.confirm-icon-bg.danger { background: rgba(255, 56, 92, 0.1); color: var(--danger); }
+.confirm-icon-bg.warning { background: rgba(255, 184, 0, 0.1); color: #FFB800; }
+.confirm-icon-bg.info { background: rgba(0, 132, 137, 0.1); color: var(--color-primary); }
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: color 0.2s;
+}
+
+.modal-close-btn:hover {
+  color: var(--text-primary);
+}
