@@ -36,12 +36,12 @@ export default function AdminSidebar({ open, setOpen }) {
 
         {/* Admin info */}
         <div style={{ padding: '0.75rem', marginBottom: '1rem', background: 'rgba(194,0,106,0.12)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(194,0,106,0.25)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <Link to="/admin/profile" className="avatar avatar-sm avatar-initials" style={{ minWidth: 36, borderColor: 'var(--color-secondary)' }}>
+          <div className="avatar avatar-sm avatar-initials" style={{ minWidth: 36, borderColor: 'var(--color-secondary)' }}>
             {user?.profilePhoto
               ? <img src={user.profilePhoto} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
               : <span style={{ fontSize: '0.75rem' }}>{initials}</span>
             }
-          </Link>
+          </div>
           <div style={{ overflow: 'hidden' }}>
             <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.name}</div>
             <span className="badge badge-pink" style={{ fontSize: '0.6rem' }}>Administrator</span>
