@@ -29,7 +29,7 @@ export default function AdminSidebar({ open, setOpen }) {
           <div className="sidebar-logo-icon" style={{ background: 'var(--color-primary)' }}>⚙️</div>
           <div>
             <div className="sidebar-logo-text">Admin Panel</div>
-            <div className="sidebar-logo-sub">KabûrûReads</div>
+            <div className="sidebar-logo-sub">Joe Books</div>
           </div>
           {open && <button onClick={() => setOpen(false)} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}><X size={18} /></button>}
         </div>

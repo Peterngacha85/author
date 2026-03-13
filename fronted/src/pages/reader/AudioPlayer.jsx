@@ -4,6 +4,7 @@ import { Howl } from 'howler';
 import { Play, Pause, SkipBack, SkipForward, ArrowLeft, Volume2, VolumeX, Download } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import API from '../../api/axios';
+import ReviewSection from '../../components/ReviewSection';
 
 export default function AudioPlayer() {
   const { id } = useParams();
@@ -324,6 +325,9 @@ export default function AudioPlayer() {
             })}
           </div>
         </div>
+
+        {/* Reviews Section */}
+        {book && <ReviewSection bookId={id} />}
       </div>
     </div>
   );

@@ -53,7 +53,7 @@ export default function Login() {
             <label className="form-label">Email or Phone Number</label>
             <div className="form-input-icon-wrap">
               <Phone size={16} className="icon" />
-              <input type="text" name="phone" placeholder="e.g. 07... or kaburu@..." className="form-input"
+              <input type="text" name="phone" placeholder="e.g. 07... or joe@..." className="form-input"
                 value={form.phone} onChange={handleChange} required />
             </div>
           </div>

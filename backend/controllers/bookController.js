@@ -1,5 +1,6 @@
 const Book = require('../models/Book');
 const User = require('../models/User');
+const Review = require('../models/Review');
 const { cloudinary } = require('../utils/cloudinary');
 
 // Create a new book (Admin only)
@@ -156,5 +157,61 @@ exports.updateBook = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Server error while updating book' });
+  }
+};
+
+// Add a review to a book
+exports.addReview = async (req, res) => {
+  try {
+    const { rating, comment } = req.body;
+    const bookId = req.params.id;
+
+    if (!rating || !comment) {
+      return res.status(400).json({ msg: 'Please provide a rating and a comment' });
+    }
+
+    const review = new Review({
+      bookId,
+      userId: req.user.id,
+      userName: req.user.name,
+      rating: Number(rating),
+      comment
+    });
+
+    await review.save();
+    res.status(201).json(review);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server error while adding review' });
+  }
+};
+
+// Get all reviews for a book
+exports.getReviews = async (req, res) => {
+  try {
+    const reviews = await Review.find({ bookId: req.params.id }).sort({ createdAt: -1 });
+    res.json(reviews);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server error while fetching reviews' });
+  }
+};
+
+// Delete a review (Admin only)
+exports.deleteReview = async (req, res) => {
+  try {
+    const review = await Review.findById(req.params.reviewId);
+    if (!review) return res.status(404).json({ msg: 'Review not found' });
+
+    // Ensure the user is an admin (already handled by middleware, but good to double check)
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ msg: 'Only admins can delete reviews' });
+    }
+
+    await review.deleteOne();
+    res.json({ msg: 'Review deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server error while deleting review' });
   }
 };

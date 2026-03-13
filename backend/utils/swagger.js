@@ -8,8 +8,8 @@ const options = {
       version: '1.0.0',
       description: 'API documentation for the Author CMS (eBooks and Audiobooks)',
       contact: {
-        name: 'Kabûrû Joseph',
-        email: 'kabûrûJoseph@gmail.com'
+        name: 'Joe Joseph',
+        email: 'joejoseph@gmail.com'
       },
     },
     servers: [

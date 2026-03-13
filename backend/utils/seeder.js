@@ -24,7 +24,7 @@ const seedAdmin = async () => {
     }
 
     admin = new User({
-      name: 'Admin Kabûrû',
+      name: 'Admin Joe',
       phone: adminPhone || '0000000000',
       email: adminEmail,
       password: adminPassword,
