@@ -761,8 +761,8 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
 
 .delete-review-btn {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  bottom: 0.75rem;
+  right: 0.75rem;
   background: none;
   border: none;
   color: var(--danger);
