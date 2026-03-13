@@ -36,12 +36,12 @@ export default function UserSidebar({ open, setOpen }) {
 
         {/* User info */}
         <div style={{ padding: '0.75rem', marginBottom: '1rem', background: 'rgba(194,0,106,0.12)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(194,0,106,0.25)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div className="avatar avatar-sm avatar-initials" style={{ minWidth: 36, borderColor: 'var(--color-secondary)' }}>
+          <Link to="/dashboard/profile" className="avatar avatar-sm avatar-initials" style={{ minWidth: 36, borderColor: 'var(--color-secondary)' }}>
             {user?.profilePhoto
               ? <img src={user.profilePhoto} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
               : <span style={{ fontSize: '0.75rem' }}>{initials}</span>
             }
-          </div>
+          </Link>
           <div style={{ overflow: 'hidden' }}>
             <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.name}</div>
             <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{user?.phone}</div>
