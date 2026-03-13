@@ -293,7 +293,7 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-          © 2026 Joe Books. All rights reserved.
+          © 2026 Joe Books. All rights reserved. developed by <a href="https://fastweb.co.ke" style={{ color: colors.accentRed, textDecoration: 'none' }} target="_blank" rel="noopener noreferrer">Fastweb Technologies</a>
       </footer>
     </div>
   );
