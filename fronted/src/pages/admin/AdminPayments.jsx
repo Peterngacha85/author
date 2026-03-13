@@ -19,7 +19,7 @@ export default function AdminPayments() {
     try {
       await API.post('/payments/verify', { transactionId: txId, status, adminComment: comment[txId] || '' });
       toast.success(`Payment ${status}!`);
-      setTransactions(prev => prev.map(t => t._id === txId ? { ...t, status } : t));
+      setTransactions(prev => prev.map(t => t._id === txId ? { ...t, status, adminComment: comment[txId] || '' } : t));
     } catch {
       toast.error('Action failed');
     }
