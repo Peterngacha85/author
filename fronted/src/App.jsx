@@ -85,7 +85,6 @@ export default function App() {
             <Route path="upload"  element={<AdminUpload />} />
             <Route path="payments" element={<AdminPayments />} />
             <Route path="users"   element={<AdminUsers />} />
-            <Route path="profile" element={<UserProfile />} />
             <Route path="books/reorder/:id" element={<ChapterReorder />} />
           </Route>
 

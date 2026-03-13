@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, Link } from 'react-router-dom';
 import { BookOpen, Headphones, Home, User, LogOut, Menu, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 

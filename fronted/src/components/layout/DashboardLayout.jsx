@@ -46,15 +46,25 @@ export default function DashboardLayout({ role = 'user' }) {
                 {role === 'admin' ? 'Administrator' : 'Member'}
               </div>
             </div>
-            <Link to={`${role === 'admin' ? '/admin' : '/dashboard'}/profile`} className={`avatar avatar-sm ${!user?.profilePhoto ? 'avatar-initials' : ''}`}>
-              {user?.profilePhoto
-                ? <img src={user.profilePhoto} alt={user.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
-                : <span style={{ fontSize: '0.75rem' }}>
-                    {user?.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U'}
-                  </span>
-              }
-            </Link>
+            {role === 'user' ? (
+              <Link to="/dashboard/profile" className={`avatar avatar-sm ${!user?.profilePhoto ? 'avatar-initials' : ''}`}>
+                {user?.profilePhoto
+                  ? <img src={user.profilePhoto} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                  : <span style={{ fontSize: '0.75rem' }}>
+                      {user?.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U'}
+                    </span>
+                }
+              </Link>
+            ) : (
+              <div className={`avatar avatar-sm ${!user?.profilePhoto ? 'avatar-initials' : ''}`}>
+                {user?.profilePhoto
+                  ? <img src={user.profilePhoto} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                  : <span style={{ fontSize: '0.75rem' }}>
+                      {user?.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U'}
+                    </span>
+                }
+              </div>
+            )}
           </div>
         </header>
 
