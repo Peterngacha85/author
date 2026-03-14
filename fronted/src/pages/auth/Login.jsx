@@ -9,7 +9,7 @@ export default function Login() {
   const { login, user, loading } = useAuth();
   const [showPass, setShowPass] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [form, setForm] = useState({ phone: '', password: '' });
+  const [form, setForm] = useState({ phone: '', password: '', confirmPassword: '' });
 
   // Redirect if already logged in
   useEffect(() => {
@@ -22,6 +22,9 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (form.password !== form.confirmPassword) {
+      return toast.error('Passwords do not match');
+    }
     setIsSubmitting(true);
     try {
       const user = await login(form.phone, form.password);
@@ -69,6 +72,16 @@ export default function Login() {
                 style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
                 {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Confirm Password</label>
+            <div className="form-input-icon-wrap">
+              <Lock size={16} className="icon" />
+              <input type={showPass ? 'text' : 'password'} name="confirmPassword" placeholder="Repeat your password"
+                className="form-input" value={form.confirmPassword} onChange={handleChange} required
+                style={{ paddingRight: '2.75rem' }} />
             </div>
           </div>
 
