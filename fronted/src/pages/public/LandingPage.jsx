@@ -13,20 +13,20 @@ export default function LandingPage() {
 
   // Premium Aesthetic Palette (derived from screenshot)
   const colors = {
-    charcoal: '#0A0A0B',
-    deepRed: '#4A0404',
-    bloodRed: '#8B0000',
-    brightRed: '#9B1B1B', // More cinematic red from screenshot
-    surface: '#121214',
+    charcoal: '#1A0101', // Deep Red Wine Base
+    deepRed: '#2D0202',
+    bloodRed: '#4A0404',
+    brightRed: '#8B0000', 
+    surface: '#240202',
     textPrimary: '#FFFFFF',
     textSecondary: '#D1D1D1',
-    border: 'rgba(255, 255, 255, 0.08)',
-    accentRed: '#FF4D4D' // For the "right in your pocket" text
+    border: 'rgba(255, 255, 255, 0.12)',
+    accentRed: '#FF4D4D'
   };
 
   return (
     <div style={{ 
-      background: 'linear-gradient(180deg, #0A0A0B 0%, #3B0404 100%)', 
+      background: 'linear-gradient(180deg, #1A0101 0%, #2D0202 50%, #1A0101 100%)', 
       minHeight: '100vh', 
       display: 'flex', 
       flexDirection: 'column', 
@@ -42,7 +42,7 @@ export default function LandingPage() {
       {/* Navigation */}
       <nav style={{ 
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
-        padding: '1.25rem 5%', background: 'rgba(10, 10, 11, 0.8)', 
+        padding: '1.25rem 5%', background: 'rgba(26, 1, 1, 0.85)', 
         backdropFilter: 'blur(20px)',
         borderBottom: `1px solid ${colors.border}`,
         position: 'sticky', top: 0, zIndex: 100 
@@ -272,7 +272,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer (Screenshot Style) */}
-      <footer style={{ padding: '5rem 5% 3rem', borderTop: `1px solid ${colors.border}`, background: '#000' }}>
+      <footer style={{ padding: '5rem 5% 3rem', borderTop: `1px solid ${colors.border}`, background: '#1A0101' }}>
         <div className="landing-footer-inner">
           <div style={{ flex: '1 1 300px' }}>
                <span style={{ fontSize: '1.1rem', fontWeight: 700 }}>Joe Books</span>
