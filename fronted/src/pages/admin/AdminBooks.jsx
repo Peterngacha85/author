@@ -5,7 +5,7 @@ import API from '../../api/axios';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../../components/common/ConfirmModal';
 
-export default function AdminBooks() {
+export default function AdminBooks({ filter }) {
   const navigate = useNavigate();
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,12 +21,17 @@ export default function AdminBooks() {
 
   useEffect(() => {
     fetchBooks();
-  }, []);
+  }, [filter]);
 
   const fetchBooks = async () => {
+    setLoading(true);
     try {
       const res = await API.get('/books');
-      setBooks(res.data);
+      if (filter) {
+        setBooks(res.data.filter(b => b.type === filter));
+      } else {
+        setBooks(res.data);
+      }
     } catch (err) {
       toast.error('Failed to fetch books');
     } finally {
