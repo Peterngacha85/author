@@ -131,7 +131,7 @@ export default function BookDetails() {
             <h3 style={{ fontSize: '1.1rem', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-primary)' }}>
               Synopsis
             </h3>
-            <div style={{ lineHeight: 1.8, color: 'var(--text-secondary)', fontSize: '1.05rem', whiteSpace: 'pre-line', maxWidth: '700px' }}>
+            <div style={{ lineHeight: 1.5, color: 'var(--text-secondary)', fontSize: '1.05rem', whiteSpace: 'pre-line', maxWidth: '700px' }}>
               {book.description || 'No description provided.'}
             </div>
           </div>
