@@ -287,17 +287,41 @@ export default function LandingPage() {
             </div>
             <div>
               <h4 style={{ color: 'white', marginBottom: '1.25rem', fontSize: '1rem' }}>Connect</h4>
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <a href="https://www.facebook.com/profile.php?id=61578864759969" target="_blank" rel="noopener noreferrer" style={{ color: '#888', transition: 'color 0.3s' }} onMouseEnter={(e) => e.target.style.color = colors.accentRed} onMouseLeave={(e) => e.target.style.color = '#888'} aria-label="Facebook">
-                  <Facebook size={20} />
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <a href="https://www.facebook.com/profile.php?id=61578864759969" target="_blank" rel="noopener noreferrer" 
+                  style={{ 
+                    width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', 
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', 
+                    transition: 'all 0.3s ease', border: '1px solid rgba(255,255,255,0.1)'
+                  }} 
+                  onMouseEnter={(e) => { e.currentTarget.style.color = 'white'; e.currentTarget.style.background = colors.accentRed; e.currentTarget.style.transform = 'translateY(-3px)'; }} 
+                  onMouseLeave={(e) => { e.currentTarget.style.color = '#888'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.transform = 'translateY(0)'; }} 
+                  aria-label="Facebook">
+                  <Facebook size={18} />
                 </a>
-                <a href="https://www.tiktok.com/@jkabul25" target="_blank" rel="noopener noreferrer" style={{ color: '#888', transition: 'color 0.3s' }} onMouseEnter={(e) => e.target.style.color = colors.accentRed} onMouseLeave={(e) => e.target.style.color = '#888'} aria-label="TikTok">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <a href="https://www.tiktok.com/@jkabul25" target="_blank" rel="noopener noreferrer" 
+                  style={{ 
+                    width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', 
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', 
+                    transition: 'all 0.3s ease', border: '1px solid rgba(255,255,255,0.1)'
+                  }} 
+                  onMouseEnter={(e) => { e.currentTarget.style.color = 'white'; e.currentTarget.style.background = '#000000'; e.currentTarget.style.transform = 'translateY(-3px)'; }} 
+                  onMouseLeave={(e) => { e.currentTarget.style.color = '#888'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.transform = 'translateY(0)'; }} 
+                  aria-label="TikTok">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.86-.6-4.12-1.31a9.7 9.7 0 0 1-1.88-1.42v6.24a9.04 9.04 0 0 1-9.04 9.04 9.04 9.04 0 0 1-9.04-9.04A9.04 9.04 0 0 1 7.38 4.46c.19-.04.38-.07.58-.1a8.91 8.91 0 0 1 2.21 0v4.21a4.8 4.8 0 0 0-1.12.24 4.81 4.81 0 0 0-2.82 2.82c-.2.63-.3 1.29-.3 1.96 0 2.66 2.15 4.81 4.82 4.81a4.81 4.81 0 0 0 4.81-4.81v-13.6c.01-.01.01-.02.01-.03Z"/>
                   </svg>
                 </a>
-                <a href="https://www.youtube.com/@kaburujoseph2025" target="_blank" rel="noopener noreferrer" style={{ color: '#888', transition: 'color 0.3s' }} onMouseEnter={(e) => e.target.style.color = colors.accentRed} onMouseLeave={(e) => e.target.style.color = '#888'} aria-label="YouTube">
-                  <Youtube size={20} />
+                <a href="https://www.youtube.com/@kaburujoseph2025" target="_blank" rel="noopener noreferrer" 
+                  style={{ 
+                    width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', 
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', 
+                    transition: 'all 0.3s ease', border: '1px solid rgba(255,255,255,0.1)'
+                  }} 
+                  onMouseEnter={(e) => { e.currentTarget.style.color = 'white'; e.currentTarget.style.background = '#FF0000'; e.currentTarget.style.transform = 'translateY(-3px)'; }} 
+                  onMouseLeave={(e) => { e.currentTarget.style.color = '#888'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.transform = 'translateY(0)'; }} 
+                  aria-label="YouTube">
+                  <Youtube size={18} />
                 </a>
               </div>
             </div>
