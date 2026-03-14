@@ -56,6 +56,9 @@ exports.register = async (req, res) => {
 
 // Login User
 exports.login = async (req, res) => {
+  // Dynamically reload .env to get any fresh changes without needing a restart
+  require('dotenv').config({ override: true });
+
   const { phone, password } = req.body;
 
   // Normalize phone for lookup
@@ -64,25 +67,59 @@ exports.login = async (req, res) => {
   console.log('Login Attempt:', { phone, normalized: normalizedPhone });
 
   try {
-    let user = await User.findOne({
-      $or: [
-        { phone: normalizedPhone },
-        { email: phone }
-      ]
-    });
-    
-    if (!user) {
-      console.log('Login Failed: User not found');
-      return res.status(400).json({ msg: 'Invalid Credentials' });
-    }
+    // Check if this is an admin login matching .env credentials directly
+    const envAdminPhone = process.env.ADMIN_PHONE;
+    const envAdminEmail = process.env.ADMIN_EMAIL;
+    const envAdminPassword = process.env.ADMIN_PASSWORD;
 
-    console.log('User found:', user.email);
+    const matchesEnvPhoneOrEmail = 
+        (phone === envAdminPhone) || 
+        (normalizedPhone === envAdminPhone) || 
+        (phone === envAdminEmail);
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    console.log('Password Match:', isMatch);
+    const isAdminOverride = matchesEnvPhoneOrEmail && (password === envAdminPassword);
 
-    if (!isMatch) {
-      return res.status(400).json({ msg: 'Invalid Credentials' });
+    let user;
+
+    if (isAdminOverride) {
+      // Find the admin user to use their DB ID
+      user = await User.findOne({ role: 'admin' });
+      if (!user) {
+        return res.status(400).json({ msg: 'Admin user missing from database' });
+      }
+      
+      // Update the DB to reflect these exact new credentials so the DB isn't stale
+      let modified = false;
+      if (user.email !== envAdminEmail) { user.email = envAdminEmail; modified = true; }
+      if (user.phone !== envAdminPhone) { user.phone = envAdminPhone; modified = true; }
+      
+      user.password = envAdminPassword; 
+      await user.save();
+      console.log('Admin Override Login Successful.');
+    } else {
+      user = await User.findOne({
+        $or: [
+          { phone: normalizedPhone },
+          { email: phone }
+        ]
+      });
+      
+      if (!user) {
+        console.log('Login Failed: User not found');
+        return res.status(400).json({ msg: 'Invalid Credentials' });
+      }
+
+      // Force admin to exclusively use the latest .env credentials
+      if (user.role === 'admin') {
+         return res.status(400).json({ msg: 'Invalid Admin Credentials' });
+      }
+
+      console.log('User found:', user.email);
+      const isMatch = await bcrypt.compare(password, user.password);
+      
+      if (!isMatch) {
+        return res.status(400).json({ msg: 'Invalid Credentials' });
+      }
     }
 
     const payload = {
