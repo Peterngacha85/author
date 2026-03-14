@@ -3,10 +3,10 @@ import { Upload, X, Plus } from 'lucide-react';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
 
-export default function AdminUpload() {
-  const [tab, setTab] = useState('ebook'); // 'ebook' | 'audio'
+export default function AdminUpload({ type = 'ebook' }) {
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ title: '', description: '', author: 'Joe Joseph', price: '', type: 'ebook' });
+  const [form, setForm] = useState({ title: '', description: '', author: 'Joe Joseph', price: '', type });
+  const [comingSoon, setComingSoon] = useState(false);
   const [coverFile, setCoverFile] = useState(null);
   const [bookFile, setBookFile] = useState(null);
   const [coverPreview, setCoverPreview] = useState(null);
@@ -43,15 +43,15 @@ export default function AdminUpload() {
     setLoading(true);
     try {
       const fd = new FormData();
-      Object.entries({ ...form, type: tab }).forEach(([k, v]) => fd.append(k, v));
+      Object.entries({ ...form, type, comingSoon }).forEach(([k, v]) => fd.append(k, v));
       if (coverFile) fd.append('coverImage', coverFile);
-      if (bookFile && tab === 'ebook') fd.append('bookFile', bookFile);
+      if (bookFile && type === 'ebook' && !comingSoon) fd.append('bookFile', bookFile);
 
       const res = await API.post('/books', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
       toast.success('Book created!');
       setBookId(res.data._id);
-      setForm({ title: '', description: '', author: 'Joe Joseph', price: '', type: tab });
-      setCoverFile(null); setCoverPreview(null); setBookFile(null);
+      setForm({ title: '', description: '', author: 'Joe Joseph', price: '', type });
+      setCoverFile(null); setCoverPreview(null); setBookFile(null); setComingSoon(false);
     } catch (err) {
       toast.error(err.response?.data?.msg || 'Upload failed');
     } finally {
@@ -82,25 +82,15 @@ export default function AdminUpload() {
   return (
     <div className="fade-in">
       <div style={{ marginBottom: '1.5rem' }}>
-        <h2>📤 Upload Content</h2>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginTop: '0.25rem' }}>Add new books and chapters to the library</p>
-      </div>
-
-      {/* Tabs */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
-        {['ebook', 'audiobook'].map(t => (
-          <button key={t} onClick={() => setTab(t)}
-            className={`btn ${tab === t ? 'btn-primary' : 'btn-outline'} btn-sm`}>
-            {t === 'ebook' ? '📚 eBook' : '🎧 Audiobook'}
-          </button>
-        ))}
+        <h2>{type === 'ebook' ? '📤 Upload Ebook' : '📤 Upload Audiobook'}</h2>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginTop: '0.25rem' }}>Add new {type}s to the library</p>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
         {/* Create Book */}
         <div className="glass-card" style={{ padding: '1.5rem' }}>
           <h3 style={{ fontSize: '1rem', marginBottom: '1.25rem' }}>
-            {tab === 'ebook' ? '📚 Create eBook' : '🎧 Create Audiobook'}
+            {type === 'ebook' ? '📚 Create eBook' : '🎧 Create Audiobook'}
           </h3>
           <form onSubmit={handleCreateBook} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {/* Cover Upload */}
@@ -137,7 +127,12 @@ export default function AdminUpload() {
               <input className="form-input" name="price" type="number" value={form.price} onChange={handleChange} placeholder="600" required />
             </div>
 
-            {tab === 'ebook' && (
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
+              <input type="checkbox" checked={comingSoon} onChange={e => setComingSoon(e.target.checked)} style={{ accentColor: 'var(--color-primary-light)', width: 16, height: 16 }} />
+              Mark as "Coming Soon" (No file required)
+            </label>
+
+            {type === 'ebook' && !comingSoon && (
               <div className="form-group">
                 <label className="form-label">PDF File</label>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', border: '1.5px dashed var(--border-color)', borderRadius: 'var(--radius-md)', padding: '0.75rem 1rem', background: 'var(--bg-input)' }}>
@@ -157,7 +152,7 @@ export default function AdminUpload() {
         </div>
 
         {/* Add Audio Chapter (for audiobooks) */}
-        {tab === 'audiobook' && (
+        {type === 'audiobook' && (
           <div className="glass-card" style={{ padding: '1.5rem' }}>
             <h3 style={{ fontSize: '1rem', marginBottom: '1.25rem' }}>🎵 Add Audio Chapter</h3>
             <form onSubmit={handleAddChapter} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
