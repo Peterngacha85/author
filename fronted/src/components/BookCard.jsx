@@ -7,6 +7,13 @@ export default function BookCard({ book, isPurchased, onBuy, onRead, onListen })
   const { user } = useAuth();
 
   const handleCardClick = () => {
+    if (book.comingSoon) {
+      import('react-hot-toast').then(({ default: toast }) => {
+        toast.success('This book will be available soon!');
+      });
+      return;
+    }
+
     if (user?.disabled) {
       import('react-hot-toast').then(({ default: toast }) => {
         toast.error('Account restricted. Please contact admin.');
@@ -36,9 +43,16 @@ export default function BookCard({ book, isPurchased, onBuy, onRead, onListen })
       }
 
       {/* Lock icon for unpurchased */}
-      {!isPurchased && (
+      {!isPurchased && !book.comingSoon && (
         <div className="book-card-lock">
           <Lock size={14} color="white" />
+        </div>
+      )}
+
+      {/* Coming Soon overlay */}
+      {book.comingSoon && (
+        <div className="book-card-lock" style={{ background: 'rgba(0, 0, 0, 0.7)', width: 'auto', padding: '0.2rem 0.6rem', borderRadius: '1rem', whiteSpace: 'nowrap' }}>
+          <span style={{ color: 'white', fontSize: '0.75rem', fontWeight: 600 }}>Coming Soon</span>
         </div>
       )}
 
@@ -48,12 +62,16 @@ export default function BookCard({ book, isPurchased, onBuy, onRead, onListen })
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.75rem', gap: '0.5rem' }}>
           <span className="book-card-price" style={{ fontSize: '0.9rem' }}>KES {book.price?.toLocaleString()}</span>
-          {isPurchased ? (
+          {isPurchased && !book.comingSoon ? (
             <button
               onClick={isAudio ? onListen : onRead}
               className="btn btn-primary btn-sm"
               style={{ padding: '0.35rem 0.75rem' }}>
               {isAudio ? <><Headphones size={12} /> Listen</> : <><BookOpen size={12} /> Read</>}
+            </button>
+          ) : book.comingSoon ? (
+            <button className="btn btn-outline btn-sm" disabled style={{ padding: '0.35rem 0.75rem', opacity: 0.6 }}>
+              Soon
             </button>
           ) : (
             <div style={{ display: 'flex', gap: '0.5rem' }}>

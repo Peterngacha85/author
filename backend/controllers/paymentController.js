@@ -191,3 +191,18 @@ exports.simulateSTKSuccess = async (req, res) => {
         res.status(500).json({ msg: 'Simulation failed' });
     }
 };
+
+// Delete Payment (Admin)
+exports.deletePayment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const transaction = await Transaction.findByIdAndDelete(id);
+
+    if (!transaction) return res.status(404).json({ msg: 'Transaction not found' });
+
+    res.json({ msg: 'Payment record deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server error while deleting' });
+  }
+};

@@ -22,6 +22,10 @@ const BookSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  comingSoon: {
+    type: Boolean,
+    default: false
+  },
   coverImage: {
     url: String,
     public_id: String

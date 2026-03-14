@@ -6,14 +6,15 @@ const { cloudinary } = require('../utils/cloudinary');
 // Create a new book (Admin only)
 exports.createBook = async (req, res) => {
   try {
-    const { title, description, author, type, price } = req.body;
+    const { title, description, author, type, price, comingSoon } = req.body;
     
     const newBook = new Book({
       title,
       description,
       author,
       type,
-      price
+      price,
+      comingSoon: comingSoon === 'true' // Handle form data string
     });
 
     // Handle cover image if uploaded
@@ -24,8 +25,8 @@ exports.createBook = async (req, res) => {
       };
     }
 
-    // Handle eBook file if uploaded
-    if (type === 'ebook' && req.files && req.files.bookFile) {
+    // Handle eBook file if uploaded and not coming soon
+    if (!newBook.comingSoon && type === 'ebook' && req.files && req.files.bookFile) {
       newBook.fileUrl = {
         url: req.files.bookFile[0].path,
         public_id: req.files.bookFile[0].filename
