@@ -103,13 +103,8 @@ exports.getBook = async (req, res) => {
         delete bookData.fileUrl;
       }
       if (book.type === 'audiobook') {
-        bookData.chapters = bookData.chapters.map(ch => {
-          if (!ch.isSample) {
-            const { url, ...rest } = ch;
-            return rest;
-          }
-          return ch;
-        });
+        // Completely hide non-sample chapters for unpurchased users
+        bookData.chapters = bookData.chapters.filter(ch => ch.isSample);
       }
     }
 
