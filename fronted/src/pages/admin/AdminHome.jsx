@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
-import { BookOpen, Users, CreditCard, TrendingUp } from 'lucide-react';
+import { BookOpen, Users, CreditCard, TrendingUp, Trash2 } from 'lucide-react';
 import API from '../../api/axios';
+import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/common/ConfirmModal';
 
 export default function AdminHome() {
   const [stats, setStats] = useState({ books: 0, users: 0, payments: 0, revenue: 0 });
   const [recentTx, setRecentTx] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [txToDelete, setTxToDelete] = useState(null);
 
   useEffect(() => {
     Promise.all([
@@ -13,13 +17,27 @@ export default function AdminHome() {
       API.get('/admin/users'),
       API.get('/payments/all'),
     ]).then(([books, users, payments]) => {
-      const revenue = payments.data
-        .filter(p => p.status === 'confirmed')
-        .reduce((sum, p) => sum + (p.amount || 0), 0);
+      const confirmedPayments = payments.data.filter(p => p.status === 'confirmed' || p.status === 'verified');
+      const revenue = confirmedPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
       setStats({ books: books.data.length, users: users.data.length, payments: payments.data.length, revenue });
-      setRecentTx(payments.data.slice(0, 5));
+      setRecentTx(payments.data.slice(0, 8)); // Show a few more
     }).catch(() => {}).finally(() => setLoading(false));
   }, []);
+
+  const deleteTx = async () => {
+    if (!txToDelete) return;
+    try {
+      await API.delete(`/payments/${txToDelete}`);
+      toast.success('Transaction deleted');
+      setRecentTx(prev => prev.filter(t => t._id !== txToDelete));
+      setStats(prev => ({ ...prev, payments: prev.payments - 1 })); // Basic stat update
+    } catch {
+      toast.error('Failed to delete transaction');
+    } finally {
+      setIsConfirmOpen(false);
+      setTxToDelete(null);
+    }
+  };
 
   const STATS = [
     { icon: BookOpen,    label: 'Total Books',     value: stats.books,    color: 'rgba(255,56,92,0.1)',   textColor: 'var(--color-primary)' },
@@ -68,14 +86,15 @@ export default function AdminHome() {
               <tr>
                 <th>User</th>
                 <th>Book</th>
-                <th>Amount</th>
+                 <th>Amount</th>
                 <th>Status</th>
                 <th>Date</th>
+                <th style={{ textAlign: 'right' }}>Action</th>
               </tr>
             </thead>
             <tbody>
               {recentTx.length === 0 && (
-                <tr><td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>No transactions yet</td></tr>
+                <tr><td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>No transactions yet</td></tr>
               )}
               {recentTx.map(tx => (
                 <tr key={tx._id}>
@@ -86,12 +105,30 @@ export default function AdminHome() {
                   <td style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
                     {new Date(tx.createdAt).toLocaleDateString()}
                   </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <button 
+                      onClick={() => { setTxToDelete(tx._id); setIsConfirmOpen(true); }}
+                      className="btn btn-sm btn-danger" 
+                      style={{ padding: '0.4rem' }}
+                      title="Delete transaction"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
+
+      <ConfirmModal 
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={deleteTx}
+        title="Delete Transaction"
+        message="Are you sure you want to delete this transaction record? This will also revoke user access to the book."
+      />
     </div>
   );
 }
