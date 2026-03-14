@@ -60,8 +60,7 @@ export default function PaymentModal({ book, onClose }) {
       setCheckoutId(res.data.checkoutRequestId);
       toast.success('STK Push sent! Please enter your PIN.');
     } catch (err) {
-      toast.error(err.response?.data?.msg || 'STK Push failed. Please try manual payment.');
-      setMethod('manual');
+      toast.error(err.response?.data?.msg || 'STK Push failed. Please try again or contact support.');
       setStatus('idle');
     } finally {
       setLoading(false);
@@ -110,8 +109,9 @@ export default function PaymentModal({ book, onClose }) {
             </p>
             <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', marginTop: '1.5rem' }}>
               <button 
-                onClick={() => { setStatus('idle'); setMethod('manual'); }}
+                onClick={() => toast('We are sorry, manual payment has been disabled at the moment', { icon: 'ℹ️' })}
                 className="btn btn-sm btn-outline" 
+                style={{ opacity: 0.7 }}
               >
                 Having trouble? Use Manual Input
               </button>
@@ -150,9 +150,9 @@ export default function PaymentModal({ book, onClose }) {
                 <Smartphone size={16} /> M-Pesa Express
               </button>
               <button 
-                onClick={() => setMethod('manual')}
-                className={`btn btn-sm ${method === 'manual' ? 'btn-primary' : 'btn-outline'}`}
-                style={{ flex: 1, display: 'flex', gap: '0.4rem', justifyContent: 'center' }}
+                onClick={() => toast('We are sorry, manual payment has been disabled at the moment', { icon: 'ℹ️' })}
+                className={`btn btn-sm btn-outline`}
+                style={{ flex: 1, display: 'flex', gap: '0.4rem', justifyContent: 'center', opacity: 0.6 }}
               >
                 <FileText size={16} /> Manual Input
               </button>

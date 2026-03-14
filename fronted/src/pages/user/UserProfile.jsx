@@ -16,6 +16,7 @@ export default function UserProfile() {
     email: user?.email || '',
     phone: user?.phone || '',
     newPassword: '',
+    confirmPassword: '',
   });
 
   const initials = user?.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
@@ -42,11 +43,17 @@ export default function UserProfile() {
     setLoading(true);
     try {
       const payload = { name: form.name, email: form.email };
-      if (form.newPassword) payload.password = form.newPassword;
+      if (form.newPassword) {
+        if (form.newPassword !== form.confirmPassword) {
+          setLoading(false);
+          return toast.error('Passwords do not match');
+        }
+        payload.password = form.newPassword;
+      }
       const res = await API.put('/auth/update', payload);
       updateUser(res.data);
       toast.success('Profile updated!');
-      setForm(p => ({ ...p, newPassword: '' }));
+      setForm(p => ({ ...p, newPassword: '', confirmPassword: '' }));
     } catch (err) {
       toast.error(err.response?.data?.msg || 'Update failed');
     } finally {
@@ -140,6 +147,16 @@ export default function UserProfile() {
                 style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
                 {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Confirm New Password</label>
+            <div className="form-input-icon-wrap">
+              <Lock size={16} className="icon" />
+              <input className="form-input" name="confirmPassword" type={showPass ? 'text' : 'password'}
+                value={form.confirmPassword} onChange={handleChange}
+                placeholder="Repeat new password..." style={{ paddingRight: '2.75rem' }} />
             </div>
           </div>
 
