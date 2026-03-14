@@ -151,6 +151,10 @@ export default function Register() {
               <input type={showPass ? 'text' : 'password'} name="confirmPassword" placeholder="Repeat your password"
                 className="form-input" value={form.confirmPassword} onChange={handleChange} required
                 style={{ paddingRight: '2.75rem' }} />
+              <button type="button" onClick={() => setShowPass(p => !p)}
+                style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+                {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
             </div>
           </div>
 
