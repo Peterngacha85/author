@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, BookOpen, Users, CreditCard, Settings, LogOut, Menu, X, Upload } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Book, Headphones, Users, CreditCard, Settings, LogOut, Menu, X, Upload } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const NAV = [
   { to: '/admin',           icon: LayoutDashboard, label: 'Overview',    end: true },
-  { to: '/admin/books',     icon: BookOpen,         label: 'Books' },
-  { to: '/admin/upload',    icon: Upload,            label: 'Upload Content' },
-  { to: '/admin/payments',  icon: CreditCard,        label: 'Payments' },
-  { to: '/admin/users',     icon: Users,             label: 'Users' },
+  { to: '/admin/books',     icon: BookOpen,        label: 'Books' },
+  { to: '/admin/ebooks',    icon: Book,            label: 'Ebooks' },
+  { to: '/admin/audiobooks',icon: Headphones,      label: 'Audiobook' },
+  { to: '/admin/upload',    icon: Upload,          label: 'Upload Content' },
+  { to: '/admin/payments',  icon: CreditCard,      label: 'Payments' },
+  { to: '/admin/users',     icon: Users,           label: 'Users' },
 ];
 
 export default function AdminSidebar({ open, setOpen }) {

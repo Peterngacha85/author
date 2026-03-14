@@ -82,6 +82,8 @@ export default function App() {
           }>
             <Route index          element={<AdminHome />} />
             <Route path="books"     element={<AdminBooks />} />
+            <Route path="ebooks"    element={<AdminBooks filter="ebook" />} />
+            <Route path="audiobooks" element={<AdminBooks filter="audiobook" />} />
             <Route path="upload"  element={<AdminUpload />} />
             <Route path="payments" element={<AdminPayments />} />
             <Route path="users"   element={<AdminUsers />} />

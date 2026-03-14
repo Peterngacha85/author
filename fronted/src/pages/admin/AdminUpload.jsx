@@ -124,7 +124,10 @@ export default function AdminUpload() {
               <label className="form-label">Title *</label>
               <input className="form-input" name="title" value={form.title} onChange={handleChange} placeholder="Book title" required />
             </div>
-              <input className="form-input" name="author" value={form.author} onChange={handleChange} />
+            <div className="form-group">
+              <label className="form-label">Authour</label>
+              <input className="form-input" name="author" value={form.author} onChange={handleChange} placeholder="Authour name" />
+            </div>
             <div className="form-group">
               <label className="form-label">Description</label>
               <textarea className="form-input" name="description" value={form.description} onChange={handleChange} rows={3} style={{ resize: 'vertical' }} placeholder="Short description..." />
