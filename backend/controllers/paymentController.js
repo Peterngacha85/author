@@ -50,8 +50,10 @@ exports.verifyPayment = async (req, res) => {
     // If rejected, remove access
     if (status === 'rejected') {
       const user = await User.findById(transaction.userId);
-      user.purchasedItems = user.purchasedItems.filter(id => id.toString() !== transaction.bookId.toString());
-      await user.save();
+      if (user) {
+        user.purchasedItems = user.purchasedItems.filter(id => id.toString() !== transaction.bookId.toString());
+        await user.save();
+      }
     }
 
     res.json({ msg: `Payment ${status}`, transaction });
@@ -196,11 +198,20 @@ exports.simulateSTKSuccess = async (req, res) => {
 exports.deletePayment = async (req, res) => {
   try {
     const { id } = req.params;
-    const transaction = await Transaction.findByIdAndDelete(id);
+    const transaction = await Transaction.findById(id);
 
     if (!transaction) return res.status(404).json({ msg: 'Transaction not found' });
 
-    res.json({ msg: 'Payment record deleted successfully' });
+    // Revoke access before deleting the record
+    const user = await User.findById(transaction.userId);
+    if (user) {
+      user.purchasedItems = user.purchasedItems.filter(pId => pId.toString() !== transaction.bookId.toString());
+      await user.save();
+    }
+
+    await Transaction.findByIdAndDelete(id);
+
+    res.json({ msg: 'Payment record deleted and access revoked successfully' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Server error while deleting' });
