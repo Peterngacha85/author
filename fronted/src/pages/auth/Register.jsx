@@ -12,7 +12,7 @@ export default function Register() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [photoFile, setPhotoFile] = useState(null);
-  const [form, setForm] = useState({ name: '', phone: '', email: '', password: '', confirmPassword: '' });
+  const [form, setForm] = useState({ name: '', phone: '', email: '', password: '' });
 
   // Redirect if already logged in
   useEffect(() => {
@@ -34,12 +34,8 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.phone || !form.password || !form.confirmPassword) {
-      toast.error('Name, phone, password and confirmation are required');
-      return;
-    }
-    if (form.password !== form.confirmPassword) {
-      toast.error('Passwords do not match');
+    if (!form.name || !form.phone || !form.password) {
+      toast.error('Name, phone, and password are required');
       return;
     }
     setIsSubmitting(true);
@@ -143,20 +139,6 @@ export default function Register() {
             </div>
           </div>
 
-          {/* Confirm Password */}
-          <div className="form-group">
-            <label className="form-label">Confirm Password *</label>
-            <div className="form-input-icon-wrap">
-              <Lock size={16} className="icon" />
-              <input type={showPass ? 'text' : 'password'} name="confirmPassword" placeholder="Repeat your password"
-                className="form-input" value={form.confirmPassword} onChange={handleChange} required
-                style={{ paddingRight: '2.75rem' }} />
-              <button type="button" onClick={() => setShowPass(p => !p)}
-                style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
-                {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            </div>
-          </div>
 
           <button type="submit" className="btn btn-primary btn-full btn-lg glow-pulse" disabled={isSubmitting} style={{ marginTop: '0.5rem' }}>
             {isSubmitting ? <span className="spinner" /> : 'Create Account'}
