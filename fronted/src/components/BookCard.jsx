@@ -1,8 +1,10 @@
 import { Lock, BookOpen, Headphones } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function BookCard({ book, isPurchased, onBuy, onRead, onListen }) {
   const isAudio = book.type === 'audiobook';
+  const navigate = useNavigate();
 
   const { user } = useAuth();
 
@@ -25,17 +27,16 @@ export default function BookCard({ book, isPurchased, onBuy, onRead, onListen })
       if (isAudio) onListen();
       else onRead();
     } else {
-      // Allow listening to samples even if not purchased
-      if (isAudio && book.chapters?.some(c => c.isSample)) {
-        onListen();
-      } else {
-        onBuy();
-      }
+      // Just let it navigate, don't trigger inline Buy modal
+      navigate(`/dashboard/book/${book._id}`);
     }
   };
 
   return (
-    <div className="book-card" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
+    <div className="book-card" onClick={(e) => {
+      // Allow card click to always navigate to details unless clicking buttons
+      navigate(`/dashboard/book/${book._id}`);
+    }} style={{ cursor: 'pointer' }}>
       {/* Cover */}
       {book.coverImage?.url || book.coverImage
         ? <img src={book.coverImage?.url || book.coverImage} alt={book.title} className="book-card-cover" />
@@ -64,7 +65,7 @@ export default function BookCard({ book, isPurchased, onBuy, onRead, onListen })
           <span className="book-card-price" style={{ fontSize: '0.9rem' }}>KES {book.price?.toLocaleString()}</span>
           {isPurchased && !book.comingSoon ? (
             <button
-              onClick={isAudio ? onListen : onRead}
+              onClick={(e) => { e.stopPropagation(); isAudio ? onListen() : onRead(); }}
               className="btn btn-primary btn-sm"
               style={{ padding: '0.35rem 0.75rem' }}>
               {isAudio ? <><Headphones size={12} /> Listen</> : <><BookOpen size={12} /> Read</>}

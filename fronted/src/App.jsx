@@ -15,6 +15,7 @@ import Register    from './pages/auth/Register';
 import UserHome    from './pages/user/UserHome';
 import BooksPage   from './pages/user/BooksPage';
 import UserProfile from './pages/user/UserProfile';
+import BookDetails from './pages/user/BookDetails';
 import EbookReader from './pages/reader/EbookReader';
 import AudioPlayer from './pages/reader/AudioPlayer';
 
@@ -62,6 +63,7 @@ export default function App() {
             <Route path="ebooks"  element={<BooksPage type="ebook" />} />
             <Route path="audio"   element={<BooksPage type="audiobook" />} />
             <Route path="profile" element={<UserProfile />} />
+            <Route path="book/:id" element={<BookDetails />} />
           </Route>
 
           {/* ── Shared Reader Routes ─────────────────── */}

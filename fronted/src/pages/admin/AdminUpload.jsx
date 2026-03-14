@@ -96,13 +96,13 @@ export default function AdminUpload({ type = 'ebook' }) {
             {/* Cover Upload */}
             <div>
               <label className="form-label">Cover Image</label>
-              <label style={{ display: 'block', cursor: 'pointer', marginTop: '0.4rem' }}>
-                <div style={{ border: '2px dashed var(--border-color)', borderRadius: 'var(--radius-md)', height: 140, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-input)', overflow: 'hidden', transition: 'border-color 0.2s' }}>
+              <label style={{ display: 'block', cursor: 'pointer', marginTop: '0.4rem', width: 'fit-content' }}>
+                <div style={{ border: '2px dashed var(--border-color)', borderRadius: 'var(--radius-md)', width: 200, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-input)', overflow: 'hidden', transition: 'border-color 0.2s' }}>
                   {coverPreview
                     ? <img src={coverPreview} alt="cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     : <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
                         <Upload size={28} style={{ marginBottom: '0.5rem' }} />
-                        <div style={{ fontSize: '0.8rem' }}>Click to upload cover</div>
+                        <div style={{ fontSize: '0.8rem' }}>Upload cover</div>
                       </div>
                   }
                 </div>
