@@ -12,21 +12,31 @@ export default function BookDetails() {
   const { user } = useAuth();
   
   const [book, setBook] = useState(null);
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
   const [showPayment, setShowPayment] = useState(false);
 
   useEffect(() => {
-    API.get(`/books/${id}`)
-      .then(res => setBook(res.data))
-      .catch(err => setError(err.response?.data?.msg || 'Failed to load book'))
-      .finally(() => setLoading(false));
+    Promise.all([
+      API.get(`/books/${id}`),
+      API.get(`/books/${id}/reviews`)
+    ]).then(([bookRes, reviewsRes]) => {
+      setBook(bookRes.data);
+      setReviews(reviewsRes.data);
+    })
+    .catch(err => setError(err.response?.data?.msg || 'Failed to load book details'))
+    .finally(() => setLoading(false));
   }, [id]);
 
   if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}><span className="spinner spinner-lg"></span></div>;
   if (error) return <div className="fade-in" style={{ padding: '2rem', textAlign: 'center', color: 'var(--danger)' }}>{error}</div>;
   if (!book) return null;
+
+  const avgRating = reviews.length > 0 
+    ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
+    : null;
 
   const isAudio = book.type === 'audiobook';
   const isAdmin = user?.role === 'admin';
@@ -108,13 +118,20 @@ export default function BookDetails() {
           </div>
           
           <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem', lineHeight: 1.2 }}>{book.title}</h1>
-          <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginBottom: '2rem' }}>by <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{book.author}</span></p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '1.5rem' }}>
+            <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', margin: 0 }}>by <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{book.author}</span></p>
+            {avgRating && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(255,184,0,0.1)', color: '#FFB800', padding: '0.2rem 0.6rem', borderRadius: '1rem', fontSize: '0.85rem', fontWeight: 600 }}>
+                <Star size={14} fill="#FFB800" /> {avgRating} ({reviews.length} reviews)
+              </div>
+            )}
+          </div>
 
           <div style={{ marginBottom: '3rem' }}>
-            <h3 style={{ fontSize: '1.2rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <BookOpen size={18} color="var(--color-primary)" /> Synopsis
+            <h3 style={{ fontSize: '1.1rem', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-primary)' }}>
+              Synopsis
             </h3>
-            <div style={{ lineHeight: 1.7, color: 'var(--text-secondary)', whiteSpace: 'pre-line' }}>
+            <div style={{ lineHeight: 1.8, color: 'var(--text-secondary)', fontSize: '1.05rem', whiteSpace: 'pre-line', maxWidth: '700px' }}>
               {book.description || 'No description provided.'}
             </div>
           </div>
@@ -122,7 +139,7 @@ export default function BookDetails() {
       </div>
 
       {/* Reviews Section */}
-      <ReviewSection bookId={book._id} />
+      <ReviewSection bookId={book._id} onReviewAdded={(newRev) => setReviews([newRev, ...reviews])} />
 
       {/* Payment Modal */}
       {showPayment && <PaymentModal book={book} onClose={() => setShowPayment(false)} />}

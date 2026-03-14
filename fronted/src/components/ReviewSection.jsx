@@ -5,7 +5,7 @@ import API from '../api/axios';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 
-export default function ReviewSection({ bookId }) {
+export default function ReviewSection({ bookId, onReviewAdded }) {
   const { user } = useAuth();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -40,6 +40,7 @@ export default function ReviewSection({ bookId }) {
     try {
       const res = await API.post(`/books/${bookId}/reviews`, { rating, comment });
       setReviews(prev => [res.data, ...prev]);
+      if (onReviewAdded) onReviewAdded(res.data);
       setRating(0);
       setComment('');
       toast.success('Review submitted!');
