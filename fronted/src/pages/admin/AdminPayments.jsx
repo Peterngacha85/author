@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
 import { CheckCircle, XCircle, Trash2 } from 'lucide-react';
+import ConfirmModal from '../../components/common/ConfirmModal';
 
 export default function AdminPayments() {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState({});
   const [tab, setTab] = useState('pending'); // 'pending' or 'history'
+
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [txToDelete, setTxToDelete] = useState(null);
 
   useEffect(() => {
     API.get('/payments/all')
@@ -26,14 +30,22 @@ export default function AdminPayments() {
     }
   };
 
-  const deleteTx = async (txId) => {
-    if (!window.confirm("Are you sure you want to delete this payment record?")) return;
+  const openDeleteConfirm = (txId) => {
+    setTxToDelete(txId);
+    setIsConfirmOpen(true);
+  };
+
+  const deleteTx = async () => {
+    if (!txToDelete) return;
     try {
-      await API.delete(`/payments/${txId}`);
+      await API.delete(`/payments/${txToDelete}`);
       toast.success('Payment record deleted');
-      setTransactions(prev => prev.filter(t => t._id !== txId));
+      setTransactions(prev => prev.filter(t => t._id !== txToDelete));
     } catch {
       toast.error('Failed to delete payment');
+    } finally {
+      setIsConfirmOpen(false);
+      setTxToDelete(null);
     }
   };
 
@@ -119,7 +131,7 @@ export default function AdminPayments() {
                       </div>
                     ) : (
                       <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <button onClick={() => deleteTx(tx._id)} className="btn btn-danger btn-sm" title="Delete">
+                        <button onClick={() => openDeleteConfirm(tx._id)} className="btn btn-danger btn-sm" title="Delete">
                           <Trash2 size={14} />
                         </button>
                       </div>
@@ -131,6 +143,16 @@ export default function AdminPayments() {
           </table>
         </div>
       )}
+
+      {/* Reusable Confirm Modal */}
+      <ConfirmModal 
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={deleteTx}
+        title="Delete Payment Record"
+        message="Are you sure you want to delete this payment record? This action cannot be undone."
+        confirmText="Delete Record"
+      />
     </div>
   );
 }
