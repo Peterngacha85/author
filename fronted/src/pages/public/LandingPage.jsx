@@ -162,7 +162,6 @@ export default function LandingPage() {
             
             <div className="landing-stats">
               <div><div style={{ fontSize: '1.5rem', fontWeight: 800, color: colors.textPrimary }}>10K+</div><div style={{ fontSize: '0.8rem', color: colors.textSecondary }}>Active Readers</div></div>
-              <div><div style={{ fontSize: '1.5rem', fontWeight: 800, color: colors.textPrimary }}>500+</div><div style={{ fontSize: '0.8rem', color: colors.textSecondary }}>Premium Books</div></div>
               <div><div style={{ fontSize: '1.5rem', fontWeight: 800, color: colors.textPrimary }}>4.9/5</div><div style={{ fontSize: '0.8rem', color: colors.textSecondary }}>Average Rating</div></div>
             </div>
           </div>
