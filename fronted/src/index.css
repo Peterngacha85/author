@@ -596,9 +596,25 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
    ======================== */
 .books-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
 }
+
+.book-details-grid {
+  display: grid;
+  grid-template-columns: minmax(200px, 300px) 1fr;
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+
+.synopsis-text {
+  line-height: 1.2 !important;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  white-space: pre-line;
+  max-width: 750px;
+}
+
 
 /* ========================
    Audio Player
@@ -639,7 +655,9 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
   .sidebar.open { transform: translateX(0); }
   .dashboard-main { margin-left: 0; }
   .mobile-menu-btn { display: flex !important; }
-  .books-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .books-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  .book-details-grid { grid-template-columns: 1fr; gap: 2rem; }
+
 }
 
 @media (max-width: 600px) {
@@ -664,7 +682,8 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
 
 /* Fix for mobile card sizing */
 @media (max-width: 480px) {
-  .books-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+  .books-grid { grid-template-columns: 1fr; }
+
   .book-card-cover, .book-card-cover-placeholder { height: 160px; }
 }
 
