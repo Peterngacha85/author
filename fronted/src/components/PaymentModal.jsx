@@ -109,6 +109,41 @@ export default function PaymentModal({ book, onClose }) {
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', justifyContent: 'center', marginTop: '1.5rem' }}>
               <button 
+                onClick={async () => {
+                  try {
+                    const res = await API.get(`/payments/status/${checkoutId}`);
+                    if (res.data.status === 'verified') {
+                      setStatus('success');
+                      toast.success('Payment verified! Access granted.');
+                      setTimeout(() => { onClose(); window.location.reload(); }, 2000);
+                    } else {
+                      toast('Status: ' + res.data.status, { icon: '⏳' });
+                    }
+                  } catch (err) {
+                    toast.error('Could not refresh status');
+                  }
+                }}
+                className="btn btn-sm btn-primary" 
+                style={{ width: '100%' }}
+              >
+                Refresh Payment Status
+              </button>
+              <button 
+                onClick={async () => {
+                  try {
+                    await API.post('/payments/simulate');
+                    toast.success('Simulation successful!');
+                    // The polling useEffect will catch the 'verified' status soon
+                  } catch (err) {
+                    toast.error('Simulation failed');
+                  }
+                }}
+                className="btn btn-sm btn-success" 
+                style={{ width: '100%' }}
+              >
+                Force Verify (Simulate Success)
+              </button>
+              <button 
                 onClick={() => {
                   setStatus('idle');
                   setLoading(false);
@@ -118,30 +153,8 @@ export default function PaymentModal({ book, onClose }) {
               >
                 Cancel / Go Back
               </button>
-              <button 
-                onClick={() => toast('We are sorry, manual payment has been disabled at the moment', { icon: 'ℹ️' })}
-                className="btn btn-sm btn-ghost" 
-                style={{ fontSize: '0.75rem', opacity: 0.7 }}
-              >
-                Having trouble? Use Manual Input
-              </button>
-
-              {import.meta.env.DEV && (
-                <button 
-                  onClick={async () => {
-                    try {
-                      await API.post('/payments/simulate');
-                      toast.success('Simulation successful!');
-                    } catch (err) {
-                      toast.error('Simulation failed');
-                    }
-                  }}
-                  className="btn btn-sm btn-success" 
-                >
-                  Simulate STK Success
-                </button>
-              )}
             </div>
+
           </div>
         ) : (
           <>
