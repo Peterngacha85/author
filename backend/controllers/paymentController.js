@@ -93,11 +93,13 @@ exports.stkPush = async (req, res) => {
       bookId,
       amount,
       status: 'pending',
-      mpesaCode: mpesaResponse.CheckoutRequestID, // Temporary placeholder until callback
+      checkoutRequestId: mpesaResponse.CheckoutRequestID,
+      mpesaCode: 'PENDING_' + mpesaResponse.CheckoutRequestID, // Temporary unique value
       adminComment: 'STK Push Initiated'
     });
 
     await newTransaction.save();
+
 
     res.status(200).json({ 
       msg: 'STK Push initiated. Please enter your PIN on your phone.',
@@ -117,8 +119,9 @@ exports.handleCallback = async (req, res) => {
         const checkoutRequestId = result.CheckoutRequestID;
         const resultCode = result.ResultCode;
 
-        const transaction = await Transaction.findOne({ mpesaCode: checkoutRequestId });
+        const transaction = await Transaction.findOne({ checkoutRequestId });
         if (!transaction) return res.status(404).json({ msg: 'Transaction not found for this callback' });
+
 
         if (resultCode === 0) {
             // Success
@@ -155,9 +158,10 @@ exports.handleCallback = async (req, res) => {
 exports.checkStatus = async (req, res) => {
   try {
     const { checkoutRequestId } = req.params;
-    const transaction = await Transaction.findOne({ mpesaCode: checkoutRequestId });
+    const transaction = await Transaction.findOne({ checkoutRequestId });
 
     if (!transaction) return res.status(404).json({ msg: 'Transaction not found' });
+
 
     res.json({ 
       status: transaction.status,

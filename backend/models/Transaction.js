@@ -16,6 +16,12 @@ const TransactionSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  checkoutRequestId: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
+
   amount: {
     type: Number,
     required: true
