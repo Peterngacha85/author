@@ -148,10 +148,19 @@ exports.handleCallback = async (req, res) => {
 
             // Grant access to the book
             const user = await User.findById(transaction.userId);
-            if (user && !user.purchasedItems.includes(transaction.bookId)) {
-                user.purchasedItems.push(transaction.bookId);
-                await user.save();
+            if (user) {
+                const bookIdStr = transaction.bookId.toString();
+                const alreadyPurchased = user.purchasedItems.some(id => id.toString() === bookIdStr);
+                
+                if (!alreadyPurchased) {
+                    user.purchasedItems.push(transaction.bookId);
+                    await user.save();
+                    console.log(`Access granted to User: ${user.phone} for Book: ${bookIdStr}`);
+                } else {
+                    console.log(`User ${user.phone} already had access to Book: ${bookIdStr}`);
+                }
             }
+
             console.log(`Payment confirmed successful for ${checkoutRequestId}. M-Pesa Code: ${mpesaCode}`);
         } else {
             // Cancelled or Failed (e.g. Insufficient Funds)
@@ -163,10 +172,13 @@ exports.handleCallback = async (req, res) => {
 
         res.json({ ResultCode: 0, ResultDesc: 'Success' });
     } catch (err) {
-        console.error('M-Pesa Callback Error:', err);
-        res.status(500).json({ msg: 'Internal server error' });
+        console.error('CRITICAL: M-Pesa Callback Processing Error:', err);
+        // We still return 200 to Safaricom to prevent retries if it's a logic error,
+        // but log it heavily for the admin.
+        res.status(200).json({ ResultCode: 0, ResultDesc: 'Logged' });
     }
 };
+
 
 
 // Check Transaction Status (User)
@@ -180,8 +192,11 @@ exports.checkStatus = async (req, res) => {
 
     res.json({ 
       status: transaction.status,
-      bookId: transaction.bookId
+      bookId: transaction.bookId,
+      checkoutRequestId: transaction.checkoutRequestId,
+      updatedAt: transaction.updatedAt || transaction.createdAt
     });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Server error' });
