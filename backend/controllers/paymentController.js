@@ -114,18 +114,32 @@ exports.stkPush = async (req, res) => {
 // M-Pesa Callback Handler
 exports.handleCallback = async (req, res) => {
     try {
+        console.log('--- M-Pesa Callback Received ---');
+        console.log(JSON.stringify(req.body, null, 2));
+        
         const { Body } = req.body;
+        if (!Body || !Body.stkCallback) {
+          console.error('Invalid Callback Body structure');
+          return res.status(400).json({ msg: 'Invalid callback body' });
+        }
+
         const result = Body.stkCallback;
         const checkoutRequestId = result.CheckoutRequestID;
         const resultCode = result.ResultCode;
 
-        const transaction = await Transaction.findOne({ checkoutRequestId });
-        if (!transaction) return res.status(404).json({ msg: 'Transaction not found for this callback' });
+        console.log(`Processing callback for CheckoutRequestID: ${checkoutRequestId}, ResultCode: ${resultCode}`);
 
+        const transaction = await Transaction.findOne({ checkoutRequestId });
+        if (!transaction) {
+          console.error(`Transaction NOT FOUND for CheckoutRequestID: ${checkoutRequestId}`);
+          return res.status(404).json({ msg: 'Transaction not found for this callback' });
+        }
 
         if (resultCode === 0) {
             // Success
-            const mpesaCode = result.CallbackMetadata.Item.find(item => item.Name === 'MpesaReceiptNumber').Value;
+            const metadata = result.CallbackMetadata?.Item || [];
+            const mpesaCodeItem = metadata.find(item => item.Name === 'MpesaReceiptNumber');
+            const mpesaCode = mpesaCodeItem ? mpesaCodeItem.Value : 'SUCCESS_' + checkoutRequestId;
             
             transaction.status = 'verified';
             transaction.mpesaCode = mpesaCode;
@@ -134,17 +148,17 @@ exports.handleCallback = async (req, res) => {
 
             // Grant access to the book
             const user = await User.findById(transaction.userId);
-            if (!user.purchasedItems.includes(transaction.bookId)) {
+            if (user && !user.purchasedItems.includes(transaction.bookId)) {
                 user.purchasedItems.push(transaction.bookId);
                 await user.save();
             }
-            console.log(`Payment successful for Transaction: ${checkoutRequestId}. M-Pesa Code: ${mpesaCode}`);
+            console.log(`Payment confirmed successful for ${checkoutRequestId}. M-Pesa Code: ${mpesaCode}`);
         } else {
-            // Cancelled or Failed
+            // Cancelled or Failed (e.g. Insufficient Funds)
             transaction.status = 'rejected';
-            transaction.adminComment = `M-Pesa Failed: ${result.ResultDesc}`;
+            transaction.adminComment = `M-Pesa Failed (${resultCode}): ${result.ResultDesc}`;
             await transaction.save();
-            console.log(`Payment failed for Transaction: ${checkoutRequestId}. Reason: ${result.ResultDesc}`);
+            console.log(`Payment marked as FAILED for ${checkoutRequestId}. Reason: ${result.ResultDesc}`);
         }
 
         res.json({ ResultCode: 0, ResultDesc: 'Success' });
@@ -153,6 +167,7 @@ exports.handleCallback = async (req, res) => {
         res.status(500).json({ msg: 'Internal server error' });
     }
 };
+
 
 // Check Transaction Status (User)
 exports.checkStatus = async (req, res) => {

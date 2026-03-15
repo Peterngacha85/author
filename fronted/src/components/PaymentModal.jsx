@@ -107,14 +107,25 @@ export default function PaymentModal({ book, onClose }) {
             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
               Please check your phone and enter your M-Pesa PIN to complete the payment for <strong>{book.title}</strong>.
             </p>
-            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', marginTop: '1.5rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', justifyContent: 'center', marginTop: '1.5rem' }}>
+              <button 
+                onClick={() => {
+                  setStatus('idle');
+                  setLoading(false);
+                }}
+                className="btn btn-sm btn-outline" 
+                style={{ width: '100%' }}
+              >
+                Cancel / Go Back
+              </button>
               <button 
                 onClick={() => toast('We are sorry, manual payment has been disabled at the moment', { icon: 'ℹ️' })}
-                className="btn btn-sm btn-outline" 
-                style={{ opacity: 0.7 }}
+                className="btn btn-sm btn-ghost" 
+                style={{ fontSize: '0.75rem', opacity: 0.7 }}
               >
                 Having trouble? Use Manual Input
               </button>
+
               {import.meta.env.DEV && (
                 <button 
                   onClick={async () => {
