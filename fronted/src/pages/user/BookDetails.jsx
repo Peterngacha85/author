@@ -53,7 +53,7 @@ export default function BookDetails() {
       </div>
 
       {/* Main Details Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 300px) 1fr', gap: '3rem', marginBottom: '3rem' }}>
+      <div className="book-details-grid">
         
         {/* Left Column: Cover & Actions */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -131,12 +131,13 @@ export default function BookDetails() {
             <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-primary)', opacity: 0.9 }}>
               Synopsis
             </h3>
-            <div style={{ lineHeight: 1.3, color: 'var(--text-secondary)', fontSize: '0.95rem', whiteSpace: 'pre-line', maxWidth: '750px' }}>
+            <div className="synopsis-text">
               {book.description || 'No description provided.'}
             </div>
           </div>
         </div>
       </div>
+
 
       {/* Reviews Section */}
       <ReviewSection bookId={book._id} onReviewAdded={(newRev) => setReviews([newRev, ...reviews])} />

@@ -142,8 +142,11 @@ export default function LandingPage() {
               <span style={{ color: colors.accentRed }}>right in your pocket.</span>
             </h1>
             <p style={{ fontSize: '1.1rem', color: colors.textSecondary, marginBottom: '2.5rem', lineHeight: 1.6, maxWidth: 480 }}>
-              Discover thousands of inspiring eBooks and Audiobooks. Written for Kenyans, by Kenyans. Secure your copy today and read anywhere, anytime.
+              Some stories are written.<br />
+              Others are lived.<br />
+              Joe Books brings you powerful stories inspired by real experiences, beginning with Just One Text, the story of how a single message changed everything. If you have ever loved, lost, or started over, you may find a part of yourself here. Read or listen anytime, anywhere.
             </p>
+
             <div className="landing-hero-buttons">
               <Link to={user ? dashboardPath : "/register"} style={{ 
                 fontSize: '1rem', padding: '1rem 2rem', background: colors.brightRed,
@@ -309,8 +312,9 @@ export default function LandingPage() {
                   onMouseLeave={(e) => { e.currentTarget.style.color = '#888'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.transform = 'translateY(0)'; }} 
                   aria-label="TikTok">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.86-.6-4.12-1.31a9.7 9.7 0 0 1-1.88-1.42v6.24a9.04 9.04 0 0 1-9.04 9.04 9.04 9.04 0 0 1-9.04-9.04A9.04 9.04 0 0 1 7.38 4.46c.19-.04.38-.07.58-.1a8.91 8.91 0 0 1 2.21 0v4.21a4.8 4.8 0 0 0-1.12.24 4.81 4.81 0 0 0-2.82 2.82c-.2.63-.3 1.29-.3 1.96 0 2.66 2.15 4.81 4.82 4.81a4.81 4.81 0 0 0 4.81-4.81v-13.6c.01-.01.01-.02.01-.03Z"/>
+                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/>
                   </svg>
+
                 </a>
                 <a href="https://www.youtube.com/@kaburujoseph2025" target="_blank" rel="noopener noreferrer" 
                   style={{ 
