@@ -292,9 +292,10 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
 .book-card-cover {
   width: 100%;
   height: 200px;
-  object-fit: cover;
-  background: var(--gradient-card);
+  object-fit: contain;
+  background: #f0f0f0;
 }
+
 .book-card-cover-placeholder {
   width: 100%;
   height: 200px;
@@ -607,6 +608,24 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
   margin-bottom: 3rem;
 }
 
+.details-cover {
+
+  width: 100%;
+  aspect-ratio: 2/3;
+  background: #f0f0f0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  position: relative;
+}
+
+.details-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+
 .synopsis-text {
   line-height: 1.2 !important;
   color: var(--text-secondary);
@@ -685,6 +704,8 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
   .books-grid { grid-template-columns: 1fr; }
 
   .book-card-cover, .book-card-cover-placeholder { height: 380px; }
+  .details-cover { height: 380px; aspect-ratio: auto; }
+
 
 }
 
