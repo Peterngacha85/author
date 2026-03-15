@@ -129,21 +129,6 @@ export default function PaymentModal({ book, onClose }) {
                 Refresh Payment Status
               </button>
               <button 
-                onClick={async () => {
-                  try {
-                    await API.post('/payments/simulate');
-                    toast.success('Simulation successful!');
-                    // The polling useEffect will catch the 'verified' status soon
-                  } catch (err) {
-                    toast.error('Simulation failed');
-                  }
-                }}
-                className="btn btn-sm btn-success" 
-                style={{ width: '100%' }}
-              >
-                Force Verify (Simulate Success)
-              </button>
-              <button 
                 onClick={() => {
                   setStatus('idle');
                   setLoading(false);
@@ -153,6 +138,7 @@ export default function PaymentModal({ book, onClose }) {
               >
                 Cancel / Go Back
               </button>
+
             </div>
 
           </div>
