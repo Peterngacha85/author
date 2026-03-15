@@ -684,7 +684,8 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
 @media (max-width: 480px) {
   .books-grid { grid-template-columns: 1fr; }
 
-  .book-card-cover, .book-card-cover-placeholder { height: 160px; }
+  .book-card-cover, .book-card-cover-placeholder { height: 380px; }
+
 }
 
 /* ========================
