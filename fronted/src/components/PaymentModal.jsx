@@ -4,7 +4,7 @@ import API from '../api/axios';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 
-const MPESA_TILL = '07200145';
+const MPESA_TILL = '7200145';
 
 export default function PaymentModal({ book, onClose }) {
   const { user } = useAuth();
