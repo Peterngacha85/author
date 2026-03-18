@@ -58,11 +58,7 @@ export default function BookDetails() {
         {/* Left Column: Cover & Actions */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div className="details-cover">
-            {book.comingSoon && (
-              <div style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(0,0,0,0.7)', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '1rem', fontSize: '0.8rem', fontWeight: 600, zIndex: 10 }}>
-                Coming Soon
-              </div>
-            )}
+
             {book.coverImage?.url || book.coverImage
               ? <img src={book.coverImage?.url || book.coverImage} alt={book.title} />
               : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '4rem' }}>{isAudio ? '🎧' : '📚'}</div>
@@ -72,7 +68,11 @@ export default function BookDetails() {
 
           <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', textAlign: 'center' }}>
             <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-primary)' }}>
-              KES {book.price?.toLocaleString()}
+              {book.comingSoon ? (
+                <span style={{ background: 'rgba(0, 0, 0, 0.08)', padding: '0.2rem 0.6rem', borderRadius: '1rem', fontSize: '0.9rem', fontWeight: 600, color: '#444' }}>Coming Soon</span>
+              ) : (
+                `KES ${book.price?.toLocaleString()}`
+              )}
             </div>
 
             {book.comingSoon ? (

@@ -50,19 +50,18 @@ export default function BookCard({ book, isPurchased, onBuy, onRead, onListen })
         </div>
       )}
 
-      {/* Coming Soon overlay */}
-      {book.comingSoon && (
-        <div className="book-card-lock" style={{ background: 'rgba(0, 0, 0, 0.7)', width: 'auto', padding: '0.2rem 0.6rem', borderRadius: '1rem', whiteSpace: 'nowrap' }}>
-          <span style={{ color: 'white', fontSize: '0.75rem', fontWeight: 600 }}>Coming Soon</span>
-        </div>
-      )}
+
 
       <div className="book-card-body">
         <div className="book-card-title">{book.title}</div>
         <div className="book-card-author">by {book.author}</div>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.75rem', gap: '0.5rem' }}>
-          <span className="book-card-price" style={{ fontSize: '0.9rem' }}>KES {book.price?.toLocaleString()}</span>
+          {book.comingSoon ? (
+            <span style={{ background: 'rgba(0, 0, 0, 0.08)', padding: '0.2rem 0.6rem', borderRadius: '1rem', fontSize: '0.75rem', fontWeight: 600, color: '#444' }}>Coming Soon</span>
+          ) : (
+            <span className="book-card-price" style={{ fontSize: '0.9rem' }}>KES {book.price?.toLocaleString()}</span>
+          )}
           {isPurchased && !book.comingSoon ? (
             <button
               onClick={(e) => { e.stopPropagation(); isAudio ? onListen() : onRead(); }}
