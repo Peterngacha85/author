@@ -5,9 +5,18 @@ require('dotenv').config({ override: true });
 
 const app = express();
 
+// CORS — must be first, before all other middleware
+const corsOptions = {
+  origin: true, // Allow all origins
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'x-auth-token', 'Authorization'],
+  credentials: true
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Handle preflight for all routes
+
 // Middleware
 app.use(express.json());
-app.use(cors());
 
 // DB Connection
 mongoose.connect(process.env.MONGODB_URI)
