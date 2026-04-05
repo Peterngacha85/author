@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/backend/:path*",
-      "destination": "https://joetales.co.ke.fastweb.co.ke/api/:path*"
+      "destination": "http://joetales.co.ke.fastweb.co.ke/api/:path*"
     },
     {
       "source": "/(.*)",
