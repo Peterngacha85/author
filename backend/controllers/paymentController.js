@@ -107,7 +107,9 @@ exports.stkPush = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ msg: err.message || 'Server error during STK Push' });
+    const errorData = err.response ? err.response.data : null;
+    const errorMsg = errorData?.errorMessage || errorData?.errorMessage || err.message || 'Server error during STK Push';
+    res.status(500).json({ msg: errorMsg, details: errorData });
   }
 };
 
