@@ -31,7 +31,8 @@ const initiateSTKPush = async (phone, amount, bookTitle) => {
         ? 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
         : 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
 
-    const shortCode = process.env.MPESA_SHORTCODE;
+    const shortCode = process.env.MPESA_SHORTCODE; // Store Number
+    const tillNumber = process.env.MPESA_TILL_NUMBER || shortCode; // Fallback for backward compatibility
     const passkey = process.env.MPESA_PASSKEY;
     const callbackUrl = process.env.MPESA_CALLBACK_URL;
     
@@ -56,7 +57,7 @@ const initiateSTKPush = async (phone, amount, bookTitle) => {
         TransactionType: 'CustomerBuyGoodsOnline',
         Amount: Math.round(amount),
         PartyA: formattedPhone,
-        PartyB: shortCode,
+        PartyB: tillNumber,
         PhoneNumber: formattedPhone,
         CallBackURL: callbackUrl,
         AccountReference: bookTitle.substring(0, 12),
