@@ -13,7 +13,7 @@ const corsOptions = {
   credentials: true
 };
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Handle preflight for all routes
+app.options(/.*/, cors(corsOptions)); // Handle preflight for all routes
 
 // Middleware
 app.use(express.json());
