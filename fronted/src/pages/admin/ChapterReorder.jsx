@@ -161,15 +161,25 @@ export default function ChapterReorder() {
             <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>{book?.title}</p>
           </div>
         </div>
-        <button 
-          onClick={handleSave} 
-          disabled={saving}
-          className="btn btn-primary" 
-          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-        >
-          {saving ? <span className="spinner spinner-sm" /> : <Save size={18} />}
-          {saving ? 'Saving...' : 'Save Order'}
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <button 
+            onClick={() => navigate(`/admin/upload-${book?.type === 'ebook' ? 'ebook' : 'audiobook'}/${id}`)} 
+            className="btn btn-outline" 
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+          >
+            <Plus size={18} />
+            Add Chapter
+          </button>
+          <button 
+            onClick={handleSave} 
+            disabled={saving}
+            className="btn btn-primary" 
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+          >
+            {saving ? <span className="spinner spinner-sm" /> : <Save size={18} />}
+            {saving ? 'Saving...' : 'Save Order'}
+          </button>
+        </div>
       </div>
 
       <div style={{ background: 'rgba(0,166,153,0.05)', padding: '1rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', color: '#007A70', fontSize: '0.9rem' }}>

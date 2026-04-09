@@ -86,8 +86,8 @@ export default function App() {
             <Route path="books"     element={<AdminBooks />} />
             <Route path="ebooks"    element={<AdminBooks filter="ebook" />} />
             <Route path="audiobooks" element={<AdminBooks filter="audiobook" />} />
-            <Route path="upload-ebook"     element={<AdminUpload type="ebook" />} />
-            <Route path="upload-audiobook" element={<AdminUpload type="audiobook" />} />
+            <Route path="upload-ebook/:id?"     element={<AdminUpload type="ebook" />} />
+            <Route path="upload-audiobook/:id?" element={<AdminUpload type="audiobook" />} />
             <Route path="payments" element={<AdminPayments />} />
             <Route path="users"   element={<AdminUsers />} />
             <Route path="books/reorder/:id" element={<ChapterReorder />} />
