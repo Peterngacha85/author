@@ -1,12 +1,15 @@
 import { useState, useRef } from 'react';
-import { Camera, Save, User, Phone, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { Camera, Save, User, Phone, Mail, Lock, Eye, EyeOff, Trash2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/common/ConfirmModal';
 
 export default function UserProfile() {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, logout } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const [photoPreview, setPhotoPreview] = useState(user?.profilePhoto || null);
   const fileRef = useRef();
@@ -58,6 +61,20 @@ export default function UserProfile() {
       toast.error(err.response?.data?.msg || 'Update failed');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    try {
+      await API.delete('/auth/delete');
+      toast.success('Account deleted successfully');
+      logout();
+    } catch (err) {
+      toast.error('Failed to delete account');
+    } finally {
+      setDeleting(false);
+      setIsDeleteModalOpen(false);
     }
   };
 
@@ -177,6 +194,30 @@ export default function UserProfile() {
           You have <strong style={{ color: 'var(--color-accent)' }}>{user?.purchasedItems?.length || 0}</strong> book{user?.purchasedItems?.length !== 1 ? 's' : ''} in your library.
         </p>
       </div>
+
+      <div className="glass-card" style={{ padding: '1.5rem', marginTop: '1.5rem', border: '1px solid rgba(225, 44, 50, 0.2)', backgroundColor: 'rgba(225, 44, 50, 0.02)' }}>
+        <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--danger)' }}>Danger Zone</h3>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1rem' }}>
+          Deleting your account is permanent. This action will remove all your data and access to purchased books.
+        </p>
+        <button 
+          type="button"
+          onClick={() => setIsDeleteModalOpen(true)}
+          className="btn btn-danger"
+          style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem' }}
+        >
+          <Trash2 size={18} /> Delete My Account
+        </button>
+      </div>
+
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteAccount}
+        title="Delete Account"
+        message="Are you absolutely sure you want to delete your account? All your data, purchases, and access will be permanently lost. This cannot be undone."
+        confirmText={deleting ? "Deleting..." : "Yes, Delete Account"}
+      />
     </div>
   );
 }

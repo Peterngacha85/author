@@ -212,3 +212,17 @@ exports.uploadPhoto = async (req, res) => {
     });
   }
 };
+
+// Delete account
+exports.deleteAccount = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ msg: 'User not found' });
+    
+    await user.deleteOne();
+    res.json({ msg: 'Account deleted successfully' });
+  } catch (err) {
+    console.error('Delete Account Error:', err);
+    res.status(500).json({ msg: 'Server error while deleting account' });
+  }
+};

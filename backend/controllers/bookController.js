@@ -48,7 +48,6 @@ exports.addChapter = async (req, res) => {
     const book = await Book.findById(bookId);
 
     if (!book) return res.status(404).json({ msg: 'Book not found' });
-    if (book.type !== 'audiobook') return res.status(400).json({ msg: 'Not an audiobook' });
 
     if (!req.file) return res.status(400).json({ msg: 'Please upload an audio file' });
 
@@ -122,7 +121,6 @@ exports.reorderChapters = async (req, res) => {
     const book = await Book.findById(bookId);
 
     if (!book) return res.status(404).json({ msg: 'Book not found' });
-    if (book.type !== 'audiobook') return res.status(400).json({ msg: 'Not an audiobook' });
 
     // Update chapters array with the new order
     book.chapters = chapters;

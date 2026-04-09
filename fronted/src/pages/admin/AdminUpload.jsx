@@ -72,6 +72,7 @@ export default function AdminUpload({ type = 'ebook' }) {
       await API.post('/books/chapter', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
       toast.success('Chapter added!');
       setChapterTitle(''); setChapterFile(null); setIsSample(false);
+      setTimeout(() => window.location.reload(), 1000);
     } catch (err) {
       toast.error(err.response?.data?.msg || 'Chapter upload failed');
     } finally {
@@ -151,11 +152,10 @@ export default function AdminUpload({ type = 'ebook' }) {
           </form>
         </div>
 
-        {/* Add Audio Chapter (for audiobooks) */}
-        {type === 'audiobook' && (
-          <div className="glass-card" style={{ padding: '1.5rem' }}>
-            <h3 style={{ fontSize: '1rem', marginBottom: '1.25rem' }}>🎵 Add Audio Chapter</h3>
-            <form onSubmit={handleAddChapter} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        {/* Add Audio Chapter (for audiobooks & ebooks) */}
+        <div className="glass-card" style={{ padding: '1.5rem' }}>
+          <h3 style={{ fontSize: '1rem', marginBottom: '1.25rem' }}>🎵 Add Chapter</h3>
+          <form onSubmit={handleAddChapter} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div className="form-group">
                 <label className="form-label">Select Audiobook *</label>
                 <select 
@@ -165,14 +165,14 @@ export default function AdminUpload({ type = 'ebook' }) {
                   required
                 >
                   <option value="">-- Choose a book --</option>
-                  {books.filter(b => b.type === 'audiobook').map(b => (
+                  {books.map(b => (
                     <option key={b._id} value={b._id}>
                       {b.title} ({b._id.slice(-6)})
                     </option>
                   ))}
                 </select>
                 <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-                  {fetchingBooks ? 'Loading books...' : 'Select the audiobook you want to add chapters to'}
+                  {fetchingBooks ? 'Loading books...' : 'Select the book you want to add chapters to'}
                 </span>
               </div>
               <div className="form-group">
@@ -180,13 +180,13 @@ export default function AdminUpload({ type = 'ebook' }) {
                 <input className="form-input" value={chapterTitle} onChange={e => setChapterTitle(e.target.value)} placeholder="e.g. Chapter 1 - Introduction" />
               </div>
               <div className="form-group">
-                <label className="form-label">Audio File (MP3)</label>
+                <label className="form-label">Chapter File</label>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', border: '1.5px dashed var(--border-color)', borderRadius: 'var(--radius-md)', padding: '0.75rem 1rem', background: 'var(--bg-input)' }}>
                   <Upload size={18} color="var(--text-muted)" />
                   <span style={{ fontSize: '0.85rem', color: chapterFile ? 'var(--text-primary)' : 'var(--text-muted)' }}>
-                    {chapterFile ? chapterFile.name : 'Click to upload MP3'}
+                    {chapterFile ? chapterFile.name : 'Click to upload Chapter File'}
                   </span>
-                  <input type="file" accept="audio/*" hidden onChange={e => setChapterFile(e.target.files[0])} />
+                  <input type="file" accept="audio/*,application/pdf" hidden onChange={e => setChapterFile(e.target.files[0])} />
                 </label>
               </div>
               <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
@@ -198,7 +198,6 @@ export default function AdminUpload({ type = 'ebook' }) {
               </button>
             </form>
           </div>
-        )}
       </div>
     </div>
   );

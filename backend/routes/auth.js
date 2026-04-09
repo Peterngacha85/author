@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { register, login, getMe, updateProfile, uploadPhoto } = require('../controllers/authController');
+const { register, login, getMe, updateProfile, uploadPhoto, deleteAccount } = require('../controllers/authController');
 const auth = require('../middleware/auth');
 const { uploadProfile } = require('../utils/cloudinary');
 
@@ -83,5 +83,16 @@ router.put('/update', auth, updateProfile);
  *       - bearerAuth: []
  */
 router.post('/upload-photo', auth, uploadProfile.single('photo'), uploadPhoto);
+
+/**
+ * @swagger
+ * /api/auth/delete:
+ *   delete:
+ *     summary: Delete user account
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.delete('/delete', auth, deleteAccount);
 
 module.exports = router;

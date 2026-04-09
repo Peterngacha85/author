@@ -174,16 +174,14 @@ export default function AdminBooks({ filter }) {
                       >
                         <ExternalLink size={14} />
                       </button>
-                      {book.type === 'audiobook' && (
-                        <button 
-                          onClick={() => navigate(`/admin/books/reorder/${book._id}`)}
-                          className="btn btn-sm btn-outline" 
-                          style={{ color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}
-                          title="Reorder Chapters"
-                        >
-                          <Plus size={14} />
-                        </button>
-                      )}
+                      <button 
+                        onClick={() => navigate(`/admin/books/reorder/${book._id}`)}
+                        className="btn btn-sm btn-outline" 
+                        style={{ color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}
+                        title="Reorder Chapters"
+                      >
+                        <Plus size={14} />
+                      </button>
                       <button 
                         onClick={() => handleDeleteClick(book._id)}
                         className="btn btn-sm btn-danger" 
