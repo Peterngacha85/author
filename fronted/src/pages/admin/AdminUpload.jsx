@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 import { Upload, X, Plus } from 'lucide-react';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
@@ -20,13 +21,26 @@ export default function AdminUpload({ type = 'ebook' }) {
   const [chapterFile, setChapterFile] = useState(null);
   const [isSample, setIsSample] = useState(false);
 
+  const { id } = useParams();
+  const chapterSectionRef = useRef(null);
+
   useEffect(() => {
     setFetchingBooks(true);
     API.get('/books')
-      .then(res => setBooks(res.data))
+      .then(res => {
+        setBooks(res.data);
+        // If an ID was passed in, pre-select it after books are loaded
+        if (id) {
+          setBookId(id);
+          // Scroll to the chapter section
+          setTimeout(() => {
+            chapterSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+          }, 500);
+        }
+      })
       .catch(() => toast.error('Failed to load books for dropdown'))
       .finally(() => setFetchingBooks(false));
-  }, []);
+  }, [id]);
 
   const handleChange = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
 
@@ -153,7 +167,7 @@ export default function AdminUpload({ type = 'ebook' }) {
         </div>
 
         {/* Add Audio Chapter (for audiobooks & ebooks) */}
-        <div className="glass-card" style={{ padding: '1.5rem' }}>
+        <div ref={chapterSectionRef} className="glass-card" style={{ padding: '1.5rem' }}>
           <h3 style={{ fontSize: '1rem', marginBottom: '1.25rem' }}>🎵 Add Chapter</h3>
           <form onSubmit={handleAddChapter} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div className="form-group">
@@ -171,9 +185,20 @@ export default function AdminUpload({ type = 'ebook' }) {
                     </option>
                   ))}
                 </select>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-                  {fetchingBooks ? 'Loading books...' : 'Select the book you want to add chapters to'}
-                </span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.25rem' }}>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                    {fetchingBooks ? 'Loading books...' : 'Select the book you want to add chapters to'}
+                  </span>
+                  {bookId && (
+                    <button 
+                      type="button"
+                      onClick={() => navigate(`/admin/books/reorder/${bookId}`)}
+                      style={{ background: 'none', border: 'none', color: 'var(--color-primary)', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer', padding: 0 }}
+                    >
+                      🔄 Reorder existing chapters
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="form-group">
                 <label className="form-label">Chapter Title</label>

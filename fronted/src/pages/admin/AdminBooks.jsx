@@ -175,10 +175,10 @@ export default function AdminBooks({ filter }) {
                         <ExternalLink size={14} />
                       </button>
                       <button 
-                        onClick={() => navigate(`/admin/books/reorder/${book._id}`)}
+                        onClick={() => navigate(`/admin/upload-${book.type === 'ebook' ? 'ebook' : 'audiobook'}/${book._id}`)}
                         className="btn btn-sm btn-outline" 
                         style={{ color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}
-                        title="Reorder Chapters"
+                        title="Add Chapter"
                       >
                         <Plus size={14} />
                       </button>
