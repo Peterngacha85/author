@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Viewer, Worker, ViewMode } from '@react-pdf-viewer/core';
+import { Viewer, Worker, ViewMode, ScrollMode } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import { pageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
 import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -128,45 +128,48 @@ export default function EbookReader() {
               </div>
             ) : (
               <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-                <div style={{ position: 'relative', height: '100%' }}>
-                  {/* Left Navigation Button */}
-                  <div style={{ position: 'absolute', left: '-60px', top: '50%', transform: 'translateY(-50%)', zIndex: 20 }}>
+                <div style={{ position: 'relative', height: '100%', padding: '0 20px' }}>
+                  {/* Fixed Navigation Overlays */}
+                  <div style={{ position: 'fixed', left: '2rem', top: '50%', transform: 'translateY(-50%)', zIndex: 1000 }}>
                      <GoToPreviousPage>
                         {(props) => (
                           <button 
-                            className="nav-btn-large" 
+                            className="nav-btn-fixed" 
                             onClick={props.onClick} 
                             disabled={props.isDisabled}
                             title="Previous Page"
                           >
-                            <ChevronLeft size={32} />
+                            <ChevronLeft size={36} />
                           </button>
                         )}
                      </GoToPreviousPage>
                   </div>
 
-                  {/* Right Navigation Button */}
-                  <div style={{ position: 'absolute', right: '-60px', top: '50%', transform: 'translateY(-50%)', zIndex: 20 }}>
+                  <div style={{ position: 'fixed', right: '2rem', top: '50%', transform: 'translateY(-50%)', zIndex: 1000 }}>
                      <GoToNextPage>
                         {(props) => (
                           <button 
-                            className="nav-btn-large" 
+                            className="nav-btn-fixed" 
                             onClick={props.onClick} 
                             disabled={props.isDisabled}
                             title="Next Page"
                           >
-                            <ChevronRight size={32} />
+                            <ChevronRight size={36} />
                           </button>
                         )}
                      </GoToNextPage>
                   </div>
 
-                  <Viewer
-                    fileUrl={book?.fileUrl?.url || book?.fileUrl}
-                    plugins={[defaultLayoutPluginInstance, pageNavigationPluginInstance]}
-                    theme="light"
-                    viewMode={ViewMode.SinglePage}
-                  />
+                  <div className="pdf-viewer-wrapper" style={{ height: 'calc(100vh - 180px)', width: '100%', maxWidth: 900, margin: '0 auto' }}>
+                    <Viewer
+                      key={book._id}
+                      fileUrl={book?.fileUrl?.url || book?.fileUrl}
+                      plugins={[defaultLayoutPluginInstance, pageNavigationPluginInstance]}
+                      theme="light"
+                      viewMode={ViewMode.SinglePage}
+                      scrollMode={ScrollMode.Page}
+                    />
+                  </div>
                 </div>
               </Worker>
             )}
@@ -186,42 +189,54 @@ export default function EbookReader() {
           -ms-user-select: none;
           user-select: none;
         }
-        .nav-btn-large {
+        .nav-btn-fixed {
           background: var(--bg-surface);
-          border: 1px solid var(--border-color);
+          border: 2px solid var(--color-primary);
           color: var(--color-primary);
-          width: 56px;
-          height: 56px;
+          width: 64px;
+          height: 64px;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          box-shadow: var(--shadow-md);
-          transition: all 0.2s;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .nav-btn-large:hover:not(:disabled) {
+        .nav-btn-fixed:hover:not(:disabled) {
           background: var(--color-primary);
           color: white;
-          transform: scale(1.1);
+          transform: translateY(-50%) scale(1.1);
+          box-shadow: 0 12px 32px rgba(255, 56, 92, 0.3);
         }
-        .nav-btn-large:disabled {
-          opacity: 0.3;
+        .nav-btn-fixed:disabled {
+          opacity: 0.15;
           cursor: not-allowed;
+          filter: grayscale(1);
+        }
+        .pdf-viewer-wrapper {
+          box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+          border-radius: 8px;
+          overflow: hidden;
+          background: white;
         }
         /* Mobile adjustments */
         @media (max-width: 1100px) {
-          .nav-btn-large {
-            position: fixed;
-            bottom: 20px;
+          .nav-btn-fixed {
             width: 50px;
             height: 50px;
+            bottom: 30px;
+            top: auto;
+            transform: none;
           }
-          .nav-btn-large:first-of-type {
+          .nav-btn-fixed:first-of-type {
             left: 20px;
           }
-          .nav-btn-large:last-of-type {
+          .nav-btn-fixed:last-of-type {
             right: 20px;
+          }
+          .nav-btn-fixed:hover:not(:disabled) {
+            transform: scale(1.05);
           }
         }
       `}</style>
