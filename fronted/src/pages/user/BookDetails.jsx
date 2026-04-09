@@ -40,7 +40,7 @@ export default function BookDetails() {
 
   const isAudio = book.type === 'audiobook';
   const isAdmin = user?.role === 'admin';
-  const isPurchased = true; // TEMPORARY BYPASS: isAdmin || (user?.purchasedItems || []).includes(book._id);
+  const isPurchased = isAdmin || (user?.purchasedItems || []).includes(book._id);
   const hasSample = isAudio && book.chapters?.some(c => c.isSample);
 
   return (
