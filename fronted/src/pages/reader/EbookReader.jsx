@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Viewer, Worker, ViewMode } from '@react-pdf-viewer/core';
+import { Viewer, Worker, ViewMode, ScrollMode } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -111,6 +111,7 @@ export default function EbookReader() {
                   plugins={[defaultLayoutPluginInstance]}
                   theme="light"
                   viewMode={ViewMode.SinglePage}
+                  scrollMode={ScrollMode.Page}
                 />
               </Worker>
             )}
