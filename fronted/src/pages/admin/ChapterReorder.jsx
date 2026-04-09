@@ -147,25 +147,48 @@ export default function ChapterReorder() {
   );
 
   return (
-    <div className="fade-in" style={{ maxWidth: 700, margin: '0 auto' }}>
-      <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <button onClick={() => navigate('/admin/books')} className="btn btn-outline btn-sm">
+    <div className="fade-in" style={{ maxWidth: 800, margin: '0 auto', padding: '0 1rem' }}>
+      <div style={{ 
+        marginBottom: '2.5rem', 
+        display: 'flex', 
+        flexWrap: 'wrap', 
+        justifyContent: 'space-between', 
+        alignItems: 'flex-start',
+        gap: '1.5rem',
+        padding: '1rem 0'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', flex: '1 1 300px' }}>
+          <button onClick={() => navigate('/admin/books')} className="btn btn-outline btn-sm" style={{ marginTop: '0.5rem' }}>
             <ArrowLeft size={16} />
           </button>
-          <div>
-            <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Headphones size={24} color="var(--color-primary)" />
+          <div style={{ overflow: 'hidden' }}>
+            <h2 style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.5rem', 
+              margin: 0, 
+              fontSize: '1.75rem',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}>
+              <Headphones size={28} color="var(--color-primary)" />
               Reorder Chapters
             </h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>{book?.title}</p>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.25rem' }}>{book?.title}</p>
           </div>
         </div>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
           <button 
             onClick={() => navigate(`/admin/upload-${book?.type === 'ebook' ? 'ebook' : 'audiobook'}/${id}`)} 
             className="btn btn-outline" 
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.5rem',
+              whiteSpace: 'nowrap'
+            }}
           >
             <Plus size={18} />
             Add Chapter
@@ -174,7 +197,13 @@ export default function ChapterReorder() {
             onClick={handleSave} 
             disabled={saving}
             className="btn btn-primary" 
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.5rem', 
+              boxShadow: 'var(--shadow-md)',
+              whiteSpace: 'nowrap'
+            }}
           >
             {saving ? <span className="spinner spinner-sm" /> : <Save size={18} />}
             {saving ? 'Saving...' : 'Save Order'}
