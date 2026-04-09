@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 
 export default function AdminUpload({ type = 'ebook' }) {
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ title: '', description: '', author: 'Joe Joseph', price: '', type });
+  const [form, setForm] = useState({ title: '', description: '', author: '', price: '', type });
   const [comingSoon, setComingSoon] = useState(false);
   const [coverFile, setCoverFile] = useState(null);
   const [bookFile, setBookFile] = useState(null);
@@ -65,7 +65,7 @@ export default function AdminUpload({ type = 'ebook' }) {
       const res = await API.post('/books', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
       toast.success('Book created!');
       setBookId(res.data._id);
-      setForm({ title: '', description: '', author: 'Joe Joseph', price: '', type });
+      setForm({ title: '', description: '', author: '', price: '', type });
       setCoverFile(null); setCoverPreview(null); setBookFile(null); setComingSoon(false);
     } catch (err) {
       toast.error(err.response?.data?.msg || 'Upload failed');

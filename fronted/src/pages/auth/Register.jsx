@@ -99,7 +99,7 @@ export default function Register() {
             <label className="form-label">Full Name *</label>
             <div className="form-input-icon-wrap">
               <User size={16} className="icon" />
-              <input type="text" name="name" placeholder="Joe Joseph" className="form-input"
+              <input type="text" name="name" placeholder="Your full name" className="form-input"
                 value={form.name} onChange={handleChange} required />
             </div>
           </div>
