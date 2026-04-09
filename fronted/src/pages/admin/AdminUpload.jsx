@@ -72,6 +72,7 @@ export default function AdminUpload({ type = 'ebook' }) {
       await API.post('/books/chapter', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
       toast.success('Chapter added!');
       setChapterTitle(''); setChapterFile(null); setIsSample(false);
+      e.target.reset();
     } catch (err) {
       toast.error(err.response?.data?.msg || 'Chapter upload failed');
     } finally {
