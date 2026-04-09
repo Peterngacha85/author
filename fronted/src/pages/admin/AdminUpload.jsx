@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Upload, X, Plus } from 'lucide-react';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
@@ -21,6 +21,7 @@ export default function AdminUpload({ type = 'ebook' }) {
   const [chapterFile, setChapterFile] = useState(null);
   const [isSample, setIsSample] = useState(false);
 
+  const navigate = useNavigate();
   const { id } = useParams();
   const chapterSectionRef = useRef(null);
 
