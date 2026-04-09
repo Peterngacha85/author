@@ -116,8 +116,8 @@ export default function AdminUpload({ type = 'ebook' }) {
               <input className="form-input" name="title" value={form.title} onChange={handleChange} placeholder="Book title" required />
             </div>
             <div className="form-group">
-              <label className="form-label">Authour</label>
-              <input className="form-input" name="author" value={form.author} onChange={handleChange} placeholder="Authour name" />
+              <label className="form-label">Author</label>
+              <input className="form-input" name="author" value={form.author} onChange={handleChange} placeholder="Author name" />
             </div>
             <div className="form-group">
               <label className="form-label">Description</label>
