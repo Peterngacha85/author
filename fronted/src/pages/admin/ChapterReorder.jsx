@@ -16,7 +16,7 @@ import {
   useSortable
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Save, ArrowLeft, Headphones, Edit2, Check } from 'lucide-react';
+import { GripVertical, Save, ArrowLeft, Headphones, Edit2, Check, Plus } from 'lucide-react';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
 
