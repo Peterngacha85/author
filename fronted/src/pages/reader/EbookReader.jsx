@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Viewer, Worker, ViewMode, ScrollMode } from '@react-pdf-viewer/core';
+import { Viewer, Worker, ViewMode } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
-import { ArrowLeft } from 'lucide-react';
+import { pageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
+import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import API from '../../api/axios';
 import ReviewSection from '../../components/ReviewSection';
 
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
+import '@react-pdf-viewer/page-navigation/lib/styles/index.css';
 
 export default function EbookReader() {
   const { id } = useParams();
@@ -20,6 +22,10 @@ export default function EbookReader() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
 
+  // Page Navigation Plugin for programmatic control
+  const pageNavigationPluginInstance = pageNavigationPlugin();
+  const { GoToPreviousPage, GoToNextPage } = pageNavigationPluginInstance;
+
   // Customize toolbar to remove download/print buttons for regular users
   const defaultLayoutPluginInstance = defaultLayoutPlugin({
     sidebarTabs: (defaultTabs) => [],
@@ -27,8 +33,8 @@ export default function EbookReader() {
       <Toolbar>
         {(slots) => {
           const { 
-            ZoomOut, Zoom, ZoomIn, GoToPreviousPage, CurrentPageInput, 
-            NumberOfPages, GoToNextPage, EnterFullScreen, Download, Print 
+            ZoomOut, Zoom, ZoomIn, GoToPreviousPage: ToolbarPrev, CurrentPageInput, 
+            NumberOfPages, GoToNextPage: ToolbarNext, EnterFullScreen, Download, Print 
           } = slots;
           return (
             <div style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '4px' }}>
@@ -36,11 +42,11 @@ export default function EbookReader() {
               <div style={{ padding: '0 2px' }}><Zoom /></div>
               <div style={{ padding: '0 2px' }}><ZoomIn /></div>
               <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <GoToPreviousPage />
+                <ToolbarPrev />
                 <div style={{ display: 'flex', alignItems: 'center', margin: '0 8px' }}>
                   <CurrentPageInput /> <span style={{ padding: '0 4px' }}>/</span> <NumberOfPages />
                 </div>
-                <GoToNextPage />
+                <ToolbarNext />
               </div>
               <div style={{ padding: '0 2px' }}><EnterFullScreen /></div>
               {isAdmin && (
@@ -67,7 +73,23 @@ export default function EbookReader() {
     // Basic anti-piracy: disable right-click context menu
     const handleContext = (e) => e.preventDefault();
     document.addEventListener('contextmenu', handleContext);
-    return () => document.removeEventListener('contextmenu', handleContext);
+    
+    // Keyboard navigation
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowRight') {
+        const nextBtn = document.querySelector('button[title="Next Page"]');
+        if (nextBtn && !nextBtn.disabled) nextBtn.click();
+      } else if (e.key === 'ArrowLeft') {
+        const prevBtn = document.querySelector('button[title="Previous Page"]');
+        if (prevBtn && !prevBtn.disabled) prevBtn.click();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('contextmenu', handleContext);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
   if (loading) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: 'var(--bg-base)' }}><span className="spinner spinner-lg"></span></div>;
@@ -106,13 +128,46 @@ export default function EbookReader() {
               </div>
             ) : (
               <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-                <Viewer
-                  fileUrl={book?.fileUrl?.url || book?.fileUrl}
-                  plugins={[defaultLayoutPluginInstance]}
-                  theme="light"
-                  viewMode={ViewMode.SinglePage}
-                  scrollMode={ScrollMode.Page}
-                />
+                <div style={{ position: 'relative', height: '100%' }}>
+                  {/* Left Navigation Button */}
+                  <div style={{ position: 'absolute', left: '-60px', top: '50%', transform: 'translateY(-50%)', zIndex: 20 }}>
+                     <GoToPreviousPage>
+                        {(props) => (
+                          <button 
+                            className="nav-btn-large" 
+                            onClick={props.onClick} 
+                            disabled={props.isDisabled}
+                            title="Previous Page"
+                          >
+                            <ChevronLeft size={32} />
+                          </button>
+                        )}
+                     </GoToPreviousPage>
+                  </div>
+
+                  {/* Right Navigation Button */}
+                  <div style={{ position: 'absolute', right: '-60px', top: '50%', transform: 'translateY(-50%)', zIndex: 20 }}>
+                     <GoToNextPage>
+                        {(props) => (
+                          <button 
+                            className="nav-btn-large" 
+                            onClick={props.onClick} 
+                            disabled={props.isDisabled}
+                            title="Next Page"
+                          >
+                            <ChevronRight size={32} />
+                          </button>
+                        )}
+                     </GoToNextPage>
+                  </div>
+
+                  <Viewer
+                    fileUrl={book?.fileUrl?.url || book?.fileUrl}
+                    plugins={[defaultLayoutPluginInstance, pageNavigationPluginInstance]}
+                    theme="light"
+                    viewMode={ViewMode.SinglePage}
+                  />
+                </div>
               </Worker>
             )}
           </div>
@@ -126,11 +181,48 @@ export default function EbookReader() {
 
       <style>{`
         .pdf-container-secure {
-          /* Prevent text selection */
           -webkit-user-select: none;
           -moz-user-select: none;
           -ms-user-select: none;
           user-select: none;
+        }
+        .nav-btn-large {
+          background: var(--bg-surface);
+          border: 1px solid var(--border-color);
+          color: var(--color-primary);
+          width: 56px;
+          height: 56px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          box-shadow: var(--shadow-md);
+          transition: all 0.2s;
+        }
+        .nav-btn-large:hover:not(:disabled) {
+          background: var(--color-primary);
+          color: white;
+          transform: scale(1.1);
+        }
+        .nav-btn-large:disabled {
+          opacity: 0.3;
+          cursor: not-allowed;
+        }
+        /* Mobile adjustments */
+        @media (max-width: 1100px) {
+          .nav-btn-large {
+            position: fixed;
+            bottom: 20px;
+            width: 50px;
+            height: 50px;
+          }
+          .nav-btn-large:first-of-type {
+            left: 20px;
+          }
+          .nav-btn-large:last-of-type {
+            right: 20px;
+          }
         }
       `}</style>
     </div>
