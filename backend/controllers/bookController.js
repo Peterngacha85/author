@@ -122,14 +122,23 @@ exports.reorderChapters = async (req, res) => {
 
     if (!book) return res.status(404).json({ msg: 'Book not found' });
 
-    // Update chapters array with the new order
-    book.chapters = chapters;
+    // Explicitly map chapters to ensure subdocument fields like isSample are preserved and cast correctly
+    book.chapters = chapters.map(ch => ({
+      _id: ch._id,
+      title: ch.title,
+      url: ch.url,
+      public_id: ch.public_id,
+      isSample: Boolean(ch.isSample)
+    }));
+
+    // Explicitly mark modified for subdocument array
+    book.markModified('chapters');
     await book.save();
 
     res.json({ msg: 'Chapters reordered successfully', chapters: book.chapters });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: 'Server error' });
+    console.error('Reorder Error:', err);
+    res.status(500).json({ msg: 'Server error', error: err.message });
   }
 };
 
