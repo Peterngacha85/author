@@ -75,8 +75,8 @@ export default function BookCard({ book, isPurchased, onBuy, onRead, onListen })
             </button>
           ) : (
             <div style={{ display: 'flex', gap: '0.5rem' }}>
-              {isAudio && book.chapters?.some(c => c.isSample) && (
-                <button onClick={(e) => { e.stopPropagation(); onListen(); }} className="btn btn-outline btn-sm" style={{ padding: '0.35rem 0.5rem', fontSize: '0.75rem' }}>
+              {isAudio && book.chapters?.length > 0 && (
+                <button onClick={(e) => { e.stopPropagation(); onListen ? onListen() : navigate(`/reader/listen/${book._id}`); }} className="btn btn-outline btn-sm" style={{ padding: '0.35rem 0.5rem', fontSize: '0.75rem' }}>
                   Sample
                 </button>
               )}
