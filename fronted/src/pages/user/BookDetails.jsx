@@ -41,7 +41,7 @@ export default function BookDetails() {
   const isAudio = book.type === 'audiobook';
   const isAdmin = user?.role === 'admin';
   const isPurchased = isAdmin || (user?.purchasedItems || []).includes(book._id);
-  const hasSample = isAudio && book.chapters?.some(c => c.isSample);
+  const hasSample = isAudio && book.chapters?.length > 0;
 
   return (
     <div className="fade-in" style={{ paddingBottom: '3rem' }}>
@@ -93,7 +93,11 @@ export default function BookDetails() {
                 </button>
                 
                 {hasSample && (
-                  <button onClick={() => navigate(`/reader/listen/${book._id}`)} className="btn btn-outline" style={{ width: '100%' }}>
+                  <button 
+                    onClick={() => navigate(`/reader/listen/${book._id}`)} 
+                    className="btn btn-outline" 
+                    style={{ width: '100%', marginTop: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+                  >
                     <Headphones size={18} /> Listen to Sample
                   </button>
                 )}
