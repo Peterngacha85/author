@@ -52,9 +52,13 @@ function SortableItem({ id, chapter, onUpdate }) {
 
   const handleToggleEdit = () => {
     if (isEditing) {
-      onUpdate(id, tempTitle);
+      onUpdate(id, { title: tempTitle });
     }
     setIsEditing(!isEditing);
+  };
+
+  const toggleSample = () => {
+    onUpdate(id, { isSample: !chapter.isSample });
   };
 
   return (
@@ -74,15 +78,31 @@ function SortableItem({ id, chapter, onUpdate }) {
         ) : (
           <div style={{ fontWeight: 600 }}>{chapter.title}</div>
         )}
-        {chapter.isSample && <span className="badge badge-purple" style={{ fontSize: '0.65rem' }}>Sample</span>}
       </div>
-      <button 
-        onClick={handleToggleEdit}
-        className="btn btn-sm btn-outline"
-        style={{ padding: '0.4rem', border: 'none', background: 'transparent' }}
-      >
-        {isEditing ? <Check size={18} color="var(--success)" /> : <Edit2 size={16} color="var(--text-muted)" />}
-      </button>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <button 
+          onClick={toggleSample}
+          className={`btn btn-sm ${chapter.isSample ? 'btn-primary' : 'btn-outline'}`}
+          style={{ 
+            fontSize: '0.7rem', 
+            padding: '0.2rem 0.6rem', 
+            height: 'auto',
+            borderRadius: '12px',
+            borderColor: chapter.isSample ? 'var(--color-primary)' : 'var(--border-color)',
+            color: chapter.isSample ? 'white' : 'var(--text-muted)'
+          }}
+        >
+          {chapter.isSample ? 'Free Sample' : 'Mark as Free Sample'}
+        </button>
+        <button 
+          onClick={handleToggleEdit}
+          className="btn btn-sm btn-outline"
+          style={{ padding: '0.4rem', border: 'none', background: 'transparent' }}
+        >
+          {isEditing ? <Check size={18} color="var(--success)" /> : <Edit2 size={16} color="var(--text-muted)" />}
+        </button>
+      </div>
     </div>
   );
 }
@@ -229,8 +249,8 @@ export default function ChapterReorder() {
               key={chapter._id} 
               id={chapter._id} 
               chapter={chapter} 
-              onUpdate={(id, newTitle) => {
-                setChapters(prev => prev.map(ch => ch._id === id ? { ...ch, title: newTitle } : ch));
+              onUpdate={(id, updates) => {
+                setChapters(prev => prev.map(ch => ch._id === id ? { ...ch, ...updates } : ch));
               }}
             />
           ))}

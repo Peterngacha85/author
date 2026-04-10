@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Book, Headphones, Trash2, ExternalLink, Plus, Edit2, X, Save } from 'lucide-react';
+import { Book, Headphones, Trash2, ExternalLink, Plus, List, Edit2, X, Save } from 'lucide-react';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../../components/common/ConfirmModal';
@@ -182,6 +182,16 @@ export default function AdminBooks({ filter }) {
                       >
                         <Plus size={14} />
                       </button>
+                      {book.type === 'audiobook' && (
+                        <button 
+                          onClick={() => navigate(`/admin/books/reorder/${book._id}`)}
+                          className="btn btn-sm btn-outline" 
+                          style={{ color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}
+                          title="Manage Chapters"
+                        >
+                          <List size={14} />
+                        </button>
+                      )}
                       <button 
                         onClick={() => handleDeleteClick(book._id)}
                         className="btn btn-sm btn-danger" 
