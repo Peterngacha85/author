@@ -3,10 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Viewer, Worker, ViewMode, ScrollMode } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import { pageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
-import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, BookOpen, FileText } from 'lucide-react';
+import { ReactReader } from 'react-reader';
 import { useAuth } from '../../context/AuthContext';
 import API from '../../api/axios';
 import ReviewSection from '../../components/ReviewSection';
+import StoryReader from './StoryReader';
 
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
@@ -18,6 +20,8 @@ export default function EbookReader() {
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [viewMode, setViewMode] = useState('story'); // 'story' (reflow), 'pdf' (original), 'epub'
+  const [location, setLocation] = useState(0); // For EPUB location
 
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
@@ -64,7 +68,15 @@ export default function EbookReader() {
 
   useEffect(() => {
     API.get(`/books/${id}`)
-      .then(res => setBook(res.data))
+      .then(res => {
+        setBook(res.data);
+        const fileUrl = res.data?.fileUrl?.url || res.data?.fileUrl || '';
+        if (fileUrl.toLowerCase().endsWith('.epub')) {
+          setViewMode('epub');
+        } else {
+          setViewMode('story');
+        }
+      })
       .catch((err) => setError(err.response?.data?.msg || 'Could not load book'))
       .finally(() => setLoading(false));
   }, [id]);
@@ -106,6 +118,26 @@ export default function EbookReader() {
           <h1 style={{ fontSize: '1.2rem', margin: 0, color: 'var(--text-primary)' }}>{book?.title}</h1>
           <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{book?.author}</div>
         </div>
+
+        {/* View Mode Toggle (Only for PDFs) */}
+        {book?.fileUrl && !book.fileUrl.url?.toLowerCase().endsWith('.epub') && !book.fileUrl?.toLowerCase().endsWith('.epub') && (
+          <div style={{ marginLeft: 'auto', display: 'flex', background: 'var(--bg-input)', padding: '4px', borderRadius: 'var(--radius-md)', gap: '4px' }}>
+            <button 
+              onClick={() => setViewMode('story')} 
+              className={`view-toggle-btn ${viewMode === 'story' ? 'active' : ''}`}
+              title="Story Mode (Reflowable)"
+            >
+              <BookOpen size={16} /> <span style={{ fontSize: '0.8rem', fontWeight: 500 }}>Story Mode</span>
+            </button>
+            <button 
+              onClick={() => setViewMode('pdf')} 
+              className={`view-toggle-btn ${viewMode === 'pdf' ? 'active' : ''}`}
+              title="Original PDF View"
+            >
+              <FileText size={16} /> <span style={{ fontSize: '0.8rem', fontWeight: 500 }}>Original PDF</span>
+            </button>
+          </div>
+        )}
       </header>
 
       {/* PDF Viewport Area - Scrollable Container */}
@@ -125,6 +157,19 @@ export default function EbookReader() {
                 <button onClick={() => navigate(-1)} className="btn btn-primary" style={{ marginTop: '1.5rem' }}>
                   Go Back
                 </button>
+              </div>
+            ) : viewMode === 'epub' ? (
+              <div style={{ height: 'calc(100vh - 120px)', width: '100%', position: 'relative' }}>
+                <ReactReader
+                  url={book?.fileUrl?.url || book?.fileUrl}
+                  location={location}
+                  locationChanged={(epubcfi) => setLocation(epubcfi)}
+                  swipeable={true}
+                />
+              </div>
+            ) : viewMode === 'story' ? (
+              <div style={{ height: 'calc(100vh - 120px)', width: '100%' }}>
+                <StoryReader url={book?.fileUrl?.url || book?.fileUrl} />
               </div>
             ) : (
               <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
@@ -219,6 +264,27 @@ export default function EbookReader() {
           border-radius: 8px;
           overflow: hidden;
           background: white;
+        }
+        .view-toggle-btn {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.4rem 0.8rem;
+          border-radius: var(--radius-sm);
+          border: none;
+          background: transparent;
+          color: var(--text-muted);
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .view-toggle-btn:hover {
+          color: var(--text-primary);
+          background: rgba(128,128,128,0.1);
+        }
+        .view-toggle-btn.active {
+          background: white;
+          color: var(--color-primary);
+          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
         /* Mobile adjustments */
         @media (max-width: 1100px) {
