@@ -150,13 +150,13 @@ export default function AdminUpload({ type = 'ebook' }) {
 
             {type === 'ebook' && !comingSoon && (
               <div className="form-group">
-                <label className="form-label">PDF File</label>
+                <label className="form-label">Ebook File (PDF or EPUB)</label>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', border: '1.5px dashed var(--border-color)', borderRadius: 'var(--radius-md)', padding: '0.75rem 1rem', background: 'var(--bg-input)' }}>
                   <Upload size={18} color="var(--text-muted)" />
                   <span style={{ fontSize: '0.85rem', color: bookFile ? 'var(--text-primary)' : 'var(--text-muted)' }}>
-                    {bookFile ? bookFile.name : 'Click to upload PDF'}
+                    {bookFile ? bookFile.name : 'Click to upload PDF or EPUB'}
                   </span>
-                  <input type="file" accept=".pdf" hidden onChange={e => setBookFile(e.target.files[0])} />
+                  <input type="file" accept=".pdf,.epub" hidden onChange={e => setBookFile(e.target.files[0])} />
                 </label>
               </div>
             )}
