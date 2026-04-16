@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import * as pdfjs from 'pdfjs-dist';
-import { Type, Minus, Plus, Sun, Moon, Coffee } from 'lucide-react';
+import { Type, Minus, Plus, Sun, Moon, Coffee, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Set up worker
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js`;
@@ -18,6 +18,7 @@ export default function StoryReader({ url }) {
   const [fontSize, setFontSize] = useState(18);
   const [theme, setTheme] = useState('light');
   const [fontFamily, setFontFamily] = useState('serif');
+  const [currentPage, setCurrentPage] = useState(0);
 
   const extractText = useCallback(async () => {
     try {
@@ -56,6 +57,18 @@ export default function StoryReader({ url }) {
   useEffect(() => {
     if (url) extractText();
   }, [url, extractText]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowRight') {
+        setCurrentPage(p => Math.min(pages.length - 1, p + 1));
+      } else if (e.key === 'ArrowLeft') {
+        setCurrentPage(p => Math.max(0, p - 1));
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [pages.length]);
 
   if (loading) {
     return (
@@ -130,6 +143,12 @@ export default function StoryReader({ url }) {
           <option value="sans-serif">Sans Serif (Modern)</option>
           <option value="'Courier New', Courier, monospace">Monospace</option>
         </select>
+
+        <div style={{ height: 20, width: 1, background: `${currentTheme.meta}44` }} />
+
+        <div style={{ fontSize: '0.85rem', color: currentTheme.meta, fontWeight: 500 }}>
+          {currentPage + 1} / {pages.length}
+        </div>
       </div>
 
       {/* Text Content */}
@@ -138,32 +157,65 @@ export default function StoryReader({ url }) {
         overflowY: 'auto', 
         padding: '2rem 1rem',
         display: 'flex',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        position: 'relative'
       }}>
+        {/* Navigation Overlays */}
         <div style={{ 
+          position: 'fixed', 
+          left: '2rem', 
+          top: '50%', 
+          transform: 'translateY(-50%)', 
+          zIndex: 100 
+        }}>
+          <button 
+            className="nav-btn-story" 
+            onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
+            disabled={currentPage === 0}
+            title="Previous Page"
+            style={{ 
+              background: currentTheme.bg,
+              color: currentTheme.text,
+              borderColor: `${currentTheme.text}44`
+            }}
+          >
+            <ChevronLeft size={32} />
+          </button>
+        </div>
+
+        <div style={{ 
+          position: 'fixed', 
+          right: '2rem', 
+          top: '50%', 
+          transform: 'translateY(-50%)', 
+          zIndex: 100 
+        }}>
+          <button 
+            className="nav-btn-story" 
+            onClick={() => setCurrentPage(p => Math.min(pages.length - 1, p + 1))}
+            disabled={currentPage === pages.length - 1}
+            title="Next Page"
+            style={{ 
+              background: currentTheme.bg,
+              color: currentTheme.text,
+              borderColor: `${currentTheme.text}44`
+            }}
+          >
+            <ChevronRight size={32} />
+          </button>
+        </div>
+
+        <div className="fade-in" key={currentPage} style={{ 
           maxWidth: '800px', 
           width: '100%',
           fontSize: `${fontSize}px`,
           lineHeight: '1.7',
           fontFamily: fontFamily,
           textAlign: 'justify',
-          whiteSpace: 'pre-wrap'
+          whiteSpace: 'pre-wrap',
+          minHeight: '60vh'
         }}>
-          {pages.map((text, i) => (
-            <div key={i} style={{ marginBottom: '4rem' }}>
-              <div style={{ 
-                fontSize: '0.75rem', 
-                color: currentTheme.meta, 
-                marginBottom: '1rem', 
-                textAlign: 'center',
-                borderBottom: `1px solid ${currentTheme.meta}22`,
-                paddingBottom: '0.5rem'
-              }}>
-                PAGE {i + 1}
-              </div>
-              {text}
-            </div>
-          ))}
+          {pages[currentPage]}
         </div>
       </div>
 
@@ -196,6 +248,31 @@ export default function StoryReader({ url }) {
         }
         .theme-btn.active {
           box-shadow: 0 0 0 2px var(--color-primary);
+        }
+        .nav-btn-story {
+          width: 56px;
+          height: 56px;
+          border-radius: 50%;
+          border: 1px solid;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          transition: all 0.2s;
+        }
+        .nav-btn-story:hover:not(:disabled) {
+          transform: scale(1.1);
+          box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+        .nav-btn-story:disabled {
+          opacity: 0.2;
+          cursor: not-allowed;
+        }
+        @media (max-width: 1000px) {
+          .nav-btn-story {
+            display: none;
+          }
         }
       `}</style>
     </div>
