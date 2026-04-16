@@ -22,7 +22,8 @@ export default function UserHome() {
 
   const ebooks     = books.filter(b => b.type === 'ebook');
   const audiobooks = books.filter(b => b.type === 'audiobook');
-  const purchasedIds = user?.purchasedItems || [];
+  // TEMPORARY: Show all books as purchased for testing
+  const purchasedIds = books.map(b => b._id); // Was: user?.purchasedItems || [];
 
   const stats = [
     { icon: '📚', label: 'Total eBooks',     value: ebooks.length,     color: 'rgba(255,56,92,0.1)' },

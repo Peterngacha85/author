@@ -2,7 +2,8 @@ import { Lock, BookOpen, Headphones } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-export default function BookCard({ book, isPurchased, onBuy, onRead, onListen }) {
+export default function BookCard({ book, isPurchased: initialIsPurchased, onBuy, onRead, onListen }) {
+  const isPurchased = true; // TEMPORARY: Was initialIsPurchased
   const isAudio = book.type === 'audiobook';
   const navigate = useNavigate();
 
