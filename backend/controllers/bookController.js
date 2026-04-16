@@ -84,8 +84,9 @@ exports.getBook = async (req, res) => {
     const book = await Book.findById(req.params.id);
     if (!book) return res.status(404).json({ msg: 'Book not found' });
 
-    // Check if user has purchased the book or is an admin (Skip if user is disabled)
-    let isPurchased = false;
+    // TEMPORARY: Allow all users to access books for testing. Revert later.
+    let isPurchased = true; // Was: false
+    /* Original check:
     if (req.user && !req.user.disabled) {
       if (req.user.role === 'admin') {
         isPurchased = true;
@@ -94,6 +95,7 @@ exports.getBook = async (req, res) => {
         isPurchased = user && user.purchasedItems.some(id => id.toString() === book._id.toString());
       }
     }
+    */
 
     const bookData = book.toObject();
     
