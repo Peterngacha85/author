@@ -26,6 +26,12 @@ export default function EbookReader() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
 
+  // Helper to safely check if file is EPUB
+  const isEpub = (bookData) => {
+    const url = bookData?.fileUrl?.url || bookData?.fileUrl;
+    return typeof url === 'string' && url.toLowerCase().endsWith('.epub');
+  };
+
   // Page Navigation Plugin for programmatic control
   const pageNavigationPluginInstance = pageNavigationPlugin();
   const { GoToPreviousPage, GoToNextPage } = pageNavigationPluginInstance;
@@ -70,8 +76,7 @@ export default function EbookReader() {
     API.get(`/books/${id}`)
       .then(res => {
         setBook(res.data);
-        const fileUrl = res.data?.fileUrl?.url || res.data?.fileUrl || '';
-        if (fileUrl.toLowerCase().endsWith('.epub')) {
+        if (isEpub(res.data)) {
           setViewMode('epub');
         } else {
           setViewMode('story');
@@ -120,7 +125,7 @@ export default function EbookReader() {
         </div>
 
         {/* View Mode Toggle (Only for PDFs) */}
-        {book?.fileUrl && !book.fileUrl.url?.toLowerCase().endsWith('.epub') && !book.fileUrl?.toLowerCase().endsWith('.epub') && (
+        {book?.fileUrl && !isEpub(book) && (
           <div style={{ marginLeft: 'auto', display: 'flex', background: 'var(--bg-input)', padding: '4px', borderRadius: 'var(--radius-md)', gap: '4px' }}>
             <button 
               onClick={() => setViewMode('story')} 
