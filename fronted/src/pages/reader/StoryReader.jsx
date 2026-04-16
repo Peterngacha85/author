@@ -19,6 +19,7 @@ export default function StoryReader({ url }) {
   const [theme, setTheme] = useState('light');
   const [fontFamily, setFontFamily] = useState('serif');
   const [currentPage, setCurrentPage] = useState(0);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1000);
 
   const extractText = useCallback(async () => {
     try {
@@ -69,6 +70,12 @@ export default function StoryReader({ url }) {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [pages.length]);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1000);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   if (loading) {
     return (
@@ -146,9 +153,11 @@ export default function StoryReader({ url }) {
 
         <div style={{ height: 20, width: 1, background: `${currentTheme.meta}44` }} />
 
-        <div style={{ fontSize: '0.85rem', color: currentTheme.meta, fontWeight: 500 }}>
-          {currentPage + 1} / {pages.length}
-        </div>
+        {!isMobile && (
+          <div style={{ fontSize: '0.85rem', color: currentTheme.meta, fontWeight: 500 }}>
+            {currentPage + 1} / {pages.length}
+          </div>
+        )}
       </div>
 
       {/* Text Content */}
@@ -205,7 +214,7 @@ export default function StoryReader({ url }) {
           </button>
         </div>
 
-        <div className="fade-in" key={currentPage} style={{ 
+        <div className="fade-in" style={{ 
           maxWidth: '800px', 
           width: '100%',
           fontSize: `${fontSize}px`,
@@ -215,7 +224,18 @@ export default function StoryReader({ url }) {
           whiteSpace: 'pre-wrap',
           minHeight: '60vh'
         }}>
-          {pages[currentPage]}
+          {isMobile ? (
+            pages.map((text, i) => (
+              <div key={i} style={{ marginBottom: '3rem' }}>
+                <div style={{ fontSize: '0.7rem', color: currentTheme.meta, marginBottom: '0.75rem', textAlign: 'center', opacity: 0.5 }}>
+                  — {i + 1} —
+                </div>
+                {text}
+              </div>
+            ))
+          ) : (
+            pages[currentPage]
+          )}
         </div>
       </div>
 
