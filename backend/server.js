@@ -5,15 +5,23 @@ require('dotenv').config({ override: true });
 
 const app = express();
 
-// CORS — must be first, before all other middleware
-const corsOptions = {
-  origin: ['https://www.joetales.co.ke', 'https://joetales.co.ke', 'http://localhost:5173', 'http://localhost:5000'], // Allow specific origins
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'x-auth-token', 'Authorization'],
-  credentials: true
-};
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Handle preflight for all routes
+// CORS — explicit manual configuration to prevent proxy stripping
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (origin) {
+        // Reflect whatever origin is requesting, allowing full credentials
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-auth-token, Accept, Origin, X-Requested-With');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    
+    // Immediately respond to preflight requests
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+    next();
+});
 
 // Middleware
 app.use(express.json());
