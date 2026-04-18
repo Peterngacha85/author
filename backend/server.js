@@ -7,13 +7,13 @@ const app = express();
 
 // CORS — must be first, before all other middleware
 const corsOptions = {
-  origin: true, // Allow all origins
+  origin: ['https://www.joetales.co.ke', 'https://joetales.co.ke', 'http://localhost:5173', 'http://localhost:5000'], // Allow specific origins
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'x-auth-token', 'Authorization'],
   credentials: true
 };
 app.use(cors(corsOptions));
-app.options(/.*/, cors(corsOptions)); // Handle preflight for all routes
+app.options('*', cors(corsOptions)); // Handle preflight for all routes
 
 // Middleware
 app.use(express.json());
