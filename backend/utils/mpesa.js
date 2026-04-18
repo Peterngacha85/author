@@ -31,7 +31,7 @@ const initiateSTKPush = async (phone, amount, bookTitle) => {
         ? 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
         : 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
 
-    const shortCode = process.env.MPESA_STORE_NUMBER || process.env.MPESA_SHORTCODE; // BusinessShortCode (Store Number for Buy goods)
+    const shortCode = process.env.MPESA_SHORTCODE; // Must match the ShortCode of the Daraja App (4565479)
     const tillNumber = process.env.MPESA_TILL_NUMBER || shortCode; // PartyB
     const passkey = process.env.MPESA_PASSKEY;
     const callbackUrl = process.env.MPESA_CALLBACK_URL;
