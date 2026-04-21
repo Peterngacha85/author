@@ -30,10 +30,11 @@ const BookSchema = new mongoose.Schema({
     url: String,
     public_id: String
   },
-  // For eBooks (PDF)
+  // For eBooks (PDF/EPUB)
   fileUrl: {
     url: String,
-    public_id: String
+    public_id: String,
+    format: String
   },
   // For Audiobooks (Chapters)
   chapters: [{

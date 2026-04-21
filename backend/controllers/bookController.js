@@ -1,3 +1,4 @@
+const path = require('path');
 const Book = require('../models/Book');
 const User = require('../models/User');
 const Review = require('../models/Review');
@@ -27,9 +28,13 @@ exports.createBook = async (req, res) => {
 
     // Handle eBook file if uploaded and not coming soon
     if (!newBook.comingSoon && type === 'ebook' && req.files && req.files.bookFile) {
+      const originalFile = req.files.bookFile[0];
+      const extension = path.extname(originalFile.originalname).toLowerCase().replace('.', '');
+      
       newBook.fileUrl = {
-        url: req.files.bookFile[0].path,
-        public_id: req.files.bookFile[0].filename
+        url: originalFile.path,
+        public_id: originalFile.filename,
+        format: extension // 'pdf', 'epub', etc.
       };
     }
 

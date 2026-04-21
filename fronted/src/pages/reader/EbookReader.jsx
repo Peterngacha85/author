@@ -23,8 +23,17 @@ export default function EbookReader() {
 
   // Helper to safely check if file is EPUB
   const isEpub = (bookData) => {
-    const url = bookData?.fileUrl?.url || bookData?.fileUrl;
-    return typeof url === 'string' && url.toLowerCase().endsWith('.epub');
+    if (!bookData?.fileUrl) return false;
+    
+    // 1. Check explicit format field from DB
+    if (bookData.fileUrl.format === 'epub') return true;
+    
+    // 2. Smart Fallback for URLs (Cloudinary raw URLs might not end with .epub)
+    const url = bookData.fileUrl.url || bookData.fileUrl;
+    if (typeof url !== 'string') return false;
+    
+    const lowerUrl = url.toLowerCase();
+    return lowerUrl.endsWith('.epub') || lowerUrl.includes('/ebooks/') && lowerUrl.includes('epub');
   };
 
 
