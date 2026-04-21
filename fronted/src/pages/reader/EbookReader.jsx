@@ -1,8 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Viewer, Worker, ViewMode, ScrollMode } from '@react-pdf-viewer/core';
-import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
-import { pageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
 import { ArrowLeft, ChevronLeft, ChevronRight, BookOpen, FileText } from 'lucide-react';
 import { ReactReader } from 'react-reader';
 import { useAuth } from '../../context/AuthContext';
@@ -10,9 +7,7 @@ import API from '../../api/axios';
 import ReviewSection from '../../components/ReviewSection';
 import StoryReader from './StoryReader';
 
-import '@react-pdf-viewer/core/lib/styles/index.css';
-import '@react-pdf-viewer/default-layout/lib/styles/index.css';
-import '@react-pdf-viewer/page-navigation/lib/styles/index.css';
+
 
 export default function EbookReader() {
   const { id } = useParams();
@@ -32,45 +27,7 @@ export default function EbookReader() {
     return typeof url === 'string' && url.toLowerCase().endsWith('.epub');
   };
 
-  // Page Navigation Plugin for programmatic control
-  const pageNavigationPluginInstance = pageNavigationPlugin();
-  const { GoToPreviousPage, GoToNextPage } = pageNavigationPluginInstance;
 
-  // Customize toolbar to remove download/print buttons for regular users
-  const defaultLayoutPluginInstance = defaultLayoutPlugin({
-    sidebarTabs: (defaultTabs) => [],
-    renderToolbar: (Toolbar) => (
-      <Toolbar>
-        {(slots) => {
-          const { 
-            ZoomOut, Zoom, ZoomIn, GoToPreviousPage: ToolbarPrev, CurrentPageInput, 
-            NumberOfPages, GoToNextPage: ToolbarNext, EnterFullScreen, Download, Print 
-          } = slots;
-          return (
-            <div style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '4px' }}>
-              <div style={{ padding: '0 2px' }}><ZoomOut /></div>
-              <div style={{ padding: '0 2px' }}><Zoom /></div>
-              <div style={{ padding: '0 2px' }}><ZoomIn /></div>
-              <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <ToolbarPrev />
-                <div style={{ display: 'flex', alignItems: 'center', margin: '0 8px' }}>
-                  <CurrentPageInput /> <span style={{ padding: '0 4px' }}>/</span> <NumberOfPages />
-                </div>
-                <ToolbarNext />
-              </div>
-              <div style={{ padding: '0 2px' }}><EnterFullScreen /></div>
-              {isAdmin && (
-                <>
-                  <div style={{ padding: '0 2px' }}><Download /></div>
-                  <div style={{ padding: '0 2px' }}><Print /></div>
-                </>
-              )}
-            </div>
-          );
-        }}
-      </Toolbar>
-    )
-  });
 
   useEffect(() => {
     API.get(`/books/${id}`)
@@ -124,25 +81,7 @@ export default function EbookReader() {
           <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{book?.author}</div>
         </div>
 
-        {/* View Mode Toggle (Only for PDFs) */}
-        {book?.fileUrl && !isEpub(book) && (
-          <div style={{ marginLeft: 'auto', display: 'flex', background: 'var(--bg-input)', padding: '4px', borderRadius: 'var(--radius-md)', gap: '4px' }}>
-            <button 
-              onClick={() => setViewMode('story')} 
-              className={`view-toggle-btn ${viewMode === 'story' ? 'active' : ''}`}
-              title="Story Mode (Reflowable)"
-            >
-              <BookOpen size={16} /> <span style={{ fontSize: '0.8rem', fontWeight: 500 }}>Story Mode</span>
-            </button>
-            <button 
-              onClick={() => setViewMode('pdf')} 
-              className={`view-toggle-btn ${viewMode === 'pdf' ? 'active' : ''}`}
-              title="Original PDF View"
-            >
-              <FileText size={16} /> <span style={{ fontSize: '0.8rem', fontWeight: 500 }}>Original PDF</span>
-            </button>
-          </div>
-        )}
+
       </header>
 
       {/* PDF Viewport Area - Scrollable Container */}
@@ -172,56 +111,10 @@ export default function EbookReader() {
                   swipeable={true}
                 />
               </div>
-            ) : viewMode === 'story' ? (
+            ) : (
               <div style={{ height: 'calc(100vh - 120px)', width: '100%' }}>
                 <StoryReader url={book?.fileUrl?.url || book?.fileUrl} />
               </div>
-            ) : (
-              <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-                <div style={{ position: 'relative', height: '100%', padding: '0 20px' }}>
-                  {/* Fixed Navigation Overlays */}
-                  <div style={{ position: 'fixed', left: '2rem', top: '50%', transform: 'translateY(-50%)', zIndex: 1000 }}>
-                     <GoToPreviousPage>
-                        {(props) => (
-                          <button 
-                            className="nav-btn-fixed" 
-                            onClick={props.onClick} 
-                            disabled={props.isDisabled}
-                            title="Previous Page"
-                          >
-                            <ChevronLeft size={36} />
-                          </button>
-                        )}
-                     </GoToPreviousPage>
-                  </div>
-
-                  <div style={{ position: 'fixed', right: '2rem', top: '50%', transform: 'translateY(-50%)', zIndex: 1000 }}>
-                     <GoToNextPage>
-                        {(props) => (
-                          <button 
-                            className="nav-btn-fixed" 
-                            onClick={props.onClick} 
-                            disabled={props.isDisabled}
-                            title="Next Page"
-                          >
-                            <ChevronRight size={36} />
-                          </button>
-                        )}
-                     </GoToNextPage>
-                  </div>
-
-                  <div className="pdf-viewer-wrapper" style={{ height: 'calc(100vh - 180px)', width: '100%', maxWidth: 900, margin: '0 auto' }}>
-                    <Viewer
-                      key={book._id}
-                      fileUrl={book?.fileUrl?.url || book?.fileUrl}
-                      plugins={[defaultLayoutPluginInstance, pageNavigationPluginInstance]}
-                      theme="light"
-                      viewMode={ViewMode.SinglePage}
-                      scrollMode={ScrollMode.Page}
-                    />
-                  </div>
-                </div>
-              </Worker>
             )}
           </div>
           {/* Transparent overlay blocks deep-click interactions on the canvas */}
@@ -239,77 +132,10 @@ export default function EbookReader() {
           -ms-user-select: none;
           user-select: none;
         }
-        .nav-btn-fixed {
-          background: var(--bg-surface);
-          border: 2px solid var(--color-primary);
-          color: var(--color-primary);
-          width: 64px;
-          height: 64px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .nav-btn-fixed:hover:not(:disabled) {
-          background: var(--color-primary);
-          color: white;
-          transform: translateY(-50%) scale(1.1);
-          box-shadow: 0 12px 32px rgba(255, 56, 92, 0.3);
-        }
-        .nav-btn-fixed:disabled {
-          opacity: 0.15;
-          cursor: not-allowed;
-          filter: grayscale(1);
-        }
-        .pdf-viewer-wrapper {
-          box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-          border-radius: 8px;
-          overflow: hidden;
-          background: white;
-        }
-        .view-toggle-btn {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.4rem 0.8rem;
-          border-radius: var(--radius-sm);
-          border: none;
-          background: transparent;
-          color: var(--text-muted);
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-        .view-toggle-btn:hover {
-          color: var(--text-primary);
-          background: rgba(128,128,128,0.1);
-        }
-        .view-toggle-btn.active {
-          background: white;
-          color: var(--color-primary);
-          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
+
+
         /* Mobile adjustments */
-        @media (max-width: 1100px) {
-          .nav-btn-fixed {
-            width: 50px;
-            height: 50px;
-            bottom: 30px;
-            top: auto;
-            transform: none;
-          }
-          .nav-btn-fixed:first-of-type {
-            left: 20px;
-          }
-          .nav-btn-fixed:last-of-type {
-            right: 20px;
-          }
-          .nav-btn-fixed:hover:not(:disabled) {
-            transform: scale(1.05);
-          }
-        }
+
       `}</style>
     </div>
   );
