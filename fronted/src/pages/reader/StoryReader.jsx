@@ -49,7 +49,7 @@ export default function StoryReader({ url }) {
       setPages(extractedPages);
     } catch (err) {
       console.error('Extraction error:', err);
-      setError('Failed to extract text from PDF. Please use PDF view mode.');
+      setError('Failed to extract text from this PDF. Please ensure the file has selectable text or consider uploading an EPUB version.');
     } finally {
       setLoading(false);
     }

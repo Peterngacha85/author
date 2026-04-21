@@ -20,7 +20,11 @@ const getAccessToken = async () => {
         });
         return response.data.access_token;
     } catch (error) {
-        console.error('M-Pesa Access Token Error:', error.response ? error.response.data : error.message);
+        // Detailed logging for production troubleshooting
+        const errorData = error.response ? error.response.data : error.message;
+        console.error('M-Pesa Access Token Error:', JSON.stringify(errorData, null, 2));
+        
+        // Rethrow with a message that the controller will use
         throw new Error('Failed to generate M-Pesa access token');
     }
 };
