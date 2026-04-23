@@ -66,15 +66,17 @@ export default function App() {
             <Route path="book/:id" element={<BookDetails />} />
           </Route>
 
-          {/* ── Shared Reader Routes ─────────────────── */}
-          <Route path="/reader" element={
+          {/* ── Shared Reader Routes (Full Screen - No Sidebar) ─────────────────── */}
+          <Route path="/reader/read/:id" element={
             <ProtectedRoute>
-              <DashboardLayout />
+              <EbookReader />
             </ProtectedRoute>
-          }>
-            <Route path="read/:id" element={<EbookReader />} />
-            <Route path="listen/:id" element={<AudioPlayer />} />
-          </Route>
+          } />
+          <Route path="/reader/listen/:id" element={
+            <ProtectedRoute>
+              <AudioPlayer />
+            </ProtectedRoute>
+          } />
 
           {/* ── Admin Dashboard ─────────────────── */}
           <Route path="/admin" element={
