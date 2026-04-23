@@ -114,7 +114,7 @@ export default function EbookReader() {
       {/* PDF Viewport Area - Scrollable Container */}
       <div style={{ flex: 1, overflowY: 'auto', background: 'var(--bg-base)' }}>
         <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', minHeight: '80vh' }}>
-          <div style={{ width: '100%', maxWidth: 1000, height: '100%' }} className="pdf-container-secure">
+          <div className="pdf-container-secure reader-view-port">
             {!book?.fileUrl ? (
               <div style={{ 
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
@@ -171,9 +171,43 @@ export default function EbookReader() {
           user-select: none;
         }
 
+        .reader-view-port {
+          width: 100%;
+          max-width: 1000px;
+          height: 100%;
+        }
 
         /* Mobile adjustments */
+        @media (max-width: 768px) {
+          .reader-view-port {
+             max-width: 100% !important;
+          }
+          header {
+            padding: 0.75rem !important;
+            gap: 0.5rem !important;
+          }
+          header h1 {
+            font-size: 1rem !important;
+          }
+          .pdf-container-secure {
+            height: calc(100vh - 100px) !important;
+          }
+          
+          /* Hide the default side-buttons for better space utilization on mobile */
+          /* ReactReader uses internal elements that can be targeted like this: */
+          div[style*="position: absolute"][style*="top: 50%"] {
+            display: none !important;
+          }
+        }
 
+        @media (max-width: 480px) {
+          header h1 {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
       `}</style>
     </div>
   );
