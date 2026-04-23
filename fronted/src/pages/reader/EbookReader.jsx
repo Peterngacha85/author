@@ -177,12 +177,14 @@ export default function EbookReader() {
           width: 100%;
           max-width: 1000px;
           height: 100%;
+          margin: 0 auto;
         }
 
         /* Mobile adjustments */
         @media (max-width: 768px) {
           .reader-view-port {
-             max-width: 100% !important;
+             max-width: 100vw !important;
+             width: 100vw !important;
           }
           header {
             padding: 0.75rem !important;
@@ -193,12 +195,18 @@ export default function EbookReader() {
           }
           .pdf-container-secure {
             height: calc(100vh - 100px) !important;
+            padding: 0 !important;
+            margin: 0 !important;
           }
           
           /* Hide the default side-buttons for better space utilization on mobile */
-          /* ReactReader uses internal elements that can be targeted like this: */
           div[style*="position: absolute"][style*="top: 50%"] {
             display: none !important;
+          }
+
+          /* Ensure the reader inner container has no extra margin */
+          div[style*="position: absolute"][style*="inset: 0px"] {
+             padding: 0 !important;
           }
         }
 
