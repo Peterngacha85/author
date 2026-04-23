@@ -18,6 +18,8 @@ export default function EbookReader() {
   const [viewMode, setViewMode] = useState('story');
   const [location, setLocation] = useState(0);
   const [rendition, setRendition] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   // Reader settings
   const [fontSize, setFontSize] = useState(18);
@@ -174,7 +176,9 @@ export default function EbookReader() {
                   >
                     <ChevronLeft size={16} /> Prev
                   </button>
-                  <span style={{ fontSize: '0.75rem', color: THEMES[theme].text, opacity: 0.6 }}>Swipe or use arrows to navigate</span>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: THEMES[theme].text }}>
+                    {totalPages > 0 ? `${currentPage} / ${totalPages}` : '...'}
+                  </span>
                   <button
                     onClick={() => rendition?.next()}
                     style={{ background: 'none', border: `1px solid ${theme === 'dark' ? '#555' : '#ccc'}`, borderRadius: 6, padding: '0.3rem 0.8rem', cursor: 'pointer', color: THEMES[theme].text, display: 'flex', alignItems: 'center', gap: 4 }}
@@ -202,6 +206,17 @@ export default function EbookReader() {
                         }
                       });
                       rend.themes.select('default');
+
+                      // Generate locations for page counting (~1500 chars per page)
+                      rend.book.locations.generate(1500).then(() => {
+                        setTotalPages(rend.book.locations.length());
+                      });
+
+                      // Track page changes
+                      rend.on('relocated', (location) => {
+                        const pg = rend.book.locations.locationFromCfi(location.start.cfi);
+                        setCurrentPage(pg + 1);
+                      });
                     }}
                     epubOptions={{
                       openAs: 'epub',
