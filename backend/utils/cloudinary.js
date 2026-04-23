@@ -39,7 +39,7 @@ const bookStorage = new CloudinaryStorage({
     }
 
     const fileName = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9]/g, '_');
-    const public_id = `${Date.now()}-${fileName}`;
+    const public_id = `${Date.now()}-${fileName}${ext}`;
 
     return {
       folder,

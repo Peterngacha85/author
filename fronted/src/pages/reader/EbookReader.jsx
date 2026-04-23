@@ -25,15 +25,16 @@ export default function EbookReader() {
   const isEpub = (bookData) => {
     if (!bookData?.fileUrl) return false;
     
-    // 1. Check explicit format field from DB
-    if (bookData.fileUrl.format === 'epub') return true;
+    // 1. Check explicit format field from DB (saved during upload)
+    const format = (bookData.fileUrl.format || '').toLowerCase();
+    if (format === 'epub') return true;
     
-    // 2. Smart Fallback for URLs (Cloudinary raw URLs might not end with .epub)
-    const url = bookData.fileUrl.url || bookData.fileUrl;
-    if (typeof url !== 'string') return false;
+    // 2. Fallback for URLs
+    const rawUrl = bookData.fileUrl.url || (typeof bookData.fileUrl === 'string' ? bookData.fileUrl : '');
+    const url = rawUrl.toLowerCase();
+    if (!url) return false;
     
-    const lowerUrl = url.toLowerCase();
-    return lowerUrl.endsWith('.epub') || lowerUrl.includes('/ebooks/') && lowerUrl.includes('epub');
+    return url.endsWith('.epub') || url.includes('epub') || url.includes('/ebooks/');
   };
 
 
@@ -118,6 +119,9 @@ export default function EbookReader() {
                   location={location}
                   locationChanged={(epubcfi) => setLocation(epubcfi)}
                   swipeable={true}
+                  epubOptions={{
+                    openAs: 'epub' // Force EPUB parsing regardless of file extension
+                  }}
                 />
               </div>
             ) : (
