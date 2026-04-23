@@ -30,13 +30,15 @@ export default function EbookReader() {
     // 1. Check explicit format field from DB (saved during upload)
     const format = (bookData.fileUrl.format || '').toLowerCase();
     if (format === 'epub') return true;
+    if (format === 'pdf') return false; // Explicitly NOT an epub
     
     // 2. Fallback for URLs
     const rawUrl = bookData.fileUrl.url || (typeof bookData.fileUrl === 'string' ? bookData.fileUrl : '');
     const url = rawUrl.toLowerCase();
     if (!url) return false;
     
-    return url.endsWith('.epub') || url.includes('epub') || url.includes('/ebooks/');
+    // Check extension or specific epub markers
+    return url.endsWith('.epub') || (url.includes('/ebooks/') && url.includes('epub'));
   };
 
 
