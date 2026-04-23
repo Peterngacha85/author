@@ -254,42 +254,75 @@ export default function EbookReader() {
           margin: 0 auto;
         }
 
-        /* Mobile adjustments */
+        /* === MOBILE RESPONSIVE === */
         @media (max-width: 768px) {
+          /* Header: stack controls below title on small screens */
           .reader-view-port {
-             max-width: 100vw !important;
-             width: 100vw !important;
+            max-width: 100vw !important;
+            width: 100vw !important;
           }
+
           header {
-            padding: 0.75rem !important;
-            gap: 0.5rem !important;
+            padding: 0.5rem 0.75rem !important;
+            gap: 0.4rem !important;
+            flex-wrap: wrap !important;
+            row-gap: 0.4rem !important;
           }
+
           header h1 {
-            font-size: 1rem !important;
+            font-size: 0.9rem !important;
           }
+
+          header > div:last-child {
+            width: 100%;
+            justify-content: center;
+          }
+
           .pdf-container-secure {
             height: calc(100vh - 100px) !important;
             padding: 0 !important;
             margin: 0 !important;
           }
-          
-          /* Hide the default side-buttons for better space utilization on mobile */
+
+          /* Hide ReactReader's built-in side nav arrows */
           div[style*="position: absolute"][style*="top: 50%"] {
             display: none !important;
           }
 
-          /* Ensure the reader inner container has no extra margin */
           div[style*="position: absolute"][style*="inset: 0px"] {
-             padding: 0 !important;
+            padding: 0 !important;
           }
         }
 
         @media (max-width: 480px) {
           header h1 {
-            max-width: 200px;
+            max-width: 160px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+          }
+
+          /* Pagination bar compact on mobile */
+          .epub-pagination-bar {
+            padding: 0.3rem 0.5rem !important;
+          }
+
+          .epub-pagination-bar button {
+            padding: 0.25rem 0.5rem !important;
+            font-size: 0.75rem !important;
+          }
+
+          .epub-page-counter {
+            font-size: 0.75rem !important;
+          }
+
+          /* Font size buttons compact */
+          header button {
+            font-size: 0.85rem !important;
+          }
+
+          header span {
+            font-size: 0.7rem !important;
           }
         }
       `}</style>
