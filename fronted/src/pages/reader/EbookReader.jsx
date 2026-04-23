@@ -17,6 +17,8 @@ export default function EbookReader() {
   const [error, setError] = useState('');
   const [viewMode, setViewMode] = useState('story'); // 'story' (reflow), 'pdf' (original), 'epub'
   const [location, setLocation] = useState(0); // For EPUB location
+  const [epubData, setEpubData] = useState(null);
+  const [loadingEpub, setLoadingEpub] = useState(false);
 
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
@@ -45,6 +47,21 @@ export default function EbookReader() {
         setBook(res.data);
         if (isEpub(res.data)) {
           setViewMode('epub');
+          
+          // Pre-fetch EPUB data to resolve CORS and identification issues
+          const fileUrl = res.data.fileUrl?.url || res.data.fileUrl;
+          if (fileUrl && typeof fileUrl === 'string') {
+            const secureUrl = fileUrl.replace('http://', 'https://');
+            setLoadingEpub(true);
+            fetch(secureUrl)
+              .then(response => {
+                if (!response.ok) throw new Error('Fetch failed');
+                return response.arrayBuffer();
+              })
+              .then(buffer => setEpubData(buffer))
+              .catch(err => console.error('Epub pre-fetch error:', err))
+              .finally(() => setLoadingEpub(false));
+          }
         } else {
           setViewMode('story');
         }
@@ -114,15 +131,22 @@ export default function EbookReader() {
               </div>
             ) : viewMode === 'epub' ? (
               <div style={{ height: 'calc(100vh - 120px)', width: '100%', position: 'relative' }}>
-                <ReactReader
-                  url={book?.fileUrl?.url || book?.fileUrl}
-                  location={location}
-                  locationChanged={(epubcfi) => setLocation(epubcfi)}
-                  swipeable={true}
-                  epubOptions={{
-                    openAs: 'epub' // Force EPUB parsing regardless of file extension
-                  }}
-                />
+                {loadingEpub ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '1rem' }}>
+                    <span className="spinner"></span>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Preparing your book...</p>
+                  </div>
+                ) : (
+                  <ReactReader
+                    url={epubData || (book?.fileUrl?.url || book?.fileUrl)}
+                    location={location}
+                    locationChanged={(epubcfi) => setLocation(epubcfi)}
+                    swipeable={true}
+                    epubOptions={{
+                      openAs: 'epub'
+                    }}
+                  />
+                )}
               </div>
             ) : (
               <div style={{ height: 'calc(100vh - 120px)', width: '100%' }}>
