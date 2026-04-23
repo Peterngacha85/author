@@ -17,6 +17,7 @@ export default function EbookReader() {
   const [error, setError] = useState('');
   const [viewMode, setViewMode] = useState('story');
   const [location, setLocation] = useState(0);
+  const [rendition, setRendition] = useState(null);
 
   // Reader settings
   const [fontSize, setFontSize] = useState(18);
@@ -64,6 +65,21 @@ export default function EbookReader() {
       .catch((err) => setError(err.response?.data?.msg || 'Could not load book'))
       .finally(() => setLoading(false));
   }, [id]);
+
+  // Re-apply theme & font whenever they change via rendition
+  useEffect(() => {
+    if (!rendition) return;
+    rendition.themes.default({
+      body: {
+        background: `${THEMES[theme].bg} !important`,
+        color: `${THEMES[theme].text} !important`,
+        'font-size': `${fontSize}px !important`,
+        'line-height': '1.8 !important',
+        padding: '1rem 2rem !important',
+      }
+    });
+    rendition.themes.select('default');
+  }, [theme, fontSize, rendition]);
 
   useEffect(() => {
     // Basic anti-piracy: disable right-click context menu
@@ -143,18 +159,56 @@ export default function EbookReader() {
                 </button>
               </div>
             ) : viewMode === 'epub' ? (
-              <div style={{ height: 'calc(100vh - 120px)', width: '100%', position: 'relative', background: THEMES[theme].bg }}>
-                <ReactReader
-                  url={book?.fileUrl?.url || book?.fileUrl}
-                  location={location}
-                  locationChanged={(epubcfi) => setLocation(epubcfi)}
-                  swipeable={true}
-                  styles={{ body: { background: THEMES[theme].bg, color: THEMES[theme].text, fontSize: `${fontSize}px` } }}
-                  epubOptions={{
-                    openAs: 'epub',
-                    spread: 'none'
-                  }}
-                />
+              <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 60px)', background: THEMES[theme].bg }}>
+                {/* Top Pagination */}
+                <div style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '0.4rem 1rem',
+                  background: THEMES[theme].bg,
+                  borderBottom: `1px solid ${theme === 'dark' ? '#333' : '#e0e0e0'}`,
+                  gap: '0.5rem'
+                }}>
+                  <button
+                    onClick={() => rendition?.prev()}
+                    style={{ background: 'none', border: `1px solid ${theme === 'dark' ? '#555' : '#ccc'}`, borderRadius: 6, padding: '0.3rem 0.8rem', cursor: 'pointer', color: THEMES[theme].text, display: 'flex', alignItems: 'center', gap: 4 }}
+                  >
+                    <ChevronLeft size={16} /> Prev
+                  </button>
+                  <span style={{ fontSize: '0.75rem', color: THEMES[theme].text, opacity: 0.6 }}>Swipe or use arrows to navigate</span>
+                  <button
+                    onClick={() => rendition?.next()}
+                    style={{ background: 'none', border: `1px solid ${theme === 'dark' ? '#555' : '#ccc'}`, borderRadius: 6, padding: '0.3rem 0.8rem', cursor: 'pointer', color: THEMES[theme].text, display: 'flex', alignItems: 'center', gap: 4 }}
+                  >
+                    Next <ChevronRight size={16} />
+                  </button>
+                </div>
+
+                {/* EPUB Viewer */}
+                <div style={{ flex: 1, position: 'relative', background: THEMES[theme].bg }}>
+                  <ReactReader
+                    url={book?.fileUrl?.url || book?.fileUrl}
+                    location={location}
+                    locationChanged={(epubcfi) => setLocation(epubcfi)}
+                    swipeable={true}
+                    getRendition={(rend) => {
+                      setRendition(rend);
+                      rend.themes.default({
+                        body: {
+                          background: `${THEMES[theme].bg} !important`,
+                          color: `${THEMES[theme].text} !important`,
+                          'font-size': `${fontSize}px !important`,
+                          'line-height': '1.8 !important',
+                          padding: '1rem 2rem !important',
+                        }
+                      });
+                      rend.themes.select('default');
+                    }}
+                    epubOptions={{
+                      openAs: 'epub',
+                      spread: 'none'
+                    }}
+                  />
+                </div>
               </div>
             ) : (
               <div style={{ height: 'calc(100vh - 120px)', width: '100%' }}>
