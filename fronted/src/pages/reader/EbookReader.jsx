@@ -143,7 +143,8 @@ export default function EbookReader() {
                     locationChanged={(epubcfi) => setLocation(epubcfi)}
                     swipeable={true}
                     epubOptions={{
-                      openAs: 'epub'
+                      openAs: 'epub',
+                      spread: 'none' // Force single column
                     }}
                   />
                 )}
