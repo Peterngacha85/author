@@ -15,10 +15,18 @@ export default function EbookReader() {
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [viewMode, setViewMode] = useState('story'); // 'story' (reflow), 'pdf' (original), 'epub'
-  const [location, setLocation] = useState(0); // For EPUB location
-  const [epubData, setEpubData] = useState(null);
-  const [loadingEpub, setLoadingEpub] = useState(false);
+  const [viewMode, setViewMode] = useState('story');
+  const [location, setLocation] = useState(0);
+
+  // Reader settings
+  const [fontSize, setFontSize] = useState(18);
+  const [theme, setTheme] = useState('light');
+
+  const THEMES = {
+    light: { bg: '#ffffff', text: '#1a1a1a' },
+    sepia: { bg: '#f4ecd8', text: '#5b4636' },
+    dark: { bg: '#1a1a1a', text: '#e0e0e0' },
+  };
 
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
@@ -49,21 +57,6 @@ export default function EbookReader() {
         setBook(res.data);
         if (isEpub(res.data)) {
           setViewMode('epub');
-          
-          // Pre-fetch EPUB data to resolve CORS and identification issues
-          const fileUrl = res.data.fileUrl?.url || res.data.fileUrl;
-          if (fileUrl && typeof fileUrl === 'string') {
-            const secureUrl = fileUrl.replace('http://', 'https://');
-            setLoadingEpub(true);
-            fetch(secureUrl)
-              .then(response => {
-                if (!response.ok) throw new Error('Fetch failed');
-                return response.arrayBuffer();
-              })
-              .then(buffer => setEpubData(buffer))
-              .catch(err => console.error('Epub pre-fetch error:', err))
-              .finally(() => setLoadingEpub(false));
-          }
         } else {
           setViewMode('story');
         }
@@ -101,16 +94,34 @@ export default function EbookReader() {
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-base)' }}>
       {/* Reader Header */}
-      <header style={{ display: 'flex', alignItems: 'center', padding: '1rem', background: 'var(--bg-surface)', borderBottom: '1px solid var(--border-color)', gap: '1rem' }}>
-        <button onClick={() => navigate(isAdmin ? '/admin/books' : '/dashboard/ebooks')} className="btn btn-outline" style={{ padding: '0.5rem', border: 'none', background: 'transparent' }}>
+      <header style={{ 
+        display: 'flex', alignItems: 'center', padding: '0.75rem 1rem', 
+        background: THEMES[theme].bg, 
+        borderBottom: '1px solid rgba(128,128,128,0.2)', 
+        gap: '0.75rem',
+        flexWrap: 'wrap'
+      }}>
+        <button onClick={() => navigate(isAdmin ? '/admin/books' : '/dashboard/ebooks')} className="btn btn-outline" style={{ padding: '0.5rem', border: 'none', background: 'transparent', color: THEMES[theme].text }}>
           <ArrowLeft size={20} />
         </button>
-        <div>
-          <h1 style={{ fontSize: '1.2rem', margin: 0, color: 'var(--text-primary)' }}>{book?.title}</h1>
-          <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{book?.author}</div>
+        <div style={{ flex: 1 }}>
+          <h1 style={{ fontSize: '1rem', margin: 0, color: THEMES[theme].text }}>{book?.title}</h1>
+          <div style={{ fontSize: '0.8rem', opacity: 0.6, color: THEMES[theme].text }}>{book?.author}</div>
         </div>
 
-
+        {/* Controls */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <button onClick={() => setFontSize(s => Math.max(12, s - 2))} style={{ background: 'none', border: 'none', cursor: 'pointer', color: THEMES[theme].text, fontSize: '1rem' }}>A-</button>
+          <span style={{ fontSize: '0.75rem', color: THEMES[theme].text }}>{fontSize}px</span>
+          <button onClick={() => setFontSize(s => Math.min(36, s + 2))} style={{ background: 'none', border: 'none', cursor: 'pointer', color: THEMES[theme].text, fontSize: '1rem' }}>A+</button>
+          {Object.keys(THEMES).map(t => (
+            <button key={t} onClick={() => setTheme(t)} style={{ 
+              width: 20, height: 20, borderRadius: '50%', background: THEMES[t].bg,
+              border: theme === t ? '2px solid var(--color-primary)' : '1px solid rgba(0,0,0,0.2)',
+              cursor: 'pointer', transform: theme === t ? 'scale(1.2)' : 'scale(1)', transition: 'transform 0.2s'
+            }} title={t} />
+          ))}
+        </div>
       </header>
 
       {/* PDF Viewport Area - Scrollable Container */}
@@ -132,24 +143,18 @@ export default function EbookReader() {
                 </button>
               </div>
             ) : viewMode === 'epub' ? (
-              <div style={{ height: 'calc(100vh - 120px)', width: '100%', position: 'relative' }}>
-                {loadingEpub ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '1rem' }}>
-                    <span className="spinner"></span>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Preparing your book...</p>
-                  </div>
-                ) : (
-                  <ReactReader
-                    url={epubData || (book?.fileUrl?.url || book?.fileUrl)}
-                    location={location}
-                    locationChanged={(epubcfi) => setLocation(epubcfi)}
-                    swipeable={true}
-                    epubOptions={{
-                      openAs: 'epub',
-                      spread: 'none' // Force single column
-                    }}
-                  />
-                )}
+              <div style={{ height: 'calc(100vh - 120px)', width: '100%', position: 'relative', background: THEMES[theme].bg }}>
+                <ReactReader
+                  url={book?.fileUrl?.url || book?.fileUrl}
+                  location={location}
+                  locationChanged={(epubcfi) => setLocation(epubcfi)}
+                  swipeable={true}
+                  styles={{ body: { background: THEMES[theme].bg, color: THEMES[theme].text, fontSize: `${fontSize}px` } }}
+                  epubOptions={{
+                    openAs: 'epub',
+                    spread: 'none'
+                  }}
+                />
               </div>
             ) : (
               <div style={{ height: 'calc(100vh - 120px)', width: '100%' }}>
