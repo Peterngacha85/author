@@ -6,10 +6,10 @@ import { useAuth } from '../../context/AuthContext';
 const NAV = [
   { to: '/admin',             icon: LayoutDashboard, label: 'Overview',    end: true },
   { to: '/admin/books',       icon: BookOpen,        label: 'Books' },
-  { to: '/admin/ebooks',      icon: Book,            label: 'Ebooks' },
   { to: '/admin/audiobooks',  icon: Headphones,      label: 'Audiobook' },
-  { to: '/admin/upload-ebook',     icon: Upload,          label: 'Upload Ebook' },
+  { to: '/admin/ebooks',      icon: Book,            label: 'Ebooks' },
   { to: '/admin/upload-audiobook', icon: Upload,          label: 'Upload Audiobook' },
+  { to: '/admin/upload-ebook',     icon: Upload,          label: 'Upload Ebook' },
   { to: '/admin/payments',    icon: CreditCard,      label: 'Payments' },
   { to: '/admin/users',       icon: Users,           label: 'Users' },
 ];
