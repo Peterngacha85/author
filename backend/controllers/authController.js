@@ -14,6 +14,11 @@ exports.register = async (req, res) => {
       return res.status(400).json({ msg: 'User already exists with this phone number' });
     }
 
+    // Security Restriction: Only @gmail.com allowed
+    if (!email || !email.toLowerCase().endsWith('@gmail.com')) {
+      return res.status(400).json({ msg: 'Security Restriction: Only @gmail.com email addresses are allowed' });
+    }
+
     user = new User({
       name,
       phone: normalizedPhone,
@@ -114,6 +119,11 @@ exports.login = async (req, res) => {
          return res.status(400).json({ msg: 'Invalid Admin Credentials' });
       }
 
+      // Security Restriction: Only @gmail.com allowed
+      if (user.email && !user.email.toLowerCase().endsWith('@gmail.com')) {
+        return res.status(403).json({ msg: 'Security Restriction: Only @gmail.com accounts are permitted to log in' });
+      }
+
       console.log('User found:', user.email);
       const isMatch = await bcrypt.compare(password, user.password);
       
@@ -182,7 +192,12 @@ exports.updateProfile = async (req, res) => {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ msg: 'User not found' });
     if (name)  user.name  = name;
-    if (email) user.email = email;
+    if (email) {
+      if (!email.toLowerCase().endsWith('@gmail.com')) {
+        return res.status(400).json({ msg: 'Security Restriction: Only @gmail.com email addresses are allowed' });
+      }
+      user.email = email;
+    }
     if (password) user.password = password; // pre-save hook hashes it
     await user.save();
     const updated = await User.findById(req.user.id).select('-password');

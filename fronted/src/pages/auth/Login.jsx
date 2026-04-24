@@ -22,6 +22,13 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Security Restriction: Only @gmail.com allowed if email is used
+    if (form.phone.includes('@') && !form.phone.toLowerCase().endsWith('@gmail.com')) {
+      toast.error('Only @gmail.com email addresses are allowed');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const user = await login(form.phone, form.password);
@@ -53,7 +60,7 @@ export default function Login() {
             <label className="form-label">Email or Phone Number</label>
             <div className="form-input-icon-wrap">
               <Phone size={16} className="icon" />
-              <input type="text" name="phone" placeholder="e.g. 07... or joe@..." className="form-input"
+              <input type="text" name="phone" placeholder="e.g. 07... or joe@gmail.com" className="form-input"
                 value={form.phone} onChange={handleChange} required />
             </div>
           </div>
