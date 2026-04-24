@@ -2,6 +2,13 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
+const ALLOWED_DOMAINS = ['gmail.com', 'yahoo.com', 'hotmail.com'];
+const validateEmail = (email) => {
+  if (!email) return true;
+  const domain = email.toLowerCase().split('@')[1];
+  return ALLOWED_DOMAINS.includes(domain);
+};
+
 // Register User
 exports.register = async (req, res) => {
   const { name, phone, email, password } = req.body;
@@ -14,9 +21,9 @@ exports.register = async (req, res) => {
       return res.status(400).json({ msg: 'User already exists with this phone number' });
     }
 
-    // Security Restriction: Only @gmail.com allowed (if provided)
-    if (email && !email.toLowerCase().endsWith('@gmail.com')) {
-      return res.status(400).json({ msg: 'Security Restriction: Only @gmail.com email addresses are allowed' });
+    // Security Restriction: Only specific domains allowed (if provided)
+    if (!validateEmail(email)) {
+      return res.status(400).json({ msg: `Security Restriction: Only ${ALLOWED_DOMAINS.join(', ')} email addresses are allowed` });
     }
 
     user = new User({
@@ -119,9 +126,9 @@ exports.login = async (req, res) => {
          return res.status(400).json({ msg: 'Invalid Admin Credentials' });
       }
 
-      // Security Restriction: Only @gmail.com allowed
-      if (user.email && !user.email.toLowerCase().endsWith('@gmail.com')) {
-        return res.status(403).json({ msg: 'Security Restriction: Only @gmail.com accounts are permitted to log in' });
+      // Security Restriction: Only specific domains allowed
+      if (user.email && !validateEmail(user.email)) {
+        return res.status(403).json({ msg: `Security Restriction: Only ${ALLOWED_DOMAINS.join(', ')} accounts are permitted to log in` });
       }
 
       console.log('User found:', user.email);
@@ -193,8 +200,8 @@ exports.updateProfile = async (req, res) => {
     if (!user) return res.status(404).json({ msg: 'User not found' });
     if (name)  user.name  = name;
     if (email) {
-      if (!email.toLowerCase().endsWith('@gmail.com')) {
-        return res.status(400).json({ msg: 'Security Restriction: Only @gmail.com email addresses are allowed' });
+      if (!validateEmail(email)) {
+        return res.status(400).json({ msg: `Security Restriction: Only ${ALLOWED_DOMAINS.join(', ')} email addresses are allowed` });
       }
       user.email = email;
     }

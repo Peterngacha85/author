@@ -38,9 +38,13 @@ export default function Register() {
       toast.error('Name, phone, and password are required');
       return;
     }
-    if (form.email && !form.email.toLowerCase().endsWith('@gmail.com')) {
-      toast.error('Only @gmail.com email addresses are allowed for security purposes');
-      return;
+    const allowedDomains = ['gmail.com', 'yahoo.com', 'hotmail.com'];
+    if (form.email) {
+      const domain = form.email.toLowerCase().split('@')[1];
+      if (!allowedDomains.includes(domain)) {
+        toast.error('Only Gmail, Yahoo, and Hotmail are allowed');
+        return;
+      }
     }
     setIsSubmitting(true);
     try {
@@ -120,10 +124,10 @@ export default function Register() {
 
           {/* Email */}
           <div className="form-group">
-            <label className="form-label">Email Address <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>(optional, Gmail only)</span></label>
+            <label className="form-label">Email Address <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>(optional: Gmail, Yahoo, Hotmail)</span></label>
             <div className="form-input-icon-wrap">
               <Mail size={16} className="icon" />
-              <input type="email" name="email" placeholder="yourname@gmail.com" className="form-input"
+              <input type="email" name="email" placeholder="you@gmail.com / yahoo.com / hotmail.com" className="form-input"
                 value={form.email} onChange={handleChange} />
             </div>
           </div>
