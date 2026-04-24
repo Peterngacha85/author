@@ -75,7 +75,7 @@ exports.addChapter = async (req, res) => {
 // Get all books (Public)
 exports.getBooks = async (req, res) => {
   try {
-    const books = await Book.find().select('-chapters.url -fileUrl.url'); // Exclude secure URLs by default
+    const books = await Book.find().sort({ order: 1, createdAt: -1 }).select('-chapters.url -fileUrl.url'); // Sort by order, then newest
     res.json(books);
   } catch (err) {
     console.error(err);
@@ -221,5 +221,27 @@ exports.deleteReview = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Server error while deleting review' });
+  }
+};
+
+// Reorder Books (Admin only)
+exports.reorderBooks = async (req, res) => {
+  try {
+    const { books } = req.body; // Expects array of { _id, order }
+    
+    if (!Array.isArray(books)) {
+      return res.status(400).json({ msg: 'Invalid books array' });
+    }
+
+    const updatePromises = books.map(b => 
+      Book.findByIdAndUpdate(b._id, { order: b.order })
+    );
+
+    await Promise.all(updatePromises);
+
+    res.json({ msg: 'Books reordered successfully' });
+  } catch (err) {
+    console.error('Reorder Books Error:', err);
+    res.status(500).json({ msg: 'Server error', error: err.message });
   }
 };

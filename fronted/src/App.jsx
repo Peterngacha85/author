@@ -26,6 +26,7 @@ import AdminUpload   from './pages/admin/AdminUpload';
 import AdminPayments from './pages/admin/AdminPayments';
 import AdminUsers    from './pages/admin/AdminUsers';
 import ChapterReorder from './pages/admin/ChapterReorder';
+import BookReorder from './pages/admin/BookReorder';
 
 export default function App() {
   return (
@@ -92,6 +93,7 @@ export default function App() {
             <Route path="upload-audiobook/:id?" element={<AdminUpload type="audiobook" />} />
             <Route path="payments" element={<AdminPayments />} />
             <Route path="users"   element={<AdminUsers />} />
+            <Route path="books/reorder" element={<BookReorder />} />
             <Route path="books/reorder/:id" element={<ChapterReorder />} />
           </Route>
 

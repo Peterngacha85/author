@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { 
   createBook, addChapter, getBooks, getBook, reorderChapters, updateBook,
-  addReview, getReviews, deleteReview 
+  addReview, getReviews, deleteReview, reorderBooks
 } = require('../controllers/bookController');
 const { uploadBook, uploadAudio } = require('../utils/cloudinary');
 const auth = require('../middleware/auth');
@@ -72,6 +72,7 @@ router.get('/:id', auth, getBook);
 router.put('/:id', [auth, admin], updateBook);
 
 router.post('/reorder', [auth, admin], reorderChapters);
+router.post('/reorder-books', [auth, admin], reorderBooks);
 
 
 // Reviews
