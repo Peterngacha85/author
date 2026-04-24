@@ -150,10 +150,10 @@ export default function UserProfile() {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Email Address * <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>(Gmail only)</span></label>
+            <label className="form-label">Email Address <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>(optional, Gmail only)</span></label>
             <div className="form-input-icon-wrap">
               <Mail size={16} className="icon" />
-              <input className="form-input" name="email" type="email" value={form.email} onChange={handleChange} placeholder="yourname@gmail.com" required />
+              <input className="form-input" name="email" type="email" value={form.email} onChange={handleChange} placeholder="yourname@gmail.com" />
             </div>
           </div>
 
