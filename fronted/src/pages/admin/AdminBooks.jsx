@@ -100,7 +100,16 @@ export default function AdminBooks({ filter }) {
             Manage your eBooks and Audiobooks catalog
           </p>
         </div>
-        <div className="badge badge-purple">{books.length} Total Items</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <button 
+            onClick={() => navigate('/admin/books/reorder')}
+            className="btn btn-outline"
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}
+          >
+            <List size={16} /> Reorder Books
+          </button>
+          <div className="badge badge-purple">{books.length} Total Items</div>
+        </div>
       </div>
 
       {loading ? (
