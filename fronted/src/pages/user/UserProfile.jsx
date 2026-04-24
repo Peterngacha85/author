@@ -45,9 +45,13 @@ export default function UserProfile() {
     e.preventDefault();
     setLoading(true);
     try {
-      if (form.email && !form.email.toLowerCase().endsWith('@gmail.com')) {
-        setLoading(false);
-        return toast.error('Only @gmail.com email addresses are allowed');
+      const allowedDomains = ['gmail.com', 'yahoo.com', 'hotmail.com'];
+      if (form.email) {
+        const domain = form.email.toLowerCase().split('@')[1];
+        if (!allowedDomains.includes(domain)) {
+          setLoading(false);
+          return toast.error('Only Gmail, Yahoo, and Hotmail are allowed');
+        }
       }
       const payload = { name: form.name, email: form.email };
       if (form.newPassword) {
@@ -150,10 +154,10 @@ export default function UserProfile() {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Email Address <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>(optional, Gmail only)</span></label>
+            <label className="form-label">Email Address <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>(optional: Gmail, Yahoo, Hotmail)</span></label>
             <div className="form-input-icon-wrap">
               <Mail size={16} className="icon" />
-              <input className="form-input" name="email" type="email" value={form.email} onChange={handleChange} placeholder="yourname@gmail.com" />
+              <input className="form-input" name="email" type="email" value={form.email} onChange={handleChange} placeholder="you@gmail.com / yahoo.com" />
             </div>
           </div>
 

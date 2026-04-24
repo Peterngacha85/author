@@ -23,10 +23,14 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Security Restriction: Only @gmail.com allowed if email is used
-    if (form.phone.includes('@') && !form.phone.toLowerCase().endsWith('@gmail.com')) {
-      toast.error('Only @gmail.com email addresses are allowed');
-      return;
+    // Security Restriction: Only specific domains allowed if email is used
+    if (form.phone.includes('@')) {
+      const allowedDomains = ['gmail.com', 'yahoo.com', 'hotmail.com'];
+      const domain = form.phone.toLowerCase().split('@')[1];
+      if (!allowedDomains.includes(domain)) {
+        toast.error('Only Gmail, Yahoo, and Hotmail are allowed');
+        return;
+      }
     }
 
     setIsSubmitting(true);
@@ -60,7 +64,7 @@ export default function Login() {
             <label className="form-label">Email or Phone Number</label>
             <div className="form-input-icon-wrap">
               <Phone size={16} className="icon" />
-              <input type="text" name="phone" placeholder="e.g. 07... or joe@gmail.com" className="form-input"
+              <input type="text" name="phone" placeholder="e.g. 07... or name@gmail.com" className="form-input"
                 value={form.phone} onChange={handleChange} required />
             </div>
           </div>
