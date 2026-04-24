@@ -14,8 +14,8 @@ exports.register = async (req, res) => {
       return res.status(400).json({ msg: 'User already exists with this phone number' });
     }
 
-    // Security Restriction: Only @gmail.com allowed
-    if (!email || !email.toLowerCase().endsWith('@gmail.com')) {
+    // Security Restriction: Only @gmail.com allowed (if provided)
+    if (email && !email.toLowerCase().endsWith('@gmail.com')) {
       return res.status(400).json({ msg: 'Security Restriction: Only @gmail.com email addresses are allowed' });
     }
 
