@@ -34,8 +34,12 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.phone || !form.password) {
-      toast.error('Name, phone, and password are required');
+    if (!form.name || !form.phone || !form.password || !form.email) {
+      toast.error('All fields are required');
+      return;
+    }
+    if (!form.email.toLowerCase().endsWith('@gmail.com')) {
+      toast.error('Only @gmail.com email addresses are allowed for security purposes');
       return;
     }
     setIsSubmitting(true);
@@ -116,11 +120,11 @@ export default function Register() {
 
           {/* Email */}
           <div className="form-group">
-            <label className="form-label">Email <span style={{ color: 'var(--text-muted)' }}>(optional)</span></label>
+            <label className="form-label">Email Address * <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>(Gmail only)</span></label>
             <div className="form-input-icon-wrap">
               <Mail size={16} className="icon" />
-              <input type="email" name="email" placeholder="you@example.com" className="form-input"
-                value={form.email} onChange={handleChange} />
+              <input type="email" name="email" placeholder="yourname@gmail.com" className="form-input"
+                value={form.email} onChange={handleChange} required />
             </div>
           </div>
 

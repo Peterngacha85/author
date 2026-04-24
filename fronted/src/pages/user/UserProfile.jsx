@@ -45,6 +45,10 @@ export default function UserProfile() {
     e.preventDefault();
     setLoading(true);
     try {
+      if (form.email && !form.email.toLowerCase().endsWith('@gmail.com')) {
+        setLoading(false);
+        return toast.error('Only @gmail.com email addresses are allowed');
+      }
       const payload = { name: form.name, email: form.email };
       if (form.newPassword) {
         if (form.newPassword !== form.confirmPassword) {
@@ -146,10 +150,10 @@ export default function UserProfile() {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Email <span style={{ color: 'var(--text-muted)' }}>(optional)</span></label>
+            <label className="form-label">Email Address * <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>(Gmail only)</span></label>
             <div className="form-input-icon-wrap">
               <Mail size={16} className="icon" />
-              <input className="form-input" name="email" type="email" value={form.email} onChange={handleChange} placeholder="you@example.com" />
+              <input className="form-input" name="email" type="email" value={form.email} onChange={handleChange} placeholder="yourname@gmail.com" required />
             </div>
           </div>
 
