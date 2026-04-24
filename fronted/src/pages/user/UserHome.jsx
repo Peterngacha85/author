@@ -57,8 +57,8 @@ export default function UserHome() {
           <p style={{ color: 'rgba(255,255,255,0.75)', marginTop: '0.4rem', fontSize: '0.9rem' }}>
             Your personal digital library awaits
           </p>
-          <button onClick={() => navigate('/dashboard/ebooks')} className="btn" style={{ marginTop: '1rem', background: 'rgba(255,255,255,0.2)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)', backdropFilter: 'blur(10px)' }}>
-            Browse Books <BookOpen size={16} />
+          <button onClick={() => navigate('/dashboard/audio')} className="btn" style={{ marginTop: '1rem', background: 'rgba(255,255,255,0.2)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)', backdropFilter: 'blur(10px)' }}>
+            Browse Audiobooks <Headphones size={16} />
           </button>
         </div>
         <div style={{ fontSize: '5rem', position: 'relative', display: 'none' }}>📖</div>
@@ -77,29 +77,8 @@ export default function UserHome() {
         ))}
       </div>
 
-      {/* Featured eBooks */}
-      <div style={{ marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-          <h2 style={{ fontSize: '1.1rem' }}>📚 eBooks</h2>
-          <button onClick={() => navigate('/dashboard/ebooks')} className="btn btn-outline btn-sm">View All</button>
-        </div>
-        {loading ? (
-          <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}><span className="spinner spinner-lg" /></div>
-        ) : ebooks.length === 0 ? (
-          <div className="empty-state"><div className="empty-state-icon">📭</div><div className="empty-state-text">No eBooks available yet</div></div>
-        ) : (
-          <div className="books-grid">
-            {ebooks.slice(0, 4).map(book => (
-              <BookCard key={book._id} book={book} isPurchased={purchasedIds.includes(book._id)}
-                onBuy={() => setSelectedBook(book)}
-                onRead={() => navigate(`/reader/read/${book._id}`)} />
-            ))}
-          </div>
-        )}
-      </div>
-
       {/* Featured Audiobooks */}
-      <div>
+      <div style={{ marginBottom: '2rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
           <h2 style={{ fontSize: '1.1rem' }}>🎧 Audiobooks</h2>
           <button onClick={() => navigate('/dashboard/audio')} className="btn btn-outline btn-sm">View All</button>
@@ -114,6 +93,27 @@ export default function UserHome() {
               <BookCard key={book._id} book={book} isPurchased={purchasedIds.includes(book._id)}
                 onBuy={() => setSelectedBook(book)}
                 onListen={() => navigate(`/reader/listen/${book._id}`)} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Featured eBooks */}
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+          <h2 style={{ fontSize: '1.1rem' }}>📚 eBooks</h2>
+          <button onClick={() => navigate('/dashboard/ebooks')} className="btn btn-outline btn-sm">View All</button>
+        </div>
+        {loading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}><span className="spinner spinner-lg" /></div>
+        ) : ebooks.length === 0 ? (
+          <div className="empty-state"><div className="empty-state-icon">📭</div><div className="empty-state-text">No eBooks available yet</div></div>
+        ) : (
+          <div className="books-grid">
+            {ebooks.slice(0, 4).map(book => (
+              <BookCard key={book._id} book={book} isPurchased={purchasedIds.includes(book._id)}
+                onBuy={() => setSelectedBook(book)}
+                onRead={() => navigate(`/reader/read/${book._id}`)} />
             ))}
           </div>
         )}
