@@ -27,21 +27,39 @@ exports.register = async (req, res) => {
   const profilePhoto = req.file ? req.file.path : null;
 
   try {
-    if (email) email = email.trim();
-    if (email === '') email = undefined;
+    // Normalize inputs
+    if (email) email = email.trim() || undefined;
+    if (phone) phone = phone.trim() || undefined;
 
-    const normalizedPhone = normalizePhone(phone);
-    let user = await User.findOne({ phone: normalizedPhone });
-    if (user) {
-      return res.status(400).json({ msg: 'User already exists with this phone number' });
+    // Require at least phone or email
+    if (!phone && !email) {
+      return res.status(400).json({ msg: 'Please provide a phone number or email address to register' });
     }
 
-    // Security Restriction: Only specific domains allowed (if provided)
-    if (!validateEmail(email)) {
-      return res.status(400).json({ msg: `Security Restriction: Only ${ALLOWED_DOMAINS.join(', ')} email addresses are allowed` });
+    // Validate email domain if provided
+    if (email && !validateEmail(email)) {
+      return res.status(400).json({ msg: `Only Gmail, Yahoo, and Hotmail addresses are allowed` });
     }
 
-    user = new User({
+    const normalizedPhone = phone ? normalizePhone(phone) : undefined;
+
+    // Check for existing account by phone
+    if (normalizedPhone) {
+      const existsByPhone = await User.findOne({ phone: normalizedPhone });
+      if (existsByPhone) {
+        return res.status(400).json({ msg: 'An account already exists with this phone number' });
+      }
+    }
+
+    // Check for existing account by email
+    if (email) {
+      const existsByEmail = await User.findOne({ email });
+      if (existsByEmail) {
+        return res.status(400).json({ msg: 'An account already exists with this email address' });
+      }
+    }
+
+    const user = new User({
       name,
       phone: normalizedPhone,
       email,
@@ -51,33 +69,19 @@ exports.register = async (req, res) => {
 
     await user.save();
 
-    const payload = {
-      user: {
-        id: user.id,
-        role: user.role
-      }
-    };
+    const payload = { user: { id: user.id, role: user.role } };
 
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ 
-          token, 
-          user: { 
-            id: user.id, 
-            name: user.name, 
-            role: user.role, 
-            profilePhoto: user.profilePhoto 
-          } 
-        });
-      }
-    );
+    jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, token) => {
+      if (err) throw err;
+      res.json({
+        token,
+        user: { id: user.id, name: user.name, role: user.role, profilePhoto: user.profilePhoto }
+      });
+    });
   } catch (err) {
     console.error('Registration Error:', err);
     res.status(500).json({ msg: 'Server error during registration', error: err.message });
+
   }
 };
 

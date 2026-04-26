@@ -8,8 +8,8 @@ const UserSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
-    required: true,
-    unique: true
+    required: false,
+    sparse: true  // allows multiple docs with no phone, but enforces unique when set
   },
   email: {
     type: String,
