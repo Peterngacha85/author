@@ -22,6 +22,9 @@ export default function AdminUsers() {
       toast.success('User access updated');
     } catch {
       toast.error('Failed to update access');
+    }
+  };
+
   const requestDelete = (userId) => {
     setConfirmModal({ isOpen: true, userId });
   };
