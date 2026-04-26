@@ -75,7 +75,30 @@ exports.addChapter = async (req, res) => {
 // Get all books (Public)
 exports.getBooks = async (req, res) => {
   try {
-    const books = await Book.find().sort({ order: 1, createdAt: -1 }).select('-chapters.url -fileUrl.url'); // Sort by order, then newest
+    const books = await Book.aggregate([
+      { $sort: { order: 1, createdAt: -1 } },
+      {
+        $lookup: {
+          from: 'reviews',
+          localField: '_id',
+          foreignField: 'bookId',
+          as: 'reviews'
+        }
+      },
+      {
+        $addFields: {
+          avgRating: { $avg: '$reviews.rating' },
+          reviewCount: { $size: '$reviews' }
+        }
+      },
+      {
+        $project: {
+          'chapters.url': 0,
+          'fileUrl.url': 0,
+          'reviews': 0
+        }
+      }
+    ]);
     res.json(books);
   } catch (err) {
     console.error(err);

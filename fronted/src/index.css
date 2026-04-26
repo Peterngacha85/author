@@ -310,6 +310,27 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
 .book-card-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.3rem; color: var(--text-primary); }
 .book-card-author { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.6rem; }
 .book-card-price { font-size: 1rem; font-weight: 800; color: var(--color-accent); }
+/* Rating row on book cards */
+.book-card-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 0.35rem;
+}
+.book-card-stars {
+  display: flex;
+  gap: 1px;
+}
+.bc-star { line-height: 0; }
+.book-card-rating-avg {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #B8860B;
+}
+.book-card-rating-count {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
 .book-card-lock {
   position: absolute;
   top: 0.75rem; right: 0.75rem;
