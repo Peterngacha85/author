@@ -4,7 +4,7 @@ const Book = require('../models/Book');
 // Get all users (Admin)
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find(); // removed .select('-password') to allow admin to see the encrypted password
+    const users = await User.find().select('-password');
     res.json(users);
   } catch (err) {
     res.status(500).json({ msg: 'Server error' });

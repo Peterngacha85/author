@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/common/ConfirmModal';
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, userId: null });
 
   useEffect(() => {
     API.get('/admin/users')
@@ -20,11 +22,13 @@ export default function AdminUsers() {
       toast.success('User access updated');
     } catch {
       toast.error('Failed to update access');
-    }
+  const requestDelete = (userId) => {
+    setConfirmModal({ isOpen: true, userId });
   };
 
-  const deleteUser = async (userId) => {
-    if (!window.confirm('Are you sure you want to completely delete this user? This cannot be undone.')) return;
+  const executeDelete = async () => {
+    const userId = confirmModal.userId;
+    if (!userId) return;
     try {
       await API.delete(`/admin/users/${userId}`);
       setUsers(prev => prev.filter(u => u._id !== userId));
@@ -55,7 +59,6 @@ export default function AdminUsers() {
                 <th>User</th>
                 <th>Phone</th>
                 <th>Email</th>
-                <th>Password</th>
                 <th>Books</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -80,9 +83,6 @@ export default function AdminUsers() {
                   </td>
                   <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{u.phone}</td>
                   <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{u.email || '—'}</td>
-                  <td style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontFamily: 'monospace', maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={`Encrypted: ${u.password}`}>
-                    {u.password ? 'Encrypted Hash' : '—'}
-                  </td>
                   <td>
                     <span className="badge badge-purple">{u.purchasedItems?.length || 0} books</span>
                   </td>
@@ -99,7 +99,7 @@ export default function AdminUsers() {
                         {u.disabled ? 'Enable' : 'Disable'}
                       </button>
                       <button
-                        onClick={() => deleteUser(u._id)}
+                        onClick={() => requestDelete(u._id)}
                         className="btn btn-sm btn-danger">
                         Delete
                       </button>
@@ -111,6 +111,15 @@ export default function AdminUsers() {
           </table>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal({ isOpen: false, userId: null })}
+        onConfirm={executeDelete}
+        title="Delete User"
+        message="Are you sure you want to completely delete this user? This cannot be undone."
+        confirmText="Yes, Delete User"
+      />
     </div>
   );
 }
