@@ -9,13 +9,28 @@ const validateEmail = (email) => {
   return ALLOWED_DOMAINS.includes(domain);
 };
 
+const normalizePhone = (p) => {
+  if (!p) return p;
+  let cleaned = p.trim();
+  if (!cleaned.includes('@')) {
+    cleaned = cleaned.replace(/\s+/g, '');
+    if (cleaned.startsWith('0')) return '+254' + cleaned.slice(1);
+    if (cleaned.startsWith('254')) return '+' + cleaned;
+    if ((cleaned.startsWith('7') || cleaned.startsWith('1')) && cleaned.length === 9) return '+254' + cleaned;
+  }
+  return cleaned;
+};
+
 // Register User
 exports.register = async (req, res) => {
-  const { name, phone, email, password } = req.body;
+  let { name, phone, email, password } = req.body;
   const profilePhoto = req.file ? req.file.path : null;
 
   try {
-    const normalizedPhone = phone.startsWith('0') ? '+254' + phone.slice(1) : phone;
+    if (email) email = email.trim();
+    if (email === '') email = undefined;
+
+    const normalizedPhone = normalizePhone(phone);
     let user = await User.findOne({ phone: normalizedPhone });
     if (user) {
       return res.status(400).json({ msg: 'User already exists with this phone number' });
@@ -71,10 +86,11 @@ exports.login = async (req, res) => {
   // Dynamically reload .env to get any fresh changes without needing a restart
   require('dotenv').config({ override: true });
 
-  const { phone, password } = req.body;
+  let { phone, password } = req.body;
+  if (phone) phone = phone.trim();
 
   // Normalize phone for lookup
-  const normalizedPhone = phone.startsWith('0') ? '+254' + phone.slice(1) : phone;
+  const normalizedPhone = normalizePhone(phone);
 
   console.log('Login Attempt:', { phone, normalized: normalizedPhone });
 
@@ -84,9 +100,11 @@ exports.login = async (req, res) => {
     const envAdminEmail = process.env.ADMIN_EMAIL;
     const envAdminPassword = process.env.ADMIN_PASSWORD;
 
+    const normalizedEnvPhone = normalizePhone(envAdminPhone);
+
     const matchesEnvPhoneOrEmail = 
         (phone === envAdminPhone) || 
-        (normalizedPhone === envAdminPhone) || 
+        (normalizedPhone === normalizedEnvPhone) || 
         (phone === envAdminEmail);
 
     const isAdminOverride = matchesEnvPhoneOrEmail && (password === envAdminPassword);
@@ -109,12 +127,25 @@ exports.login = async (req, res) => {
       await user.save();
       console.log('Admin Override Login Successful.');
     } else {
-      user = await User.findOne({
-        $or: [
-          { phone: normalizedPhone },
-          { email: phone }
-        ]
-      });
+      let query;
+      const cleanPhoneInput = phone ? phone.trim() : '';
+      
+      if (cleanPhoneInput.includes('@')) {
+        // It's an email
+        query = { email: cleanPhoneInput };
+      } else {
+        // It's a phone number
+        const rawNormalizedPhone = cleanPhoneInput.startsWith('0') ? '+254' + cleanPhoneInput.slice(1) : cleanPhoneInput;
+        query = {
+          $or: [
+            { phone: normalizedPhone },
+            { phone: rawNormalizedPhone },
+            { phone: cleanPhoneInput }
+          ]
+        };
+      }
+
+      user = await User.findOne(query);
       
       if (!user) {
         console.log('Login Failed: User not found');
