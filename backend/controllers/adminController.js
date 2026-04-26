@@ -4,7 +4,7 @@ const Book = require('../models/Book');
 // Get all users (Admin)
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select('-password');
+    const users = await User.find(); // removed .select('-password') to allow admin to see the encrypted password
     res.json(users);
   } catch (err) {
     res.status(500).json({ msg: 'Server error' });
@@ -19,6 +19,19 @@ exports.toggleUserAccess = async (req, res) => {
     user.disabled = !user.disabled;
     await user.save();
     res.json({ msg: 'User access updated', disabled: user.disabled });
+  } catch (err) {
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
+// Delete a user (Admin)
+exports.deleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ msg: 'User not found' });
+    if (user.role === 'admin') return res.status(400).json({ msg: 'Cannot delete an admin' });
+    await user.deleteOne();
+    res.json({ msg: 'User removed' });
   } catch (err) {
     res.status(500).json({ msg: 'Server error' });
   }

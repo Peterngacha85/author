@@ -34,6 +34,20 @@ router.put('/users/:id/toggle', [auth, admin], toggleUserAccess);
 
 /**
  * @swagger
+ * /api/admin/users/{id}:
+ *   delete:
+ *     summary: Delete a user
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User deleted
+ */
+router.delete('/users/:id', [auth, admin], require('../controllers/adminController').deleteUser);
+
+/**
+ * @swagger
  * /api/admin/books/{id}:
  *   delete:
  *     summary: Delete a book

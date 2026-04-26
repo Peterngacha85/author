@@ -23,6 +23,17 @@ export default function AdminUsers() {
     }
   };
 
+  const deleteUser = async (userId) => {
+    if (!window.confirm('Are you sure you want to completely delete this user? This cannot be undone.')) return;
+    try {
+      await API.delete(`/admin/users/${userId}`);
+      setUsers(prev => prev.filter(u => u._id !== userId));
+      toast.success('User deleted successfully');
+    } catch (err) {
+      toast.error(err.response?.data?.msg || 'Failed to delete user');
+    }
+  };
+
   return (
     <div className="fade-in">
       <div style={{ marginBottom: '1.5rem' }}>
@@ -44,6 +55,7 @@ export default function AdminUsers() {
                 <th>User</th>
                 <th>Phone</th>
                 <th>Email</th>
+                <th>Password</th>
                 <th>Books</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -68,6 +80,9 @@ export default function AdminUsers() {
                   </td>
                   <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{u.phone}</td>
                   <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{u.email || '—'}</td>
+                  <td style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontFamily: 'monospace', maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={`Encrypted: ${u.password}`}>
+                    {u.password ? 'Encrypted Hash' : '—'}
+                  </td>
                   <td>
                     <span className="badge badge-purple">{u.purchasedItems?.length || 0} books</span>
                   </td>
@@ -77,11 +92,18 @@ export default function AdminUsers() {
                     </span>
                   </td>
                   <td>
-                    <button
-                      onClick={() => toggleAccess(u._id, u.disabled)}
-                      className={`btn btn-sm ${u.disabled ? 'btn-success' : 'btn-danger'}`}>
-                      {u.disabled ? 'Enable' : 'Disable'}
-                    </button>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <button
+                        onClick={() => toggleAccess(u._id, u.disabled)}
+                        className={`btn btn-sm ${u.disabled ? 'btn-success' : 'btn-warning'}`}>
+                        {u.disabled ? 'Enable' : 'Disable'}
+                      </button>
+                      <button
+                        onClick={() => deleteUser(u._id)}
+                        className="btn btn-sm btn-danger">
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
