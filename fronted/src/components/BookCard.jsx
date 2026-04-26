@@ -1,4 +1,4 @@
-import { Lock, BookOpen, Headphones } from 'lucide-react';
+import { Lock, BookOpen, Headphones, Star } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -56,7 +56,38 @@ export default function BookCard({ book, isPurchased, onBuy, onRead, onListen })
         <div className="book-card-title">{book.title}</div>
         <div className="book-card-author">by {book.author}</div>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.75rem', gap: '0.5rem' }}>
+        {/* ── Star Rating ── */}
+        {book.reviewCount > 0 && (
+          <div className="book-card-rating">
+            <div className="book-card-stars">
+              {[1, 2, 3, 4, 5].map((s) => {
+                const avg = book.avgRating || 0;
+                const filled = avg >= s;
+                const half   = !filled && avg >= s - 0.5;
+                return (
+                  <span key={s} className="bc-star" style={{ position: 'relative', display: 'inline-flex' }}>
+                    {/* Background (empty) star */}
+                    <Star size={12} fill="none" color="#D1D5DB" />
+                    {/* Foreground filled / half-fill overlay */}
+                    {(filled || half) && (
+                      <span style={{
+                        position: 'absolute', left: 0, top: 0,
+                        width: half ? '50%' : '100%',
+                        overflow: 'hidden', display: 'inline-flex'
+                      }}>
+                        <Star size={12} fill="#FFB800" color="#FFB800" />
+                      </span>
+                    )}
+                  </span>
+                );
+              })}
+            </div>
+            <span className="book-card-rating-avg">{(book.avgRating || 0).toFixed(1)}</span>
+            <span className="book-card-rating-count">({book.reviewCount})</span>
+          </div>
+        )}
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.5rem', gap: '0.5rem' }}>
           {book.comingSoon ? (
             <span style={{ background: 'rgba(0, 0, 0, 0.08)', padding: '0.2rem 0.6rem', borderRadius: '1rem', fontSize: '0.75rem', fontWeight: 600, color: '#444' }}>Coming Soon</span>
           ) : (
