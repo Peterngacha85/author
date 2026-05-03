@@ -55,6 +55,10 @@ export default function Register() {
       if (form.phone) fd.append('phone', form.phone);
       if (form.email) fd.append('email', form.email);
       fd.append('password', form.password);
+      
+      const sessionId = localStorage.getItem('author_traffic_session');
+      if (sessionId) fd.append('sessionId', sessionId);
+      
       if (photoFile) fd.append('photo', photoFile);
 
       const registeredUser = await register(fd);

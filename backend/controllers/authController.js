@@ -69,6 +69,16 @@ exports.register = async (req, res) => {
 
     await user.save();
 
+    // Mark as conversion if sessionId exists
+    if (req.body.sessionId) {
+      try {
+        const Traffic = require('../models/Traffic');
+        await Traffic.updateMany({ sessionId: req.body.sessionId }, { isConversion: true });
+      } catch (trackErr) {
+        console.error('Error updating conversion:', trackErr);
+      }
+    }
+
     const payload = { user: { id: user.id, role: user.role } };
 
     jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, token) => {

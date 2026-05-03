@@ -27,10 +27,14 @@ import AdminPayments from './pages/admin/AdminPayments';
 import AdminUsers    from './pages/admin/AdminUsers';
 import ChapterReorder from './pages/admin/ChapterReorder';
 import BookReorder from './pages/admin/BookReorder';
+import TrafficAnalytics from './pages/admin/TrafficAnalytics';
+
+import TrafficTracker from './components/TrafficTracker';
 
 export default function App() {
   return (
     <BrowserRouter>
+      <TrafficTracker />
       <AuthProvider>
         <Toaster
           position="top-right"
@@ -95,6 +99,7 @@ export default function App() {
             <Route path="users"   element={<AdminUsers />} />
             <Route path="books/reorder" element={<BookReorder />} />
             <Route path="books/reorder/:id" element={<ChapterReorder />} />
+            <Route path="analytics" element={<TrafficAnalytics />} />
           </Route>
 
           {/* Fallback */}
