@@ -120,14 +120,14 @@ export default function LandingPage() {
 
           {/* Book Cover Side */}
           <div className="landing-hero-book">
-            <div className="landing-book-wrapper">
+            <Link to={user ? dashboardPath : "/register"} className="landing-book-wrapper" style={{ display: 'block', textDecoration: 'none' }}>
               <img 
                 src="/images/book-cover.jpg" 
                 alt="Just One Text — A Novel by Joseph Kaburu" 
                 className="landing-book-image"
               />
               <div className="landing-book-badge">🔥 New Release</div>
-            </div>
+            </Link>
           </div>
         </div>
       </section>
