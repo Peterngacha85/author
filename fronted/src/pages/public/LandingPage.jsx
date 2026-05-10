@@ -90,15 +90,15 @@ export default function LandingPage() {
                 to={user ? dashboardPath : "/register"} 
                 className="landing-cta-primary"
               >
-                <BookOpen size={20} />
-                Read Now — KES 150
+                <Headphones size={20} />
+                Listen — KES 200
               </Link>
               <Link 
                 to={user ? dashboardPath : "/register"} 
                 className="landing-cta-secondary"
               >
-                <Headphones size={20} />
-                Listen — KES 200
+                <BookOpen size={20} />
+                Read Now — KES 150
               </Link>
             </div>
 
@@ -139,7 +139,7 @@ export default function LandingPage() {
             {[1,2,3,4,5].map(i => <Star key={i} size={18} fill="#FF4D4D" color="#FF4D4D" />)}
           </div>
           <p className="landing-testimonial">
-            "I couldn't put it down. By the third chapter, I was in tears. This book doesn't just tell a story — it makes you relive your own."
+            "I opened it out of curiosity. I finished it in one sitting."
           </p>
           <p className="landing-testimonial-author">— Early Reader Review</p>
         </div>
@@ -226,7 +226,7 @@ export default function LandingPage() {
           </p>
           <Link to={user ? dashboardPath : "/register"} className="landing-about-cta">
             <Heart size={18} />
-            Get Your Copy Now
+            Start reading now!
           </Link>
         </div>
       </section>
