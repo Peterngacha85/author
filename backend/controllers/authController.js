@@ -293,3 +293,34 @@ exports.deleteAccount = async (req, res) => {
     res.status(500).json({ msg: 'Server error while deleting account' });
   }
 };
+
+// Submit a password reset request (goes to admin)
+exports.submitPasswordReset = async (req, res) => {
+  const { phone, name, message } = req.body;
+
+  if (!phone) {
+    return res.status(400).json({ msg: 'Please provide your phone number or email' });
+  }
+
+  try {
+    const PasswordReset = require('../models/PasswordReset');
+
+    // Check if a pending request already exists for this phone/email
+    const existing = await PasswordReset.findOne({ phone: phone.trim(), status: 'pending' });
+    if (existing) {
+      return res.status(400).json({ msg: 'You already have a pending reset request. The admin will contact you soon.' });
+    }
+
+    const resetRequest = new PasswordReset({
+      phone: phone.trim(),
+      name: name ? name.trim() : '',
+      message: message ? message.trim() : ''
+    });
+
+    await resetRequest.save();
+    res.json({ msg: 'Your password reset request has been submitted. The admin will contact you shortly.' });
+  } catch (err) {
+    console.error('Password Reset Request Error:', err);
+    res.status(500).json({ msg: 'Server error while submitting request' });
+  }
+};

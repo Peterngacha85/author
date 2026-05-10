@@ -10,6 +10,7 @@ import DashboardLayout from './components/layout/DashboardLayout';
 import LandingPage from './pages/public/LandingPage';
 import Login       from './pages/auth/Login';
 import Register    from './pages/auth/Register';
+import ForgotPassword from './pages/auth/ForgotPassword';
 
 // User Pages
 import UserHome    from './pages/user/UserHome';
@@ -28,6 +29,7 @@ import AdminUsers    from './pages/admin/AdminUsers';
 import ChapterReorder from './pages/admin/ChapterReorder';
 import BookReorder from './pages/admin/BookReorder';
 import TrafficAnalytics from './pages/admin/TrafficAnalytics';
+import AdminPasswordResets from './pages/admin/AdminPasswordResets';
 
 import TrafficTracker from './components/TrafficTracker';
 
@@ -57,6 +59,7 @@ export default function App() {
           <Route path="/"         element={<LandingPage />} />
           <Route path="/login"    element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
 
           {/* ── User Dashboard ─────────────────── */}
           <Route path="/dashboard" element={
@@ -100,6 +103,7 @@ export default function App() {
             <Route path="books/reorder" element={<BookReorder />} />
             <Route path="books/reorder/:id" element={<ChapterReorder />} />
             <Route path="analytics" element={<TrafficAnalytics />} />
+            <Route path="password-resets" element={<AdminPasswordResets />} />
           </Route>
 
           {/* Fallback */}
