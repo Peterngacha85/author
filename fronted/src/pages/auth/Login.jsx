@@ -83,6 +83,11 @@ export default function Login() {
             </div>
           </div>
 
+          <div style={{ textAlign: 'right', marginTop: '-0.25rem' }}>
+            <Link to="/forgot-password" style={{ fontSize: '0.82rem', color: 'var(--color-accent)', fontWeight: 500, textDecoration: 'none' }}>
+              Forgot Password?
+            </Link>
+          </div>
 
           <button type="submit" className="btn btn-primary btn-full btn-lg glow-pulse" disabled={isSubmitting} style={{ marginTop: '0.5rem' }}>
             {isSubmitting ? <span className="spinner" /> : 'Sign In'}

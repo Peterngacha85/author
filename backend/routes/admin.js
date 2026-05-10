@@ -60,4 +60,9 @@ router.delete('/users/:id', [auth, admin], require('../controllers/adminControll
  */
 router.delete('/books/:id', [auth, admin], deleteBook);
 
+// Password Reset Request Management
+router.get('/password-resets', [auth, admin], require('../controllers/adminController').getPasswordResets);
+router.put('/password-resets/:id/resolve', [auth, admin], require('../controllers/adminController').resolvePasswordReset);
+router.delete('/password-resets/:id', [auth, admin], require('../controllers/adminController').deletePasswordReset);
+
 module.exports = router;

@@ -12,6 +12,7 @@ const NAV = [
   { to: '/admin/upload-ebook',     icon: Upload,          label: 'Upload Ebook' },
   { to: '/admin/payments',    icon: CreditCard,      label: 'Payments' },
   { to: '/admin/users',       icon: Users,           label: 'Users' },
+  { to: '/admin/password-resets', icon: Settings,        label: 'Password Resets' },
   { to: '/admin/analytics',   icon: Activity,        label: 'Traffic Analytics' },
 ];
 

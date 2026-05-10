@@ -47,3 +47,41 @@ exports.deleteBook = async (req, res) => {
     res.status(500).json({ msg: 'Server error' });
   }
 };
+
+// Get all password reset requests (Admin)
+exports.getPasswordResets = async (req, res) => {
+  try {
+    const PasswordReset = require('../models/PasswordReset');
+    const requests = await PasswordReset.find().sort({ createdAt: -1 });
+    res.json(requests);
+  } catch (err) {
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
+// Resolve a password reset request (Admin)
+exports.resolvePasswordReset = async (req, res) => {
+  try {
+    const PasswordReset = require('../models/PasswordReset');
+    const request = await PasswordReset.findById(req.params.id);
+    if (!request) return res.status(404).json({ msg: 'Request not found' });
+
+    request.status = 'resolved';
+    request.adminNote = req.body.adminNote || 'Resolved';
+    await request.save();
+    res.json({ msg: 'Request marked as resolved', request });
+  } catch (err) {
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
+// Delete a password reset request (Admin)
+exports.deletePasswordReset = async (req, res) => {
+  try {
+    const PasswordReset = require('../models/PasswordReset');
+    await PasswordReset.findByIdAndDelete(req.params.id);
+    res.json({ msg: 'Request deleted' });
+  } catch (err) {
+    res.status(500).json({ msg: 'Server error' });
+  }
+};

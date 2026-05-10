@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { register, login, getMe, updateProfile, uploadPhoto, deleteAccount } = require('../controllers/authController');
+const { register, login, getMe, updateProfile, uploadPhoto, deleteAccount, submitPasswordReset } = require('../controllers/authController');
 const auth = require('../middleware/auth');
 const { uploadProfile } = require('../utils/cloudinary');
 
@@ -94,5 +94,27 @@ router.post('/upload-photo', auth, uploadProfile.single('photo'), uploadPhoto);
  *       - bearerAuth: []
  */
 router.delete('/delete', auth, deleteAccount);
+
+/**
+ * @swagger
+ * /api/auth/forgot-password:
+ *   post:
+ *     summary: Submit a password reset request to admin
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               phone: { type: string }
+ *               name: { type: string }
+ *               message: { type: string }
+ *     responses:
+ *       200:
+ *         description: Request submitted successfully
+ */
+router.post('/forgot-password', submitPasswordReset);
 
 module.exports = router;
