@@ -234,9 +234,11 @@ export default function AdminUpload({ type = 'ebook' }) {
           </form>
         </div>
 
-        {/* Add Audio Chapter (for audiobooks & ebooks) */}
+        {/* Add file or chapter section for audiobooks and ebooks */}
         <div ref={chapterSectionRef} className="glass-card" style={{ padding: '1.5rem' }}>
-          <h3 style={{ fontSize: '1rem', marginBottom: '1.25rem' }}>🎵 Add Chapter</h3>
+          <h3 style={{ fontSize: '1rem', marginBottom: '1.25rem' }}>
+            {type === 'ebook' ? '📄 Add File' : '🎵 Add Chapter'}
+          </h3>
           <form onSubmit={handleAddChapter} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div className="form-group">
                 <label className="form-label">Select Book *</label>
@@ -255,7 +257,7 @@ export default function AdminUpload({ type = 'ebook' }) {
                 </select>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.25rem' }}>
                   <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                    {fetchingBooks ? 'Loading books...' : 'Select the book you want to add chapters to'}
+                    {fetchingBooks ? 'Loading books...' : type === 'ebook' ? 'Select the book you want to add files to' : 'Select the book you want to add chapters to'}
                   </span>
                   {bookId && (
                     <button 

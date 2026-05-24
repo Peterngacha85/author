@@ -126,7 +126,27 @@ export default function ChapterReorder() {
     API.get(`/books/${id}`)
       .then(res => {
         setBook(res.data);
-        setChapters(res.data.type === 'ebook' ? (res.data.ebookFiles || []) : (res.data.chapters || []));
+
+        if (res.data.type === 'ebook') {
+          const ebookFiles = res.data.ebookFiles || [];
+          if (ebookFiles.length > 0) {
+            setChapters(ebookFiles);
+          } else if (res.data.fileUrl) {
+            setChapters([{
+              _id: res.data.fileUrl.public_id || 'legacy-file-url',
+              title: res.data.fileUrl.format?.toUpperCase() || 'eBook File',
+              url: res.data.fileUrl.url || res.data.fileUrl,
+              public_id: res.data.fileUrl.public_id,
+              format: res.data.fileUrl.format,
+              isSample: false,
+              order: 0
+            }]);
+          } else {
+            setChapters([]);
+          }
+        } else {
+          setChapters(res.data.chapters || []);
+        }
       })
       .catch(() => toast.error('Failed to load book chapters'))
       .finally(() => setLoading(false));
