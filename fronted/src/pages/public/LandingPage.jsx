@@ -86,19 +86,19 @@ export default function LandingPage() {
             </p>
 
             <div className="landing-hero-buttons">
-              <Link 
-                to={user ? dashboardPath : "/register"} 
+              <Link
+                to={user ? dashboardPath : "/register"}
                 className="landing-cta-primary"
-              >
-                <Headphones size={20} />
-                Listen — KES 200
-              </Link>
-              <Link 
-                to={user ? dashboardPath : "/register"} 
-                className="landing-cta-secondary"
               >
                 <BookOpen size={20} />
                 Read Now — KES 150
+              </Link>
+              <Link
+                to={user ? dashboardPath : "/register"}
+                className="landing-cta-secondary"
+              >
+                <Headphones size={20} />
+                Listen — KES 200
               </Link>
             </div>
 
@@ -174,7 +174,7 @@ export default function LandingPage() {
               <li><CheckCircle size={16} /> Yours to keep forever</li>
             </ul>
 
-            <Link to={user ? dashboardPath : "/register"} className="landing-price-btn landing-price-btn-secondary">
+            <Link to={user ? dashboardPath : "/register"} className="landing-price-btn landing-price-btn-primary">
               Start Reading <ArrowRight size={16} style={{ marginLeft: '0.4rem' }} />
             </Link>
             <div className="landing-payment-badge">
@@ -261,7 +261,7 @@ export default function LandingPage() {
                   <Facebook size={16} />
                 </a>
                 <a 
-                  href="https://www.tiktok.com/@jkabul25" 
+                  href="https://www.tiktok.com/@joetales25" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="landing-footer-social-link tt"
