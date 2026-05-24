@@ -16,7 +16,7 @@ import {
   useSortable
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Save, ArrowLeft, Headphones, Edit2, Check, Plus } from 'lucide-react';
+import { GripVertical, Save, ArrowLeft, Headphones, Book, Edit2, Check, Plus } from 'lucide-react';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
 
@@ -195,7 +195,11 @@ export default function ChapterReorder() {
               overflow: 'hidden',
               textOverflow: 'ellipsis'
             }}>
-              <Headphones size={28} color="var(--color-primary)" />
+              {book?.type === 'ebook' ? (
+                <Book size={28} color="var(--color-primary)" />
+              ) : (
+                <Headphones size={28} color="var(--color-primary)" />
+              )}
               Reorder {book?.type === 'ebook' ? 'Files' : 'Chapters'}
             </h2>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.25rem' }}>{book?.title}</p>
@@ -262,7 +266,7 @@ export default function ChapterReorder() {
 
       {chapters.length === 0 && (
         <div style={{ textAlign: 'center', padding: '3rem', border: '2px dashed var(--border-color)', borderRadius: 'var(--radius-lg)', color: 'var(--text-muted)' }}>
-          No chapters found for this audiobook.
+          {book?.type === 'ebook' ? 'No files found for this eBook.' : 'No chapters found for this audiobook.'}
         </div>
       )}
     </div>
