@@ -346,6 +346,5 @@ export default function AdminUpload({ type = 'ebook' }) {
           )}
         </div>
       </div>
-    </div>
   );
 }
