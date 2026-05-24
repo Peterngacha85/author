@@ -13,6 +13,8 @@ export default function AdminBooks({ filter }) {
   // Edit Modal State
   const [editingBook, setEditingBook] = useState(null);
   const [editForm, setEditForm] = useState({ title: '', author: '', price: '', description: '' });
+  const [coverFile, setCoverFile] = useState(null);
+  const [coverPreview, setCoverPreview] = useState(null);
   const [savingEdit, setSavingEdit] = useState(false);
 
   // Confirm Modal State
@@ -65,10 +67,14 @@ export default function AdminBooks({ filter }) {
       price: book.price || '',
       description: book.description || ''
     });
+    setCoverFile(null);
+    setCoverPreview(book.coverImage?.url || book.coverImage || null);
   };
 
   const closeEditModal = () => {
     setEditingBook(null);
+    setCoverFile(null);
+    setCoverPreview(null);
   };
 
   const handleEditChange = (e) => {
@@ -80,7 +86,18 @@ export default function AdminBooks({ filter }) {
     if (!editForm.title.trim() || !editForm.price) return toast.error('Title and price are required');
     setSavingEdit(true);
     try {
-      const res = await API.put(`/books/${editingBook._id}`, editForm);
+      const formData = new FormData();
+      formData.append('title', editForm.title);
+      formData.append('author', editForm.author);
+      formData.append('price', editForm.price);
+      formData.append('description', editForm.description);
+      if (coverFile) {
+        formData.append('coverImage', coverFile);
+      }
+
+      const res = await API.put(`/books/${editingBook._id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
       setBooks(books.map(b => b._id === editingBook._id ? { ...b, ...res.data.book } : b));
       toast.success('Book updated successfully');
       closeEditModal();
@@ -271,6 +288,31 @@ export default function AdminBooks({ filter }) {
                   onChange={handleEditChange} 
                   style={{ resize: 'vertical' }}
                 />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Cover Image</label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', border: '1.5px dashed var(--border-color)', borderRadius: 'var(--radius-md)', padding: '0.75rem 1rem', background: 'var(--bg-input)' }}>
+                  <img 
+                    src={coverPreview || 'https://via.placeholder.com/80x120'} 
+                    alt="cover preview" 
+                    style={{ width: 80, height: 120, objectFit: 'cover', borderRadius: 8, border: '1px solid rgba(0,0,0,0.08)' }}
+                  />
+                  <span style={{ fontSize: '0.85rem', color: coverFile ? 'var(--text-primary)' : 'var(--text-muted)' }}>
+                    {coverFile ? coverFile.name : 'Click to upload a new cover image'}
+                  </span>
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    hidden 
+                    onChange={e => {
+                      const file = e.target.files[0];
+                      if (!file) return;
+                      setCoverFile(file);
+                      setCoverPreview(URL.createObjectURL(file));
+                    }} 
+                  />
+                </label>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>

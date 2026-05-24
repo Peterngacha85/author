@@ -82,7 +82,7 @@ router.get('/', getBooks);
  *         description: Book details
  */
 router.get('/:id', auth, getBook);
-router.put('/:id', [auth, admin], updateBook);
+router.put('/:id', [auth, admin, uploadBook.single('coverImage')], updateBook);
 
 router.post('/reorder', [auth, admin], reorderChapters);
 router.post('/reorder-books', [auth, admin], reorderBooks);

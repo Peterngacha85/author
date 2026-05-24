@@ -298,6 +298,13 @@ exports.updateBook = async (req, res) => {
     if (price) book.price = price;
     if (author) book.author = author;
 
+    if (req.file) {
+      book.coverImage = {
+        url: req.file.path,
+        public_id: req.file.filename
+      };
+    }
+
     await book.save();
     res.json({ msg: 'Book updated successfully', book });
   } catch (err) {
