@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { 
   createBook, addChapter, getBooks, getBook, reorderChapters, updateBook,
-  addReview, getReviews, deleteReview, reorderBooks
+  addReview, getReviews, deleteReview, reorderBooks,
+  addEbookFile, updateEbookFile, deleteEbookFile
 } = require('../controllers/bookController');
 const { uploadBook, uploadAudio } = require('../utils/cloudinary');
 const auth = require('../middleware/auth');
@@ -47,6 +48,18 @@ router.post('/chapter',
   [auth, admin, uploadAudio.single('audioFile')], 
   addChapter
 );
+
+router.post('/ebook-file', 
+  [auth, admin, uploadBook.single('ebookFile')], 
+  addEbookFile
+);
+
+router.put('/ebook-file/:bookId/:fileId', 
+  [auth, admin, uploadBook.single('ebookFile')], 
+  updateEbookFile
+);
+
+router.delete('/ebook-file/:bookId/:fileId', [auth, admin], deleteEbookFile);
 
 router.get('/', getBooks);
 

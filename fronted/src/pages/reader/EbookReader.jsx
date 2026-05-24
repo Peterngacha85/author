@@ -13,6 +13,7 @@ export default function EbookReader() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [book, setBook] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [viewMode, setViewMode] = useState('story');
@@ -35,20 +36,16 @@ export default function EbookReader() {
   const isAdmin = user?.role === 'admin';
 
   // Helper to safely check if file is EPUB
-  const isEpub = (bookData) => {
-    if (!bookData?.fileUrl) return false;
-    
-    // 1. Check explicit format field from DB (saved during upload)
-    const format = (bookData.fileUrl.format || '').toLowerCase();
+  const isEpub = (file) => {
+    if (!file) return false;
+    const format = (file.format || '').toLowerCase();
     if (format === 'epub') return true;
-    if (format === 'pdf') return false; // Explicitly NOT an epub
-    
-    // 2. Fallback for URLs
-    const rawUrl = bookData.fileUrl.url || (typeof bookData.fileUrl === 'string' ? bookData.fileUrl : '');
+    if (format === 'pdf') return false;
+
+    const rawUrl = file.url || (typeof file === 'string' ? file : '');
     const url = rawUrl.toLowerCase();
     if (!url) return false;
-    
-    // Check extension or specific epub markers
+
     return url.endsWith('.epub') || (url.includes('/ebooks/') && url.includes('epub'));
   };
 
@@ -58,7 +55,10 @@ export default function EbookReader() {
     API.get(`/books/${id}`)
       .then(res => {
         setBook(res.data);
-        if (isEpub(res.data)) {
+        const files = res.data?.ebookFiles?.length > 0 ? res.data.ebookFiles : (res.data?.fileUrl ? [res.data.fileUrl] : []);
+        const firstFile = files[0] || null;
+        setSelectedFile(firstFile);
+        if (firstFile && isEpub(firstFile)) {
           setViewMode('epub');
         } else {
           setViewMode('story');
@@ -67,6 +67,18 @@ export default function EbookReader() {
       .catch((err) => setError(err.response?.data?.msg || 'Could not load book'))
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    if (!book) return;
+    const files = book?.ebookFiles?.length > 0 ? book.ebookFiles : (book?.fileUrl ? [book.fileUrl] : []);
+    const firstFile = files[0] || null;
+    setSelectedFile(firstFile);
+    if (firstFile && isEpub(firstFile)) {
+      setViewMode('epub');
+    } else {
+      setViewMode('story');
+    }
+  }, [book]);
 
   // Re-apply theme & font whenever they change via rendition
   useEffect(() => {
@@ -142,11 +154,36 @@ export default function EbookReader() {
         </div>
       </header>
 
+      {book?.ebookFiles?.length > 1 && (
+        <div style={{ padding: '0.75rem 1rem', display: 'flex', alignItems: 'center', gap: '0.75rem', background: '#f7f7f7' }}>
+          <label style={{ fontWeight: 600, color: '#333' }}>Choose file:</label>
+          <select
+            value={selectedFile?._id || ''}
+            onChange={(e) => {
+              const selected = book.ebookFiles.find(file => file._id === e.target.value);
+              setSelectedFile(selected || null);
+              if (selected && isEpub(selected)) {
+                setViewMode('epub');
+              } else {
+                setViewMode('story');
+              }
+            }}
+            style={{ padding: '0.5rem 0.75rem', borderRadius: 8, border: '1px solid #d0d0d0', minWidth: 220 }}
+          >
+            {book.ebookFiles.map(file => (
+              <option key={file._id} value={file._id}>
+                {file.title || `${file.format?.toUpperCase() || 'File'} ${file.order + 1}`}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       {/* PDF Viewport Area - Scrollable Container */}
       <div style={{ flex: 1, overflowY: 'auto', background: 'var(--bg-base)' }}>
         <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', minHeight: '80vh' }}>
           <div className="pdf-container-secure reader-view-port">
-            {!book?.fileUrl ? (
+            {!selectedFile ? (
               <div style={{ 
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
                 height: '100%', color: 'var(--text-muted)', textAlign: 'center', padding: '2rem'
@@ -190,7 +227,7 @@ export default function EbookReader() {
                 {/* EPUB Viewer */}
                 <div style={{ flex: 1, position: 'relative', background: THEMES[theme].bg }}>
                   <ReactReader
-                    url={book?.fileUrl?.url || book?.fileUrl}
+                    url={selectedFile?.url || selectedFile}
                     location={location}
                     locationChanged={(epubcfi) => setLocation(epubcfi)}
                     swipeable={true}
@@ -227,7 +264,7 @@ export default function EbookReader() {
               </div>
             ) : (
               <div style={{ height: 'calc(100vh - 120px)', width: '100%' }}>
-                <StoryReader url={book?.fileUrl?.url || book?.fileUrl} />
+                <StoryReader url={selectedFile?.url || selectedFile} />
               </div>
             )}
           </div>

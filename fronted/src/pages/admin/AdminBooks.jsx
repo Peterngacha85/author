@@ -187,20 +187,18 @@ export default function AdminBooks({ filter }) {
                         onClick={() => navigate(`/admin/upload-${book.type === 'ebook' ? 'ebook' : 'audiobook'}/${book._id}`)}
                         className="btn btn-sm btn-outline" 
                         style={{ color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}
-                        title="Add Chapter"
+                        title={book.type === 'ebook' ? 'Manage Files' : 'Add Chapter'}
                       >
                         <Plus size={14} />
                       </button>
-                      {book.type === 'audiobook' && (
-                        <button 
-                          onClick={() => navigate(`/admin/books/reorder/${book._id}`)}
-                          className="btn btn-sm btn-outline" 
-                          style={{ color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}
-                          title="Manage Chapters"
-                        >
-                          <List size={14} />
-                        </button>
-                      )}
+                      <button 
+                        onClick={() => navigate(`/admin/books/reorder/${book._id}`)}
+                        className="btn btn-sm btn-outline" 
+                        style={{ color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}
+                        title={book.type === 'ebook' ? 'Reorder Files' : 'Manage Chapters'}
+                      >
+                        <List size={14} />
+                      </button>
                       <button 
                         onClick={() => handleDeleteClick(book._id)}
                         className="btn btn-sm btn-danger" 

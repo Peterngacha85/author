@@ -36,6 +36,15 @@ exports.createBook = async (req, res) => {
         public_id: originalFile.filename,
         format: extension // 'pdf', 'epub', etc.
       };
+
+      newBook.ebookFiles = [{
+        title: originalFile.originalname,
+        url: originalFile.path,
+        public_id: originalFile.filename,
+        format: extension,
+        isSample: false,
+        order: 0
+      }];
     }
 
     await newBook.save();
@@ -66,6 +75,91 @@ exports.addChapter = async (req, res) => {
     book.chapters.push(newChapter);
     await book.save();
     res.json(book);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
+exports.addEbookFile = async (req, res) => {
+  try {
+    const { bookId, title, isSample } = req.body;
+    const book = await Book.findById(bookId);
+
+    if (!book) return res.status(404).json({ msg: 'Book not found' });
+    if (book.type !== 'ebook') return res.status(400).json({ msg: 'This route only supports eBook files' });
+    if (!req.file) return res.status(400).json({ msg: 'Please upload an ebook file' });
+
+    const originalFile = req.file.originalname;
+    const extension = path.extname(originalFile).toLowerCase().replace('.', '');
+
+    const newEbookFile = {
+      title: title || originalFile,
+      url: req.file.path,
+      public_id: req.file.filename,
+      format: extension,
+      isSample: isSample === 'true',
+      order: book.ebookFiles ? book.ebookFiles.length : 0
+    };
+
+    book.ebookFiles = book.ebookFiles || [];
+    book.ebookFiles.push(newEbookFile);
+    await book.save();
+
+    res.status(201).json(book);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
+exports.updateEbookFile = async (req, res) => {
+  try {
+    const { bookId, fileId } = req.params;
+    const { title, isSample } = req.body;
+    const book = await Book.findById(bookId);
+
+    if (!book) return res.status(404).json({ msg: 'Book not found' });
+    if (book.type !== 'ebook') return res.status(400).json({ msg: 'This route only supports eBook files' });
+
+    book.ebookFiles = book.ebookFiles || [];
+    const file = book.ebookFiles.id(fileId);
+    if (!file) return res.status(404).json({ msg: 'eBook file not found' });
+
+    if (title) file.title = title;
+    if (typeof isSample !== 'undefined') file.isSample = isSample === 'true' || isSample === true;
+    if (req.file) {
+      const extension = path.extname(req.file.originalname).toLowerCase().replace('.', '');
+      file.url = req.file.path;
+      file.public_id = req.file.filename;
+      file.format = extension;
+    }
+
+    await book.save();
+    res.json(book);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
+exports.deleteEbookFile = async (req, res) => {
+  try {
+    const { bookId, fileId } = req.params;
+    const book = await Book.findById(bookId);
+
+    if (!book) return res.status(404).json({ msg: 'Book not found' });
+    if (book.type !== 'ebook') return res.status(400).json({ msg: 'This route only supports eBook files' });
+
+    book.ebookFiles = book.ebookFiles || [];
+    const file = book.ebookFiles.id(fileId);
+    if (!file) return res.status(404).json({ msg: 'eBook file not found' });
+
+    file.remove();
+    book.markModified('ebookFiles');
+    await book.save();
+
+    res.json({ msg: 'eBook file removed successfully', ebookFiles: book.ebookFiles });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Server error' });
@@ -124,15 +218,21 @@ exports.getBook = async (req, res) => {
     }
 
     const bookData = book.toObject();
-    
+    bookData.ebookFiles = bookData.ebookFiles || [];
+
     if (!isPurchased) {
       if (book.type === 'ebook') {
+        bookData.ebookFiles = bookData.ebookFiles.filter(file => file.isSample);
         delete bookData.fileUrl;
       }
       if (book.type === 'audiobook') {
         // Completely hide non-sample chapters for unpurchased users
         bookData.chapters = bookData.chapters.filter(ch => ch.isSample);
       }
+    }
+
+    if (bookData.type === 'ebook' && bookData.ebookFiles.length > 0) {
+      delete bookData.fileUrl;
     }
 
     res.json(bookData);
@@ -142,28 +242,43 @@ exports.getBook = async (req, res) => {
   }
 };
 
-// Reorder Chapters (Admin only)
+// Reorder Chapters / eBook files (Admin only)
 exports.reorderChapters = async (req, res) => {
   try {
-    const { bookId, chapters } = req.body;
+    const { bookId, chapters, ebookFiles } = req.body;
     const book = await Book.findById(bookId);
 
     if (!book) return res.status(404).json({ msg: 'Book not found' });
 
-    // Explicitly map chapters to ensure subdocument fields like isSample are preserved and cast correctly
-    book.chapters = chapters.map(ch => ({
-      _id: ch._id,
-      title: ch.title,
-      url: ch.url,
-      public_id: ch.public_id,
-      isSample: Boolean(ch.isSample)
-    }));
+    if (Array.isArray(chapters)) {
+      book.chapters = chapters.map(ch => ({
+        _id: ch._id,
+        title: ch.title,
+        url: ch.url,
+        public_id: ch.public_id,
+        isSample: Boolean(ch.isSample)
+      }));
+      book.markModified('chapters');
+      await book.save();
+      return res.json({ msg: 'Chapters reordered successfully', chapters: book.chapters });
+    }
 
-    // Explicitly mark modified for subdocument array
-    book.markModified('chapters');
-    await book.save();
+    if (Array.isArray(ebookFiles)) {
+      book.ebookFiles = ebookFiles.map(file => ({
+        _id: file._id,
+        title: file.title,
+        url: file.url,
+        public_id: file.public_id,
+        format: file.format,
+        isSample: Boolean(file.isSample),
+        order: file.order || 0
+      }));
+      book.markModified('ebookFiles');
+      await book.save();
+      return res.json({ msg: 'eBook files reordered successfully', ebookFiles: book.ebookFiles });
+    }
 
-    res.json({ msg: 'Chapters reordered successfully', chapters: book.chapters });
+    return res.status(400).json({ msg: 'Please provide chapters or ebookFiles to reorder' });
   } catch (err) {
     console.error('Reorder Error:', err);
     res.status(500).json({ msg: 'Server error', error: err.message });

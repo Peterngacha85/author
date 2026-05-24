@@ -126,7 +126,7 @@ export default function ChapterReorder() {
     API.get(`/books/${id}`)
       .then(res => {
         setBook(res.data);
-        setChapters(res.data.chapters || []);
+        setChapters(res.data.type === 'ebook' ? (res.data.ebookFiles || []) : (res.data.chapters || []));
       })
       .catch(() => toast.error('Failed to load book chapters'))
       .finally(() => setLoading(false));
@@ -147,14 +147,17 @@ export default function ChapterReorder() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await API.post('/books/reorder', {
-        bookId: id,
-        chapters: chapters
-      });
-      toast.success('Chapter order saved successfully');
+      const payload = { bookId: id };
+      if (book?.type === 'ebook') {
+        payload.ebookFiles = chapters;
+      } else {
+        payload.chapters = chapters;
+      }
+      await API.post('/books/reorder', payload);
+      toast.success('Order saved successfully');
       navigate('/admin/books');
     } catch (err) {
-      toast.error('Failed to save chapter order');
+      toast.error('Failed to save chapter/file order');
     } finally {
       setSaving(false);
     }
@@ -193,7 +196,7 @@ export default function ChapterReorder() {
               textOverflow: 'ellipsis'
             }}>
               <Headphones size={28} color="var(--color-primary)" />
-              Reorder Chapters
+              Reorder {book?.type === 'ebook' ? 'Files' : 'Chapters'}
             </h2>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.25rem' }}>{book?.title}</p>
           </div>
@@ -211,7 +214,7 @@ export default function ChapterReorder() {
             }}
           >
             <Plus size={18} />
-            Add Chapter
+            {book?.type === 'ebook' ? 'Add File' : 'Add Chapter'}
           </button>
           <button 
             onClick={handleSave} 
@@ -232,7 +235,7 @@ export default function ChapterReorder() {
       </div>
 
       <div style={{ background: 'rgba(0,166,153,0.05)', padding: '1rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', color: '#007A70', fontSize: '0.9rem' }}>
-        💡 Drag the handles on the left to rearrange chapters.
+        💡 Drag the handles on the left to rearrange {book?.type === 'ebook' ? 'files' : 'chapters'}.
       </div>
 
       <DndContext 

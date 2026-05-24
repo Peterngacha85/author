@@ -14,8 +14,11 @@ export default function AdminUpload({ type = 'ebook' }) {
 
   const [books, setBooks] = useState([]);
   const [fetchingBooks, setFetchingBooks] = useState(false);
+  const [bookDetails, setBookDetails] = useState(null);
+  const [ebookFiles, setEbookFiles] = useState([]);
+  const [selectedReplaceFileId, setSelectedReplaceFileId] = useState(null);
 
-  // Audio chapter state
+  // Audio / eBook file state
   const [bookId, setBookId] = useState('');
   const [chapterTitle, setChapterTitle] = useState('');
   const [chapterFile, setChapterFile] = useState(null);
@@ -25,6 +28,19 @@ export default function AdminUpload({ type = 'ebook' }) {
   const { id } = useParams();
   const chapterSectionRef = useRef(null);
 
+  const fetchBookDetails = async (bookId) => {
+    try {
+      const res = await API.get(`/books/${bookId}`);
+      setBookDetails(res.data);
+      setEbookFiles(res.data.ebookFiles || []);
+    } catch (err) {
+      console.error('Failed to load book details', err);
+      toast.error('Failed to load book details');
+      setBookDetails(null);
+      setEbookFiles([]);
+    }
+  };
+
   useEffect(() => {
     setFetchingBooks(true);
     API.get('/books')
@@ -33,6 +49,7 @@ export default function AdminUpload({ type = 'ebook' }) {
         // If an ID was passed in, pre-select it after books are loaded
         if (id) {
           setBookId(id);
+          fetchBookDetails(id);
           // Scroll to the chapter section
           setTimeout(() => {
             chapterSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -42,6 +59,12 @@ export default function AdminUpload({ type = 'ebook' }) {
       .catch(() => toast.error('Failed to load books for dropdown'))
       .finally(() => setFetchingBooks(false));
   }, [id]);
+
+  useEffect(() => {
+    if (bookId) {
+      fetchBookDetails(bookId);
+    }
+  }, [bookId]);
 
   const handleChange = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
 
@@ -65,6 +88,8 @@ export default function AdminUpload({ type = 'ebook' }) {
       const res = await API.post('/books', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
       toast.success('Book created!');
       setBookId(res.data._id);
+      setBookDetails(res.data);
+      setEbookFiles(res.data.ebookFiles || []);
       setForm({ title: '', description: '', author: '', price: '', type });
       setCoverFile(null); setCoverPreview(null); setBookFile(null); setComingSoon(false);
     } catch (err) {
@@ -76,20 +101,62 @@ export default function AdminUpload({ type = 'ebook' }) {
 
   const handleAddChapter = async (e) => {
     e.preventDefault();
-    if (!bookId || !chapterFile) return toast.error('Book ID and audio file are required');
+    if (!bookId || !chapterFile) return toast.error('Book ID and file are required');
     setLoading(true);
     try {
       const fd = new FormData();
       fd.append('bookId', bookId);
       fd.append('title', chapterTitle);
       fd.append('isSample', isSample);
-      fd.append('audioFile', chapterFile);
-      await API.post('/books/chapter', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
-      toast.success('Chapter added!');
+
+      if (type === 'ebook') {
+        fd.append('ebookFile', chapterFile);
+        await API.post('/books/ebook-file', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+        toast.success('eBook file added!');
+        fetchBookDetails(bookId);
+      } else {
+        fd.append('audioFile', chapterFile);
+        await API.post('/books/chapter', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+        toast.success('Chapter added!');
+      }
+
       setChapterTitle(''); setChapterFile(null); setIsSample(false);
       e.target.reset();
     } catch (err) {
-      toast.error(err.response?.data?.msg || 'Chapter upload failed');
+      toast.error(err.response?.data?.msg || 'Upload failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReplaceEbookFile = async (e) => {
+    const file = e.target.files[0];
+    if (!bookId || !selectedReplaceFileId || !file) return;
+    setLoading(true);
+    try {
+      const fd = new FormData();
+      fd.append('ebookFile', file);
+      await API.put(`/books/ebook-file/${bookId}/${selectedReplaceFileId}`, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+      toast.success('eBook file replaced successfully!');
+      setSelectedReplaceFileId(null);
+      fetchBookDetails(bookId);
+    } catch (err) {
+      toast.error(err.response?.data?.msg || 'Replacement failed');
+    } finally {
+      setLoading(false);
+      e.target.value = null;
+    }
+  };
+
+  const handleFileDelete = async (fileId) => {
+    if (!bookId) return;
+    setLoading(true);
+    try {
+      await API.delete(`/books/ebook-file/${bookId}/${fileId}`);
+      toast.success('eBook file deleted successfully!');
+      fetchBookDetails(bookId);
+    } catch (err) {
+      toast.error(err.response?.data?.msg || 'Delete failed');
     } finally {
       setLoading(false);
     }
@@ -172,7 +239,7 @@ export default function AdminUpload({ type = 'ebook' }) {
           <h3 style={{ fontSize: '1rem', marginBottom: '1.25rem' }}>🎵 Add Chapter</h3>
           <form onSubmit={handleAddChapter} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div className="form-group">
-                <label className="form-label">Select Audiobook *</label>
+                <label className="form-label">Select Book *</label>
                 <select 
                   className="form-input" 
                   value={bookId} 
@@ -196,7 +263,7 @@ export default function AdminUpload({ type = 'ebook' }) {
                       onClick={() => navigate(`/admin/books/reorder/${bookId}`)}
                       style={{ background: 'none', border: 'none', color: 'var(--color-primary)', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer', padding: 0 }}
                     >
-                      🔄 Reorder existing chapters
+                      🔄 Reorder existing {type === 'ebook' ? 'files' : 'chapters'}
                     </button>
                   )}
                 </div>
@@ -206,13 +273,13 @@ export default function AdminUpload({ type = 'ebook' }) {
                 <input className="form-input" value={chapterTitle} onChange={e => setChapterTitle(e.target.value)} placeholder="e.g. Chapter 1 - Introduction" />
               </div>
               <div className="form-group">
-                <label className="form-label">Chapter File</label>
+                <label className="form-label">{type === 'ebook' ? 'eBook File' : 'Chapter File'}</label>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', border: '1.5px dashed var(--border-color)', borderRadius: 'var(--radius-md)', padding: '0.75rem 1rem', background: 'var(--bg-input)' }}>
                   <Upload size={18} color="var(--text-muted)" />
                   <span style={{ fontSize: '0.85rem', color: chapterFile ? 'var(--text-primary)' : 'var(--text-muted)' }}>
-                    {chapterFile ? chapterFile.name : 'Click to upload Chapter File'}
+                    {chapterFile ? chapterFile.name : type === 'ebook' ? 'Click to upload EPUB or PDF' : 'Click to upload audio file'}
                   </span>
-                  <input type="file" accept="audio/*,application/pdf" hidden onChange={e => setChapterFile(e.target.files[0])} />
+                  <input type="file" accept={type === 'ebook' ? '.pdf,.epub' : 'audio/*'} hidden onChange={e => setChapterFile(e.target.files[0])} />
                 </label>
               </div>
               <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
@@ -220,10 +287,64 @@ export default function AdminUpload({ type = 'ebook' }) {
                 Mark as Free Sample
               </label>
               <button type="submit" className="btn btn-primary" disabled={loading}>
-                {loading ? <span className="spinner" /> : <><Plus size={16} /> Add Chapter</>}
+                {loading ? <span className="spinner" /> : <><Plus size={16} /> {type === 'ebook' ? 'Add File' : 'Add Chapter'}</>}
               </button>
             </form>
           </div>
+
+          {type === 'ebook' && bookDetails && (
+            <div className="glass-card" style={{ padding: '1.5rem' }}>
+              <h3 style={{ fontSize: '1rem', marginBottom: '1.25rem' }}>📄 Manage eBook Files</h3>
+              <p style={{ color: 'var(--text-muted)', marginBottom: '1rem', fontSize: '0.9rem' }}>
+                Existing files for this eBook can be replaced or removed without deleting the book record. This keeps purchases intact.
+              </p>
+              {ebookFiles.length === 0 ? (
+                <div style={{ padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', color: 'var(--text-muted)' }}>
+                  {bookDetails.fileUrl ? (
+                    <div>
+                      <strong>Legacy eBook file:</strong> {bookDetails.fileUrl.format?.toUpperCase() || 'ebook'}
+                      <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        <button onClick={() => navigate(`/admin/upload-ebook/${bookDetails._id}`)} className="btn btn-outline btn-sm">
+                          Add new file version
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    'No eBook files have been uploaded yet for this book.'
+                  )}
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gap: '1rem' }}>
+                  {ebookFiles.map(file => (
+                    <div key={file._id} style={{ padding: '1rem', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', display: 'grid', gridTemplateColumns: '1fr auto', gap: '1rem' }}>
+                      <div>
+                        <div style={{ fontWeight: 600 }}>{file.title || `File ${file.order + 1}`}</div>
+                        <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.25rem' }}>
+                          {file.format?.toUpperCase() || 'file'} • {file.isSample ? 'Free sample' : 'Paid'}
+                        </div>
+                        <a href={file.url} target="_blank" rel="noreferrer" style={{ display: 'inline-block', marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--color-primary)' }}>
+                          View file
+                        </a>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', justifyContent: 'flex-start' }}>
+                        <button onClick={() => {
+                          setSelectedReplaceFileId(file._id);
+                          document.getElementById('replace-ebook-file-input')?.click();
+                        }} className="btn btn-sm btn-outline">
+                          Replace
+                        </button>
+                        <button onClick={() => handleFileDelete(file._id)} className="btn btn-sm btn-danger">
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <input id="replace-ebook-file-input" type="file" accept=".pdf,.epub" hidden onChange={handleReplaceEbookFile} />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -36,6 +36,20 @@ const BookSchema = new mongoose.Schema({
     public_id: String,
     format: String
   },
+  ebookFiles: [{
+    title: String,
+    url: String,
+    public_id: String,
+    format: String,
+    isSample: {
+      type: Boolean,
+      default: false
+    },
+    order: {
+      type: Number,
+      default: 0
+    }
+  }],
   // For Audiobooks (Chapters)
   chapters: [{
     title: String,
