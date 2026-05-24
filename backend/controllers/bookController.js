@@ -213,7 +213,7 @@ exports.getBook = async (req, res) => {
         isPurchased = true;
       } else {
         const user = await User.findById(req.user.id);
-        isPurchased = user && user.purchasedItems.some(id => id.toString() === book._id.toString());
+        isPurchased = user && (user.allAccess || user.purchasedItems.some(id => id.toString() === book._id.toString()));
       }
     }
 

@@ -23,6 +23,7 @@ export default function UserHome() {
   const ebooks     = books.filter(b => b.type === 'ebook');
   const audiobooks = books.filter(b => b.type === 'audiobook');
   const purchasedIds = user?.purchasedItems || [];
+  const isUnlocked = user?.allAccess;
 
   const stats = [
     { icon: '📚', label: 'Total eBooks',     value: ebooks.length,     color: 'rgba(255,56,92,0.1)' },
@@ -90,7 +91,7 @@ export default function UserHome() {
         ) : (
           <div className="books-grid">
             {audiobooks.slice(0, 4).map(book => (
-              <BookCard key={book._id} book={book} isPurchased={purchasedIds.includes(book._id)}
+              <BookCard key={book._id} book={book} isPurchased={isUnlocked || purchasedIds.includes(book._id)}
                 onBuy={() => setSelectedBook(book)}
                 onListen={() => navigate(`/reader/listen/${book._id}`)} />
             ))}
@@ -111,7 +112,7 @@ export default function UserHome() {
         ) : (
           <div className="books-grid">
             {ebooks.slice(0, 4).map(book => (
-              <BookCard key={book._id} book={book} isPurchased={purchasedIds.includes(book._id)}
+              <BookCard key={book._id} book={book} isPurchased={isUnlocked || purchasedIds.includes(book._id)}
                 onBuy={() => setSelectedBook(book)}
                 onRead={() => navigate(`/reader/read/${book._id}`)} />
             ))}

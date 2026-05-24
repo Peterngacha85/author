@@ -44,6 +44,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/books', require('./routes/books'));
 app.use('/api/payments', require('./routes/payments'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/coupons', require('./routes/coupons'));
 app.use('/api/analytics', require('./routes/analytics'));
 
 // Swagger Documentation

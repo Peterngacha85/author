@@ -204,7 +204,8 @@ exports.login = async (req, res) => {
           role: user.role,
           profilePhoto: user.profilePhoto,
           disabled: user.disabled,
-          purchasedItems: user.disabled ? [] : user.purchasedItems
+          purchasedItems: user.disabled ? [] : user.purchasedItems,
+          allAccess: user.allAccess || false
         };
 
         res.json({ token, user: userData });
@@ -223,8 +224,8 @@ exports.getMe = async (req, res) => {
     if (!user) return res.status(404).json({ msg: 'User not found' });
 
     const userData = user.toObject();
-    // Ensure 'disabled' field is present
     userData.disabled = !!userData.disabled;
+    userData.allAccess = !!userData.allAccess;
     
     if (userData.disabled) {
       userData.purchasedItems = [];

@@ -41,6 +41,9 @@ export default function UserProfile() {
     }
   };
 
+  const [couponCode, setCouponCode] = useState('');
+  const [redeeming, setRedeeming] = useState(false);
+
   const handleSave = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -69,6 +72,23 @@ export default function UserProfile() {
       toast.error(err.response?.data?.msg || 'Update failed');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRedeemCoupon = async (e) => {
+    e.preventDefault();
+    if (!couponCode.trim()) return toast.error('Enter a coupon code');
+
+    setRedeeming(true);
+    try {
+      const res = await API.post('/coupons/redeem', { code: couponCode.trim() });
+      updateUser(res.data.user);
+      setCouponCode('');
+      toast.success('Coupon redeemed! You now have access to all books.');
+    } catch (err) {
+      toast.error(err.response?.data?.msg || 'Failed to redeem coupon');
+    } finally {
+      setRedeeming(false);
     }
   };
 
@@ -201,6 +221,25 @@ export default function UserProfile() {
         <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
           You have <strong style={{ color: 'var(--color-accent)' }}>{user?.purchasedItems?.length || 0}</strong> book{user?.purchasedItems?.length !== 1 ? 's' : ''} in your library.
         </p>
+      </div>
+
+      <div className="glass-card" style={{ padding: '1.5rem', marginTop: '1.5rem' }}>
+        <h3 style={{ fontSize: '1rem', marginBottom: '0.75rem' }}>🎫 Redeem Coupon</h3>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1rem' }}>
+          Enter a one-time coupon code from the admin to unlock all books without purchasing.
+        </p>
+        <form onSubmit={handleRedeemCoupon} style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <input
+            className="form-input"
+            placeholder="Enter coupon code"
+            value={couponCode}
+            onChange={e => setCouponCode(e.target.value)}
+            style={{ flex: 1, minWidth: 200 }}
+          />
+          <button type="submit" className="btn btn-primary" disabled={redeeming}>
+            {redeeming ? 'Redeeming…' : 'Redeem'}
+          </button>
+        </form>
       </div>
 
       <div className="glass-card" style={{ padding: '1.5rem', marginTop: '1.5rem', border: '1px solid rgba(225, 44, 50, 0.2)', backgroundColor: 'rgba(225, 44, 50, 0.02)' }}>

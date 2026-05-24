@@ -15,6 +15,7 @@ export default function BooksPage({ type }) {
 
   const isAudio = type === 'audiobook';
   const purchasedIds = user?.purchasedItems?.map(String) || [];
+  const isUnlocked = user?.allAccess;
 
   useEffect(() => {
     API.get('/books')
@@ -61,7 +62,7 @@ export default function BooksPage({ type }) {
             <BookCard
               key={book._id}
               book={book}
-              isPurchased={purchasedIds.includes(String(book._id))}
+              isPurchased={isUnlocked || purchasedIds.includes(String(book._id))}
               onBuy={() => setSelectedBook(book)}
               onRead={() => navigate(`/reader/read/${book._id}`)}
               onListen={() => navigate(`/reader/listen/${book._id}`)}

@@ -28,6 +28,10 @@ const UserSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Book'
   }],
+  allAccess: {
+    type: Boolean,
+    default: false
+  },
   profilePhoto: {
     type: String,
     default: null
