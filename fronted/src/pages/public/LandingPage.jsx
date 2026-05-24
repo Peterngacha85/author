@@ -126,7 +126,7 @@ export default function LandingPage() {
                 alt="African touch hero image" 
                 className="landing-book-image"
               />
-              <div className="landing-book-badge">🔥 New Release</div>
+              <div className="landing-book-badge">🔥 Get the message!</div>
             </Link>
           </div>
         </div>
