@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { NavLink, useNavigate, Link } from 'react-router-dom';
-import { BookOpen, Headphones, Home, User, LogOut, Menu, X } from 'lucide-react';
+import { BookOpen, Headphones, Home, User, LogOut, Menu, X, Tag } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const NAV = [
   { to: '/dashboard',         icon: Home,       label: 'Home' },
   { to: '/dashboard/audio',   icon: Headphones, label: 'Audiobooks' },
   { to: '/dashboard/ebooks',  icon: BookOpen,   label: 'eBooks' },
+  { to: '/dashboard/coupon',  icon: Tag,        label: 'Coupon Code' },
   { to: '/dashboard/profile', icon: User,       label: 'My Profile' },
 ];
 
