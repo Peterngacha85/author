@@ -122,7 +122,7 @@ export default function LandingPage() {
           <div className="landing-hero-book">
             <Link to={user ? dashboardPath : "/register"} className="landing-book-wrapper" style={{ display: 'block', textDecoration: 'none' }}>
               <img 
-                src="/images/african%20touch%20image.jpeg" 
+                src="/images/african-touch-image.jpeg" 
                 alt="African touch hero image" 
                 className="landing-book-image"
               />
