@@ -219,6 +219,21 @@
   background: rgba(255, 77, 77, 0.06);
 }
 
+.landing-hero-narrator {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 1.5rem;
+  margin-left: 0.6rem;
+  padding: 0.4rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
 .landing-hero-heading {
   font-family: 'Playfair Display', serif;
   font-size: clamp(2.8rem, 5.5vw, 4.5rem);

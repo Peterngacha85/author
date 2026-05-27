@@ -185,6 +185,7 @@ export default function LandingPage() {
           {/* Text Side */}
           <div className="landing-hero-text">
             <span className="landing-hero-tagline">A Novel by Joseph Kaburu</span>
+            <span className="landing-hero-narrator">Narrated by: Guy Barnes</span>
             
             <h1 className="landing-hero-heading">
               One message.
