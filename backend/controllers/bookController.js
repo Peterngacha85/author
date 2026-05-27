@@ -166,6 +166,32 @@ exports.deleteEbookFile = async (req, res) => {
   }
 };
 
+// Get public sample chapters/files — no auth required
+exports.getPublicSamples = async (req, res) => {
+  try {
+    const books = await Book.find({
+      $or: [
+        { type: 'audiobook', 'chapters.isSample': true },
+        { type: 'ebook', 'ebookFiles.isSample': true }
+      ]
+    }).select('title type coverImage chapters ebookFiles').lean();
+
+    const result = books.map(book => {
+      if (book.type === 'audiobook') {
+        book.chapters = book.chapters.filter(ch => ch.isSample);
+      } else if (book.type === 'ebook') {
+        book.ebookFiles = book.ebookFiles.filter(f => f.isSample);
+      }
+      return book;
+    });
+
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
 // Get all books (Public)
 exports.getBooks = async (req, res) => {
   try {

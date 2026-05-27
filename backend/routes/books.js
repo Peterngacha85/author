@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { 
+const {
   createBook, addChapter, getBooks, getBook, reorderChapters, updateBook,
   addReview, getReviews, deleteReview, reorderBooks,
-  addEbookFile, updateEbookFile, deleteEbookFile
+  addEbookFile, updateEbookFile, deleteEbookFile,
+  getPublicSamples
 } = require('../controllers/bookController');
 const { uploadBook, uploadAudio } = require('../utils/cloudinary');
 const auth = require('../middleware/auth');
@@ -62,6 +63,7 @@ router.put('/ebook-file/:bookId/:fileId',
 router.delete('/ebook-file/:bookId/:fileId', [auth, admin], deleteEbookFile);
 
 router.get('/', getBooks);
+router.get('/samples', getPublicSamples);
 
 /**
  * @swagger

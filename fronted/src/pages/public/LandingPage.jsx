@@ -1,13 +1,129 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, Headphones, ShieldCheck, Lock, ArrowRight, Star, Menu, X, LayoutDashboard, Facebook, Youtube, CheckCircle, Smartphone, Heart, Zap } from 'lucide-react';
+import { BookOpen, Headphones, ShieldCheck, Lock, ArrowRight, Star, Menu, X, LayoutDashboard, Facebook, Youtube, CheckCircle, Smartphone, Heart, Zap, Play, Pause, Volume2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import API from '../../api/axios';
 import './LandingPage.css';
+
+function AudioSamplePlayer({ chapters }) {
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const audioRef = useRef(null);
+
+  const chapter = chapters[currentIdx];
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const onTime = () => setCurrentTime(audio.currentTime);
+    const onMeta = () => setDuration(audio.duration);
+    const onEnded = () => {
+      if (currentIdx < chapters.length - 1) {
+        setCurrentIdx(i => i + 1);
+      } else {
+        setPlaying(false);
+        setCurrentTime(0);
+      }
+    };
+    audio.addEventListener('timeupdate', onTime);
+    audio.addEventListener('loadedmetadata', onMeta);
+    audio.addEventListener('ended', onEnded);
+    return () => {
+      audio.removeEventListener('timeupdate', onTime);
+      audio.removeEventListener('loadedmetadata', onMeta);
+      audio.removeEventListener('ended', onEnded);
+    };
+  }, [currentIdx, chapters.length]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.load();
+    setCurrentTime(0);
+    setDuration(0);
+    if (playing) audio.play().catch(() => setPlaying(false));
+  }, [currentIdx]);
+
+  const togglePlay = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (playing) {
+      audio.pause();
+      setPlaying(false);
+    } else {
+      audio.play().catch(() => setPlaying(false));
+      setPlaying(true);
+    }
+  };
+
+  const seek = (e) => {
+    const audio = audioRef.current;
+    if (!audio || !duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const ratio = (e.clientX - rect.left) / rect.width;
+    audio.currentTime = ratio * duration;
+  };
+
+  const fmt = (s) => {
+    if (!s || isNaN(s)) return '0:00';
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return `${m}:${sec.toString().padStart(2, '0')}`;
+  };
+
+  return (
+    <div className="lp-audio-player">
+      <audio ref={audioRef} src={chapter.url} preload="metadata" />
+
+      {chapters.length > 1 && (
+        <div className="lp-audio-chapters">
+          {chapters.map((ch, i) => (
+            <button
+              key={ch._id}
+              className={`lp-audio-chapter-btn${i === currentIdx ? ' active' : ''}`}
+              onClick={() => { setCurrentIdx(i); setPlaying(false); }}
+            >
+              {ch.title || `Chapter ${i + 1}`}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className="lp-audio-controls">
+        <button className="lp-audio-play-btn" onClick={togglePlay} aria-label={playing ? 'Pause' : 'Play'}>
+          {playing ? <Pause size={20} /> : <Play size={20} />}
+        </button>
+        <div className="lp-audio-info">
+          <span className="lp-audio-chapter-name">{chapter.title || 'Free Sample'}</span>
+          <div className="lp-audio-progress-bar" onClick={seek}>
+            <div
+              className="lp-audio-progress-fill"
+              style={{ width: duration ? `${(currentTime / duration) * 100}%` : '0%' }}
+            />
+          </div>
+          <div className="lp-audio-times">
+            <span>{fmt(currentTime)}</span>
+            <span>{fmt(duration)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function LandingPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [samples, setSamples] = useState([]);
+
+  useEffect(() => {
+    API.get('/books/samples')
+      .then(res => setSamples(res.data))
+      .catch(() => {});
+  }, []);
 
   const dashboardPath = user?.role === 'admin' ? '/admin' : '/dashboard';
 
@@ -144,6 +260,57 @@ export default function LandingPage() {
           <p className="landing-testimonial-author">— Early Reader Review</p>
         </div>
       </section>
+
+      {/* ===== Free Preview Section ===== */}
+      {samples.length > 0 && (
+        <section className="landing-preview-section">
+          <div className="landing-preview-header">
+            <h2 className="landing-preview-title">Try Before You Buy</h2>
+            <p className="landing-preview-subtitle">
+              No account needed — listen to a free chapter or read a sample right here.
+            </p>
+          </div>
+
+          <div className="landing-preview-grid">
+            {samples.map(book => (
+              <div key={book._id} className="landing-preview-card">
+                <div className="landing-preview-card-top">
+                  {book.coverImage?.url && (
+                    <img
+                      src={book.coverImage.url}
+                      alt={book.title}
+                      className="landing-preview-cover"
+                    />
+                  )}
+                  <div className="landing-preview-meta">
+                    <span className="landing-preview-type">
+                      {book.type === 'audiobook' ? <><Headphones size={14} /> Audiobook Sample</> : <><BookOpen size={14} /> eBook Sample</>}
+                    </span>
+                    <h3 className="landing-preview-book-title">{book.title}</h3>
+                    {book.type === 'audiobook' && (
+                      <p className="landing-preview-narrator">Narrated by: Guy Barnes</p>
+                    )}
+                  </div>
+                </div>
+
+                {book.type === 'audiobook' && book.chapters?.length > 0 && (
+                  <AudioSamplePlayer chapters={book.chapters} />
+                )}
+
+                {book.type === 'ebook' && book.ebookFiles?.length > 0 && (
+                  <Link to={user ? dashboardPath : '/register'} className="landing-preview-read-btn">
+                    <BookOpen size={16} /> Read Free Sample
+                  </Link>
+                )}
+
+                <Link to={user ? dashboardPath : '/register'} className="landing-preview-cta">
+                  Get Full Access <ArrowRight size={14} />
+                </Link>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ===== Pricing / Format Selection ===== */}
       <section className="landing-pricing" id="pricing">
