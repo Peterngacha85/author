@@ -189,6 +189,7 @@ export default function LandingPage() {
             </div>
             <div className="landing-price-card-type">Audiobook</div>
             <div className="landing-price-card-name">Feel It</div>
+            <div className="landing-price-narrator">Narrated by: Guy Barnes</div>
             <div className="landing-price-amount">
               200 <span className="landing-price-currency">KES</span>
             </div>
