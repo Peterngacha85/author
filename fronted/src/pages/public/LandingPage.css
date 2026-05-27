@@ -501,11 +501,11 @@
 }
 
 .landing-preview-narrator {
-  font-size: 0.85rem;
+  font-size: 1rem;
   color: #FF4D4D;
   font-style: italic;
   font-weight: 700;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.4px;
   margin: 0;
 }
 
@@ -788,11 +788,11 @@
 }
 
 .landing-price-narrator {
-  font-size: 0.9rem;
+  font-size: 1.05rem;
   color: #FF4D4D;
   font-style: italic;
   font-weight: 700;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.4px;
   margin-bottom: 0.75rem;
 }
 
