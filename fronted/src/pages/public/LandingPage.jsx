@@ -363,7 +363,6 @@ export default function LandingPage() {
             <div className="landing-price-note">One-time payment • Listen anywhere</div>
             
             <ul className="landing-price-features">
-              <li><CheckCircle size={16} /> Professional narration</li>
               <li><CheckCircle size={16} /> Listen on any device</li>
               <li><CheckCircle size={16} /> Free preview available</li>
               <li><CheckCircle size={16} /> Feel every emotion</li>
