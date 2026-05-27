@@ -267,6 +267,7 @@ export default function LandingPage() {
         <section className="landing-preview-section">
           <div className="landing-preview-header">
             <h2 className="landing-preview-title">Try Before You Buy</h2>
+            <p className="landing-preview-subtitle">The Sample</p>
           </div>
 
           <div className="landing-preview-grid">
