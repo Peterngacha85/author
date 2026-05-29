@@ -5,18 +5,22 @@ require('dotenv').config({ override: true });
 
 const app = express();
 
-// CORS — explicit manual configuration to prevent proxy stripping
+// CORS — allowlist of trusted origins
+const ALLOWED_ORIGINS = [
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+  'http://localhost:3000',
+].filter(Boolean);
+
 app.use((req, res, next) => {
     const origin = req.headers.origin;
-    if (origin) {
-        // Reflect whatever origin is requesting, allowing full credentials
+    if (origin && ALLOWED_ORIGINS.includes(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
     }
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-auth-token, Accept, Origin, X-Requested-With');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
-    
-    // Immediately respond to preflight requests
+
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
     }
