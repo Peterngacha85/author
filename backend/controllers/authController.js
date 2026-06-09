@@ -85,7 +85,7 @@ exports.register = async (req, res) => {
       if (err) throw err;
       res.json({
         token,
-        user: { id: user.id, name: user.name, role: user.role, profilePhoto: user.profilePhoto }
+        user: { id: user.id, name: user.name, role: user.role, profilePhoto: user.profilePhoto, phone: user.phone || null, email: user.email || null }
       });
     });
   } catch (err) {
@@ -205,7 +205,9 @@ exports.login = async (req, res) => {
           profilePhoto: user.profilePhoto,
           disabled: user.disabled,
           purchasedItems: user.disabled ? [] : user.purchasedItems,
-          allAccess: user.allAccess || false
+          allAccess: user.allAccess || false,
+          phone: user.phone || null,
+          email: user.email || null
         };
 
         res.json({ token, user: userData });
@@ -241,14 +243,22 @@ exports.getMe = async (req, res) => {
 // Update profile
 exports.updateProfile = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, phone, password } = req.body;
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ msg: 'User not found' });
-    if (name)  user.name  = name;
+    if (name) user.name = name;
+    if (phone) {
+      const normalizedPhone = normalizePhone(phone);
+      const existsByPhone = await User.findOne({ phone: normalizedPhone, _id: { $ne: user._id } });
+      if (existsByPhone) return res.status(400).json({ msg: 'An account already exists with this phone number' });
+      user.phone = normalizedPhone;
+    }
     if (email) {
       if (!validateEmail(email)) {
         return res.status(400).json({ msg: `Security Restriction: Only ${ALLOWED_DOMAINS.join(', ')} email addresses are allowed` });
       }
+      const existsByEmail = await User.findOne({ email, _id: { $ne: user._id } });
+      if (existsByEmail) return res.status(400).json({ msg: 'An account already exists with this email address' });
       user.email = email;
     }
     if (password) user.password = password; // pre-save hook hashes it
