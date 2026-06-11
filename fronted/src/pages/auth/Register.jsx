@@ -12,6 +12,7 @@ export default function Register() {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [photoFile, setPhotoFile] = useState(null);
   const [form, setForm] = useState({ name: '', phone: '', email: '', password: '' });
+  const [contactError, setContactError] = useState(false);
 
   useEffect(() => {
     if (!authLoading && user) {
@@ -19,7 +20,11 @@ export default function Register() {
     }
   }, [user, authLoading, navigate]);
 
-  const handleChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = e => {
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
+    if ((name === 'phone' || name === 'email') && value.trim()) setContactError(false);
+  };
 
   const handlePhoto = (e) => {
     const file = e.target.files[0];
@@ -37,9 +42,11 @@ export default function Register() {
       return;
     }
     if (!form.phone && !form.email) {
+      setContactError(true);
       toast.error('Please enter a phone number or email address');
       return;
     }
+    setContactError(false);
     const allowedDomains = ['gmail.com', 'yahoo.com', 'hotmail.com'];
     if (form.email) {
       const domain = form.email.toLowerCase().split('@')[1];
@@ -117,16 +124,16 @@ export default function Register() {
 
           {/* ─── Credential Section ─── */}
           <div style={{
-            border: '1px solid var(--border-color)',
+            border: `1px solid ${contactError ? 'var(--danger)' : 'var(--border-color)'}`,
             borderRadius: 'var(--radius-md)',
             overflow: 'hidden',
             marginTop: '0.25rem'
           }}>
             {/* Header hint */}
             <div style={{
-              background: 'var(--bg-base)',
+              background: contactError ? 'rgba(var(--danger-rgb, 220,38,38), 0.06)' : 'var(--bg-base)',
               padding: '0.6rem 1rem',
-              borderBottom: '1px solid var(--border-color)',
+              borderBottom: `1px solid ${contactError ? 'var(--danger)' : 'var(--border-color)'}`,
               display: 'flex',
               alignItems: 'center',
               gap: '0.5rem'
@@ -138,6 +145,7 @@ export default function Register() {
               <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>/</span>
               <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--color-primary)' }}>Email</span>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginLeft: '0.25rem' }}>— fill in at least one</span>
+              <span style={{ color: 'var(--danger)', fontWeight: 700, marginLeft: '0.1rem' }}>*</span>
             </div>
 
             <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
