@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Copy, Plus } from 'lucide-react';
+import { Copy, Plus, Trash2 } from 'lucide-react';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
 
@@ -43,6 +43,17 @@ export default function AdminCoupons() {
   const copyCode = async (code) => {
     await navigator.clipboard.writeText(code);
     toast.success('Coupon copied');
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this coupon? This cannot be undone.')) return;
+    try {
+      await API.delete(`/coupons/${id}`);
+      setCoupons(prev => prev.filter(c => c._id !== id));
+      toast.success('Coupon deleted');
+    } catch (err) {
+      toast.error(err.response?.data?.msg || 'Failed to delete coupon');
+    }
   };
 
   return (
@@ -107,9 +118,14 @@ export default function AdminCoupons() {
                   <td>{coupon.usedBy ? coupon.usedBy.name || coupon.usedBy.email : '—'}</td>
                   <td>{coupon.usedAt ? new Date(coupon.usedAt).toLocaleString() : '—'}</td>
                   <td>
-                    <button onClick={() => copyCode(coupon.code)} className="btn btn-sm btn-outline">
-                      <Copy size={14} /> Copy
-                    </button>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <button onClick={() => copyCode(coupon.code)} className="btn btn-sm btn-outline">
+                        <Copy size={14} /> Copy
+                      </button>
+                      <button onClick={() => handleDelete(coupon._id)} className="btn btn-sm btn-danger">
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

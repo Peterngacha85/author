@@ -51,6 +51,18 @@ exports.generateCoupons = async (req, res) => {
   }
 };
 
+exports.deleteCoupon = async (req, res) => {
+  try {
+    const coupon = await Coupon.findById(req.params.id);
+    if (!coupon) return res.status(404).json({ msg: 'Coupon not found' });
+    await coupon.deleteOne();
+    res.json({ msg: 'Coupon deleted' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
 exports.redeemCoupon = async (req, res) => {
   try {
     const code = req.body.code?.trim().toUpperCase();

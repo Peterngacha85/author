@@ -27,6 +27,17 @@ exports.logVisit = async (req, res) => {
   }
 };
 
+// Reset all analytics data
+exports.resetAnalytics = async (req, res) => {
+  try {
+    await Traffic.deleteMany({});
+    res.json({ msg: 'Analytics reset successfully' });
+  } catch (err) {
+    console.error('Reset Analytics Error:', err);
+    res.status(500).json({ msg: 'Server error resetting analytics' });
+  }
+};
+
 // Get analytics data for the dashboard
 exports.getAnalytics = async (req, res) => {
   try {

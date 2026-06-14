@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../../api/axios';
+import toast from 'react-hot-toast';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   LineChart, Line, PieChart, Pie, Cell, AreaChart, Area 
 } from 'recharts';
-import { 
-  Users, MousePointer2, TrendingUp, Globe, Smartphone, 
-  Monitor, ChevronUp, ChevronDown, Activity, ArrowUpRight
+import {
+  Users, MousePointer2, TrendingUp, Globe, Smartphone,
+  Monitor, ChevronUp, ChevronDown, Activity, ArrowUpRight, RotateCcw
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -14,10 +15,25 @@ const TrafficAnalytics = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
+  const [resetting, setResetting] = useState(false);
 
   useEffect(() => {
     fetchAnalytics();
   }, []);
+
+  const handleReset = async () => {
+    if (!window.confirm('Reset all traffic analytics to zero? This permanently deletes all visit data and cannot be undone.')) return;
+    setResetting(true);
+    try {
+      await axios.delete('/analytics/reset');
+      toast.success('Analytics reset to zero');
+      fetchAnalytics();
+    } catch (err) {
+      toast.error('Failed to reset analytics');
+    } finally {
+      setResetting(false);
+    }
+  };
 
   const fetchAnalytics = async () => {
     try {
@@ -46,9 +62,20 @@ const TrafficAnalytics = () => {
 
   return (
     <div className="analytics-container" style={{ paddingBottom: '2rem' }}>
-      <div className="analytics-header" style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>Traffic Analytics</h1>
-        <p style={{ color: 'var(--text-muted)' }}>Real-time overview of your website traffic and conversion performance.</p>
+      <div className="analytics-header" style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
+        <div>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>Traffic Analytics</h1>
+          <p style={{ color: 'var(--text-muted)' }}>Real-time overview of your website traffic and conversion performance.</p>
+        </div>
+        <button
+          onClick={handleReset}
+          disabled={resetting}
+          className="btn btn-danger"
+          style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}
+        >
+          <RotateCcw size={15} />
+          {resetting ? 'Resetting…' : 'Reset to Zero'}
+        </button>
       </div>
 
       {/* Stats Grid */}

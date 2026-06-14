@@ -213,7 +213,7 @@ export default function LandingPage() {
             </h1>
 
             <p className="landing-hero-subtitle">
-              "A Single Text That Steals Forever Promised"
+              "A single Text that Stole Forever Promised"
             </p>
 
             {heroBook?.description && (

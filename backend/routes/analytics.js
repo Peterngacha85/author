@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { logVisit, getAnalytics } = require('../controllers/analyticsController');
+const { logVisit, getAnalytics, resetAnalytics } = require('../controllers/analyticsController');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 
@@ -13,5 +13,6 @@ router.post('/log', logVisit);
 // @desc    Get analytics statistics
 // @access  Private (Admin only)
 router.get('/stats', auth, admin, getAnalytics);
+router.delete('/reset', auth, admin, resetAnalytics);
 
 module.exports = router;
