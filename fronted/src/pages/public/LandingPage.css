@@ -1145,9 +1145,14 @@
   }
 
   .landing-hero-inner {
-    flex-direction: column;
+    flex-direction: column-reverse;
     gap: 2rem;
     text-align: center;
+  }
+
+  .landing-hero-book {
+    width: 100%;
+    align-items: center;
   }
 
   .landing-hero-text {
