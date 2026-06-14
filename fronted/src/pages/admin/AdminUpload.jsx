@@ -237,7 +237,7 @@ export default function AdminUpload({ type = 'ebook' }) {
         {/* Add file or chapter section for audiobooks and ebooks */}
         <div ref={chapterSectionRef} className="glass-card" style={{ padding: '1.5rem' }}>
           <h3 style={{ fontSize: '1rem', marginBottom: '1.25rem' }}>
-            {type === 'ebook' ? '📄 Add File' : '🎵 Add Chapter'}
+            {type === 'ebook' ? '📄 Upload & Save File' : '🎵 Add Chapter'}
           </h3>
           <form onSubmit={handleAddChapter} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div className="form-group">
@@ -289,7 +289,7 @@ export default function AdminUpload({ type = 'ebook' }) {
                 Mark as Free Sample
               </label>
               <button type="submit" className="btn btn-primary" disabled={loading}>
-                {loading ? <span className="spinner" /> : <><Plus size={16} /> {type === 'ebook' ? 'Add File' : 'Add Chapter'}</>}
+                {loading ? <span className="spinner" /> : <><Plus size={16} /> {type === 'ebook' ? 'Save & Upload File' : 'Add Chapter'}</>}
               </button>
             </form>
           </div>
