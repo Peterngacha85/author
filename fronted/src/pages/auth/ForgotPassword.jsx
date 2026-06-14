@@ -28,7 +28,7 @@ export default function ForgotPassword() {
     }
     setIsSubmitting(true);
     try {
-      const res = await API.post('/api/auth/forgot-password', form);
+      const res = await API.post('/auth/forgot-password', form);
       setResetToken(res.data.resetToken);
       setUserName(res.data.userName);
     } catch (err) {
@@ -50,7 +50,7 @@ export default function ForgotPassword() {
     }
     setIsSaving(true);
     try {
-      const res = await API.post('/api/auth/reset-password', { token: resetToken, newPassword });
+      const res = await API.post('/auth/reset-password', { token: resetToken, newPassword });
       toast.success(res.data.msg);
       navigate('/login');
     } catch (err) {
