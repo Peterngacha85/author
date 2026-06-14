@@ -15,7 +15,7 @@ const PasswordResetSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'resolved'],
+    enum: ['pending', 'resolved', 'self-resolved'],
     default: 'pending'
   },
   adminNote: {

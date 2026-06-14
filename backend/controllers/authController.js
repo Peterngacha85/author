@@ -305,7 +305,7 @@ exports.deleteAccount = async (req, res) => {
   }
 };
 
-// Submit a password reset request (goes to admin)
+// Submit a password reset request — finds user, issues reset token, logs request for admin
 exports.submitPasswordReset = async (req, res) => {
   const { phone, name, message } = req.body;
 
@@ -315,23 +315,69 @@ exports.submitPasswordReset = async (req, res) => {
 
   try {
     const PasswordReset = require('../models/PasswordReset');
+    const input = phone.trim().toLowerCase();
 
-    // Check if a pending request already exists for this phone/email
-    const existing = await PasswordReset.findOne({ phone: phone.trim(), status: 'pending' });
-    if (existing) {
-      return res.status(400).json({ msg: 'You already have a pending reset request. The admin will contact you soon.' });
-    }
-
-    const resetRequest = new PasswordReset({
-      phone: phone.trim(),
-      name: name ? name.trim() : '',
-      message: message ? message.trim() : ''
+    // Find user by phone or email
+    const user = await User.findOne({
+      $or: [
+        { phone: phone.trim() },
+        { email: input }
+      ]
     });
 
+    if (!user) {
+      return res.status(404).json({ msg: 'No account found with that phone number or email.' });
+    }
+
+    // Generate a short-lived reset token (15 minutes)
+    const resetToken = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '15m' }
+    );
+
+    // Log the request for admin visibility (self-resolved — user handles it themselves)
+    await PasswordReset.findOneAndDelete({ phone: phone.trim(), status: 'self-resolved' }); // clear old self-resolved for same phone
+    const resetRequest = new PasswordReset({
+      phone: phone.trim(),
+      name: user.name,
+      message: message ? message.trim() : '',
+      status: 'self-resolved',
+      adminNote: 'User reset their own password via the self-service flow.'
+    });
     await resetRequest.save();
-    res.json({ msg: 'Your password reset request has been submitted. The admin will contact you shortly.' });
+
+    res.json({ resetToken, userName: user.name });
   } catch (err) {
     console.error('Password Reset Request Error:', err);
     res.status(500).json({ msg: 'Server error while submitting request' });
+  }
+};
+
+// Complete the self-service password reset using the token issued above
+exports.resetPasswordWithToken = async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  if (!token || !newPassword) {
+    return res.status(400).json({ msg: 'Token and new password are required.' });
+  }
+  if (newPassword.length < 6) {
+    return res.status(400).json({ msg: 'Password must be at least 6 characters.' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+    if (!user) return res.status(404).json({ msg: 'User not found.' });
+
+    user.password = newPassword;
+    await user.save(); // pre-save hook hashes it
+
+    res.json({ msg: 'Password updated successfully. You can now log in.' });
+  } catch (err) {
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ msg: 'Reset link expired. Please submit a new request.' });
+    }
+    res.status(500).json({ msg: 'Server error while resetting password.' });
   }
 };

@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
-import { Clock, CheckCircle, Trash2, MessageSquare } from 'lucide-react';
+import { Clock, CheckCircle, Trash2, MessageSquare, UserCheck } from 'lucide-react';
 
 export default function AdminPasswordResets() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all'); // 'all', 'pending', 'resolved'
+  const [filter, setFilter] = useState('all'); // 'all', 'pending', 'resolved', 'self-resolved'
 
   useEffect(() => {
     fetchRequests();
@@ -45,6 +45,7 @@ export default function AdminPasswordResets() {
 
   const filtered = filter === 'all' ? requests : requests.filter(r => r.status === filter);
   const pendingCount = requests.filter(r => r.status === 'pending').length;
+  const selfResolvedCount = requests.filter(r => r.status === 'self-resolved').length;
 
   return (
     <div className="fade-in">
@@ -56,14 +57,14 @@ export default function AdminPasswordResets() {
       </div>
 
       {/* Filter Tabs */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
-        {['all', 'pending', 'resolved'].map(f => (
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+        {['all', 'pending', 'resolved', 'self-resolved'].map(f => (
           <button
             key={f}
             onClick={() => setFilter(f)}
             className={`btn btn-sm ${filter === f ? 'btn-primary' : 'btn-outline'}`}
           >
-            {f.charAt(0).toUpperCase() + f.slice(1)}
+            {f === 'self-resolved' ? 'Self-Resolved' : f.charAt(0).toUpperCase() + f.slice(1)}
             {f === 'pending' && pendingCount > 0 && (
               <span style={{
                 background: 'var(--danger)', color: 'white',
@@ -72,6 +73,16 @@ export default function AdminPasswordResets() {
                 fontSize: '0.7rem', fontWeight: 700, marginLeft: '0.4rem'
               }}>
                 {pendingCount}
+              </span>
+            )}
+            {f === 'self-resolved' && selfResolvedCount > 0 && (
+              <span style={{
+                background: 'var(--color-primary)', color: 'white',
+                borderRadius: '50%', width: 20, height: 20,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '0.7rem', fontWeight: 700, marginLeft: '0.4rem'
+              }}>
+                {selfResolvedCount}
               </span>
             )}
           </button>
@@ -95,7 +106,11 @@ export default function AdminPasswordResets() {
               className="glass-card"
               style={{
                 padding: '1.25rem 1.5rem',
-                borderLeft: req.status === 'pending' ? '4px solid var(--warning)' : '4px solid var(--success)',
+                borderLeft: req.status === 'pending'
+                  ? '4px solid var(--warning)'
+                  : req.status === 'self-resolved'
+                  ? '4px solid var(--color-primary)'
+                  : '4px solid var(--success)',
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
@@ -104,8 +119,8 @@ export default function AdminPasswordResets() {
                     <span style={{ fontWeight: 700, fontSize: '1rem' }}>
                       {req.name || 'Unknown User'}
                     </span>
-                    <span className={`badge ${req.status === 'pending' ? 'badge-yellow' : 'badge-green'}`}>
-                      {req.status === 'pending' ? '⏳ Pending' : '✅ Resolved'}
+                    <span className={`badge ${req.status === 'pending' ? 'badge-yellow' : req.status === 'self-resolved' ? 'badge-pink' : 'badge-green'}`}>
+                      {req.status === 'pending' ? '⏳ Pending' : req.status === 'self-resolved' ? '🔐 Self-Resolved' : '✅ Resolved'}
                     </span>
                   </div>
 
@@ -126,7 +141,7 @@ export default function AdminPasswordResets() {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
+                <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0, alignItems: 'center' }}>
                   {req.status === 'pending' && (
                     <button
                       onClick={() => resolveRequest(req._id)}
@@ -134,6 +149,11 @@ export default function AdminPasswordResets() {
                     >
                       <CheckCircle size={14} /> Resolve
                     </button>
+                  )}
+                  {req.status === 'self-resolved' && (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem', color: 'var(--color-primary)', fontWeight: 600 }}>
+                      <UserCheck size={15} /> User reset their own password
+                    </span>
                   )}
                   <button
                     onClick={() => deleteRequest(req._id)}

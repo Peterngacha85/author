@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { register, login, getMe, updateProfile, uploadPhoto, deleteAccount, submitPasswordReset } = require('../controllers/authController');
+const { register, login, getMe, updateProfile, uploadPhoto, deleteAccount, submitPasswordReset, resetPasswordWithToken } = require('../controllers/authController');
 const auth = require('../middleware/auth');
 const { uploadProfile } = require('../utils/cloudinary');
 
@@ -116,5 +116,6 @@ router.delete('/delete', auth, deleteAccount);
  *         description: Request submitted successfully
  */
 router.post('/forgot-password', submitPasswordReset);
+router.post('/reset-password', resetPasswordWithToken);
 
 module.exports = router;
