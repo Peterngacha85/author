@@ -14,7 +14,7 @@ export default function AdminPasswordResets() {
 
   const fetchRequests = async () => {
     try {
-      const res = await API.get('/api/admin/password-resets');
+      const res = await API.get('/admin/password-resets');
       setRequests(res.data);
     } catch {
       toast.error('Failed to load password reset requests');
@@ -25,7 +25,7 @@ export default function AdminPasswordResets() {
 
   const resolveRequest = async (id) => {
     try {
-      await API.put(`/api/admin/password-resets/${id}/resolve`, { adminNote: 'Password reset handled' });
+      await API.put(`/admin/password-resets/${id}/resolve`, { adminNote: 'Password reset handled' });
       setRequests(prev => prev.map(r => r._id === id ? { ...r, status: 'resolved' } : r));
       toast.success('Request marked as resolved');
     } catch {
@@ -35,7 +35,7 @@ export default function AdminPasswordResets() {
 
   const deleteRequest = async (id) => {
     try {
-      await API.delete(`/api/admin/password-resets/${id}`);
+      await API.delete(`/admin/password-resets/${id}`);
       setRequests(prev => prev.filter(r => r._id !== id));
       toast.success('Request deleted');
     } catch {
