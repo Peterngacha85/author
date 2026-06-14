@@ -234,6 +234,63 @@
   background: rgba(255, 255, 255, 0.05);
 }
 
+/* ===== Hero Rating, Reviews & Synopsis ===== */
+.landing-hero-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 1rem;
+}
+
+.landing-hero-rating-label {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.65);
+  margin-left: 0.4rem;
+}
+
+.landing-hero-reviews {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 1.25rem;
+}
+
+.landing-hero-review-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+}
+
+.landing-hero-review-stars {
+  display: flex;
+  gap: 0.15rem;
+  margin-bottom: 0.4rem;
+}
+
+.landing-hero-review-text {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0 0 0.3rem;
+  line-height: 1.5;
+}
+
+.landing-hero-review-author {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 600;
+}
+
+.landing-hero-synopsis {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.65;
+  margin-bottom: 1.5rem;
+  border-left: 3px solid #8B0000;
+  padding-left: 1rem;
+}
+
 .landing-hero-heading {
   font-family: 'Playfair Display', serif;
   font-size: clamp(2.8rem, 5.5vw, 4.5rem);

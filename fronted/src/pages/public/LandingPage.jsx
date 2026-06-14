@@ -118,10 +118,25 @@ export default function LandingPage() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [samples, setSamples] = useState([]);
+  const [heroBook, setHeroBook] = useState(null);
+  const [heroReviews, setHeroReviews] = useState([]);
 
   useEffect(() => {
     API.get('/books/samples')
       .then(res => setSamples(res.data))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    API.get('/books')
+      .then(res => {
+        if (!res.data.length) return;
+        const book = res.data[0];
+        setHeroBook(book);
+        API.get(`/books/${book._id}/reviews`)
+          .then(r => setHeroReviews(r.data.slice(0, 2)))
+          .catch(() => {});
+      })
       .catch(() => {});
   }, []);
 
@@ -187,6 +202,47 @@ export default function LandingPage() {
             <span className="landing-hero-tagline">A Novel by Joseph Kaburu</span>
             <span className="landing-hero-narrator">Narrated by: Guy Barnes</span>
             
+            {/* Star Rating, Reviews & Synopsis */}
+            {heroBook && (
+              <>
+                <div className="landing-hero-rating-row">
+                  {[1,2,3,4,5].map(i => (
+                    <Star
+                      key={i}
+                      size={20}
+                      fill={i <= Math.round(heroBook.avgRating || 0) ? '#FFB800' : 'none'}
+                      color={i <= Math.round(heroBook.avgRating || 0) ? '#FFB800' : '#555'}
+                    />
+                  ))}
+                  <span className="landing-hero-rating-label">
+                    {heroBook.avgRating ? heroBook.avgRating.toFixed(1) : '—'}
+                    &nbsp;·&nbsp;
+                    {heroBook.reviewCount || 0} {heroBook.reviewCount === 1 ? 'review' : 'reviews'}
+                  </span>
+                </div>
+
+                {heroReviews.length > 0 && (
+                  <div className="landing-hero-reviews">
+                    {heroReviews.map(r => (
+                      <div key={r._id} className="landing-hero-review-card">
+                        <div className="landing-hero-review-stars">
+                          {[1,2,3,4,5].map(i => (
+                            <Star key={i} size={12} fill={i <= r.rating ? '#FFB800' : 'none'} color={i <= r.rating ? '#FFB800' : '#555'} />
+                          ))}
+                        </div>
+                        <p className="landing-hero-review-text">"{r.comment}"</p>
+                        <span className="landing-hero-review-author">— {r.userName}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {heroBook.description && (
+                  <p className="landing-hero-synopsis">{heroBook.description}</p>
+                )}
+              </>
+            )}
+
             <h1 className="landing-hero-heading">
               One message.
               <span className="landing-hero-heading-accent">
