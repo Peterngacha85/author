@@ -16,11 +16,11 @@ import {
   useSortable
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Save, ArrowLeft, Headphones, Book, Edit2, Check, Plus } from 'lucide-react';
+import { GripVertical, Save, ArrowLeft, Headphones, Book, Edit2, Check, Plus, Trash2 } from 'lucide-react';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
 
-function SortableItem({ id, chapter, onUpdate }) {
+function SortableItem({ id, chapter, onUpdate, onDelete }) {
   const [isEditing, setIsEditing] = useState(false);
   const [tempTitle, setTempTitle] = useState(chapter.title);
 
@@ -95,12 +95,20 @@ function SortableItem({ id, chapter, onUpdate }) {
         >
           {chapter.isSample ? 'Free Sample' : 'Mark as Free Sample'}
         </button>
-        <button 
+        <button
           onClick={handleToggleEdit}
           className="btn btn-sm btn-outline"
           style={{ padding: '0.4rem', border: 'none', background: 'transparent' }}
         >
           {isEditing ? <Check size={18} color="var(--success)" /> : <Edit2 size={16} color="var(--text-muted)" />}
+        </button>
+        <button
+          onClick={() => onDelete(id)}
+          className="btn btn-sm"
+          style={{ padding: '0.4rem', border: 'none', background: 'transparent', color: 'var(--danger)' }}
+          title="Delete"
+        >
+          <Trash2 size={16} />
         </button>
       </div>
     </div>
@@ -163,6 +171,21 @@ export default function ChapterReorder() {
       });
     }
   }
+
+  const handleDelete = async (itemId) => {
+    if (!window.confirm('Delete this file/chapter? This cannot be undone.')) return;
+    try {
+      if (book?.type === 'ebook') {
+        await API.delete(`/books/ebook-file/${id}/${itemId}`);
+      } else {
+        await API.delete(`/books/chapter/${id}/${itemId}`);
+      }
+      setChapters(prev => prev.filter(ch => ch._id !== itemId));
+      toast.success('Deleted successfully');
+    } catch {
+      toast.error('Failed to delete');
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -272,13 +295,14 @@ export default function ChapterReorder() {
           strategy={verticalListSortingStrategy}
         >
           {chapters.map((chapter) => (
-            <SortableItem 
-              key={chapter._id} 
-              id={chapter._id} 
-              chapter={chapter} 
+            <SortableItem
+              key={chapter._id}
+              id={chapter._id}
+              chapter={chapter}
               onUpdate={(id, updates) => {
                 setChapters(prev => prev.map(ch => ch._id === id ? { ...ch, ...updates } : ch));
               }}
+              onDelete={handleDelete}
             />
           ))}
         </SortableContext>

@@ -143,6 +143,28 @@ exports.updateEbookFile = async (req, res) => {
   }
 };
 
+exports.deleteChapter = async (req, res) => {
+  try {
+    const { bookId, chapterId } = req.params;
+    const book = await Book.findById(bookId);
+
+    if (!book) return res.status(404).json({ msg: 'Book not found' });
+    if (book.type !== 'audiobook') return res.status(400).json({ msg: 'This route only supports audiobook chapters' });
+
+    const chapter = book.chapters.id(chapterId);
+    if (!chapter) return res.status(404).json({ msg: 'Chapter not found' });
+
+    chapter.remove();
+    book.markModified('chapters');
+    await book.save();
+
+    res.json({ msg: 'Chapter removed successfully', chapters: book.chapters });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
 exports.deleteEbookFile = async (req, res) => {
   try {
     const { bookId, fileId } = req.params;
