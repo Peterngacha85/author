@@ -10,6 +10,8 @@ const ALLOWED_ORIGINS = [
   process.env.CLIENT_URL,
   'http://localhost:5173',
   'http://localhost:3000',
+  'https://www.joetales.co.ke',
+  'https://author-azure-eta.vercel.app',
 ].filter(Boolean);
 
 app.use((req, res, next) => {
