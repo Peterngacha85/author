@@ -120,6 +120,8 @@ export default function LandingPage() {
   const [samples, setSamples] = useState([]);
   const [heroBook, setHeroBook] = useState(null);
   const [heroReviews, setHeroReviews] = useState([]);
+  const [showReviewsModal, setShowReviewsModal] = useState(false);
+  const [showSynopsisModal, setShowSynopsisModal] = useState(false);
 
   useEffect(() => {
     API.get('/books/samples')
@@ -134,7 +136,7 @@ export default function LandingPage() {
         const book = res.data[0];
         setHeroBook(book);
         API.get(`/books/${book._id}/reviews`)
-          .then(r => setHeroReviews(r.data.slice(0, 2)))
+          .then(r => setHeroReviews(r.data))
           .catch(() => {});
       })
       .catch(() => {});
@@ -194,54 +196,14 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* ===== HERO — Emotion-First, Book-Focused ===== */}
+      {/* ===== HERO — Kobo-style: book left, content right ===== */}
       <section className="landing-hero">
         <div className="landing-hero-inner">
-          {/* Text Side */}
+
+          {/* Text Side — right on desktop, bottom on mobile */}
           <div className="landing-hero-text">
             <span className="landing-hero-tagline">A Novel by Joseph Kaburu</span>
             <span className="landing-hero-narrator">Narrated by: Guy Barnes</span>
-            
-            {/* Star Rating, Reviews & Synopsis */}
-            {heroBook && (
-              <>
-                <div className="landing-hero-rating-row">
-                  {[1,2,3,4,5].map(i => (
-                    <Star
-                      key={i}
-                      size={20}
-                      fill={i <= Math.round(heroBook.avgRating || 0) ? '#FFB800' : 'none'}
-                      color={i <= Math.round(heroBook.avgRating || 0) ? '#FFB800' : '#555'}
-                    />
-                  ))}
-                  <span className="landing-hero-rating-label">
-                    {heroBook.avgRating ? heroBook.avgRating.toFixed(1) : '—'}
-                    &nbsp;·&nbsp;
-                    {heroBook.reviewCount || 0} {heroBook.reviewCount === 1 ? 'review' : 'reviews'}
-                  </span>
-                </div>
-
-                {heroReviews.length > 0 && (
-                  <div className="landing-hero-reviews">
-                    {heroReviews.map(r => (
-                      <div key={r._id} className="landing-hero-review-card">
-                        <div className="landing-hero-review-stars">
-                          {[1,2,3,4,5].map(i => (
-                            <Star key={i} size={12} fill={i <= r.rating ? '#FFB800' : 'none'} color={i <= r.rating ? '#FFB800' : '#555'} />
-                          ))}
-                        </div>
-                        <p className="landing-hero-review-text">"{r.comment}"</p>
-                        <span className="landing-hero-review-author">— {r.userName}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {heroBook.description && (
-                  <p className="landing-hero-synopsis">{heroBook.description}</p>
-                )}
-              </>
-            )}
 
             <h1 className="landing-hero-heading">
               One message.
@@ -254,22 +216,28 @@ export default function LandingPage() {
               "A Single Text That Steals Forever Promised"
             </p>
 
-            <p className="landing-hero-emotion">
-              If you've ever loved someone so deeply that a single message could shatter your world — this story was written for you. Read it. Feel it. Live it.
-            </p>
+            {heroBook?.description && (
+              <div className="landing-hero-synopsis-section">
+                <span className="landing-synopsis-label">Synopsis</span>
+                <p className="landing-hero-synopsis">
+                  {heroBook.description.length > 220
+                    ? heroBook.description.slice(0, 220) + '…'
+                    : heroBook.description}
+                </p>
+                {heroBook.description.length > 220 && (
+                  <button className="landing-hero-read-more" onClick={() => setShowSynopsisModal(true)}>
+                    Read More
+                  </button>
+                )}
+              </div>
+            )}
 
             <div className="landing-hero-buttons">
-              <Link
-                to={user ? dashboardPath : "/register"}
-                className="landing-cta-primary"
-              >
+              <Link to={user ? dashboardPath : "/register"} className="landing-cta-primary">
                 <BookOpen size={20} />
                 Read Now — KES 150
               </Link>
-              <Link
-                to={user ? dashboardPath : "/register"}
-                className="landing-cta-secondary"
-              >
+              <Link to={user ? dashboardPath : "/register"} className="landing-cta-secondary">
                 <Headphones size={20} />
                 Listen — KES 200
               </Link>
@@ -291,17 +259,42 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Book Cover Side */}
+          {/* Book Cover Side — left on desktop, top on mobile */}
           <div className="landing-hero-book">
-            <Link to={user ? dashboardPath : "/register"} className="landing-book-wrapper" style={{ display: 'block', textDecoration: 'none' }}>
-              <img 
-                src="/images/african-touch-image.jpeg" 
-                alt="African touch hero image" 
+            <Link to={user ? dashboardPath : "/register"} className="landing-book-wrapper">
+              <img
+                src="/images/african-touch-image.jpeg"
+                alt="African touch hero image"
                 className="landing-book-image"
               />
               <div className="landing-book-badge">🔥 Get the message!</div>
             </Link>
+
+            {heroBook && (
+              <button
+                className="landing-hero-rating-row"
+                onClick={() => setShowReviewsModal(true)}
+                aria-label="View all reviews"
+              >
+                <div className="landing-hero-rating-stars">
+                  {[1,2,3,4,5].map(i => (
+                    <Star
+                      key={i}
+                      size={18}
+                      fill={i <= Math.round(heroBook.avgRating || 0) ? '#FFB800' : 'none'}
+                      color={i <= Math.round(heroBook.avgRating || 0) ? '#FFB800' : '#555'}
+                    />
+                  ))}
+                </div>
+                <span className="landing-hero-rating-label">
+                  {heroBook.avgRating ? heroBook.avgRating.toFixed(1) : '—'}&nbsp;
+                  ({heroBook.reviewCount || 0} {heroBook.reviewCount === 1 ? 'review' : 'reviews'})
+                </span>
+                <span className="landing-hero-rating-cta">See all reviews →</span>
+              </button>
+            )}
           </div>
+
         </div>
       </section>
 
@@ -513,6 +506,76 @@ export default function LandingPage() {
           </a>
         </div>
       </footer>
+
+      {/* ===== Reviews Modal ===== */}
+      {showReviewsModal && (
+        <div className="lp-modal-overlay" onClick={() => setShowReviewsModal(false)}>
+          <div className="lp-modal" onClick={e => e.stopPropagation()}>
+            <div className="lp-modal-header">
+              <h2 className="lp-modal-title">Reader Reviews</h2>
+              <button className="lp-modal-close" onClick={() => setShowReviewsModal(false)} aria-label="Close">
+                <X size={20} />
+              </button>
+            </div>
+            {heroBook && (
+              <div className="lp-modal-rating-summary">
+                {[1,2,3,4,5].map(i => (
+                  <Star
+                    key={i}
+                    size={22}
+                    fill={i <= Math.round(heroBook.avgRating || 0) ? '#FFB800' : 'none'}
+                    color={i <= Math.round(heroBook.avgRating || 0) ? '#FFB800' : '#555'}
+                  />
+                ))}
+                <span className="lp-modal-rating-num">
+                  {heroBook.avgRating ? heroBook.avgRating.toFixed(1) : '—'} out of 5
+                </span>
+                <span className="lp-modal-rating-count">
+                  ({heroBook.reviewCount || 0} {heroBook.reviewCount === 1 ? 'review' : 'reviews'})
+                </span>
+              </div>
+            )}
+            <div className="lp-modal-reviews-list">
+              {heroReviews.length === 0 ? (
+                <p className="lp-modal-empty">No reviews yet. Be the first to review!</p>
+              ) : heroReviews.map(r => (
+                <div key={r._id} className="lp-modal-review-item">
+                  <div className="lp-modal-review-top">
+                    <div className="lp-modal-review-stars">
+                      {[1,2,3,4,5].map(i => (
+                        <Star key={i} size={14} fill={i <= r.rating ? '#FFB800' : 'none'} color={i <= r.rating ? '#FFB800' : '#555'} />
+                      ))}
+                    </div>
+                    <span className="lp-modal-review-author">{r.userName}</span>
+                    {r.createdAt && (
+                      <span className="lp-modal-review-date">
+                        {new Date(r.createdAt).toLocaleDateString('en-KE', { year: 'numeric', month: 'short', day: 'numeric' })}
+                      </span>
+                    )}
+                  </div>
+                  <p className="lp-modal-review-text">"{r.comment}"</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== Synopsis Modal ===== */}
+      {showSynopsisModal && heroBook?.description && (
+        <div className="lp-modal-overlay" onClick={() => setShowSynopsisModal(false)}>
+          <div className="lp-modal" onClick={e => e.stopPropagation()}>
+            <div className="lp-modal-header">
+              <h2 className="lp-modal-title">Synopsis</h2>
+              <button className="lp-modal-close" onClick={() => setShowSynopsisModal(false)} aria-label="Close">
+                <X size={20} />
+              </button>
+            </div>
+            <p className="lp-modal-synopsis-text">{heroBook.description}</p>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

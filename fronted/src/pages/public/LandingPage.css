@@ -191,7 +191,8 @@
 
 .landing-hero-inner {
   display: flex;
-  align-items: center;
+  flex-direction: row-reverse;
+  align-items: flex-start;
   justify-content: space-between;
   max-width: 1200px;
   width: 100%;
@@ -234,61 +235,73 @@
   background: rgba(255, 255, 255, 0.05);
 }
 
-/* ===== Hero Rating, Reviews & Synopsis ===== */
+/* ===== Hero Rating Button (below book cover) ===== */
 .landing-hero-rating-row {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 0.3rem;
-  margin-bottom: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  transition: background 0.2s;
+  width: 100%;
+}
+
+.landing-hero-rating-row:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.landing-hero-rating-stars {
+  display: flex;
+  gap: 0.2rem;
 }
 
 .landing-hero-rating-label {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.65);
-  margin-left: 0.4rem;
 }
 
-.landing-hero-reviews {
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-  margin-bottom: 1.25rem;
-}
-
-.landing-hero-review-card {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 0.75rem 1rem;
-}
-
-.landing-hero-review-stars {
-  display: flex;
-  gap: 0.15rem;
-  margin-bottom: 0.4rem;
-}
-
-.landing-hero-review-text {
-  font-size: 0.85rem;
-  font-style: italic;
-  color: rgba(255, 255, 255, 0.75);
-  margin: 0 0 0.3rem;
-  line-height: 1.5;
-}
-
-.landing-hero-review-author {
+.landing-hero-rating-cta {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: #FF4D4D;
   font-weight: 600;
 }
 
+/* ===== Hero Synopsis Section ===== */
+.landing-hero-synopsis-section {
+  margin-bottom: 1.5rem;
+}
+
+.landing-synopsis-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 0.5rem;
+}
+
 .landing-hero-synopsis {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   color: rgba(255, 255, 255, 0.7);
   line-height: 1.65;
-  margin-bottom: 1.5rem;
-  border-left: 3px solid #8B0000;
-  padding-left: 1rem;
+  margin: 0 0 0.5rem;
+}
+
+.landing-hero-read-more {
+  background: none;
+  border: none;
+  color: #FF4D4D;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .landing-hero-heading {
@@ -387,10 +400,11 @@
 
 /* Hero Book Cover Side */
 .landing-hero-book {
-  flex: 0 1 420px;
+  flex: 0 0 280px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  gap: 1rem;
   animation: fadeIn 1s ease-out 0.3s both;
 }
 
@@ -399,7 +413,7 @@
 }
 
 .landing-book-image {
-  width: 340px;
+  width: 260px;
   max-width: 100%;
   border-radius: 4px;
   animation: floatBook 5s ease-in-out infinite;
@@ -1131,8 +1145,8 @@
   }
 
   .landing-hero-inner {
-    flex-direction: column-reverse;
-    gap: 3rem;
+    flex-direction: column;
+    gap: 2rem;
     text-align: center;
   }
 
@@ -1213,4 +1227,146 @@
   .landing-about-heading {
     font-size: 1.8rem;
   }
+}
+
+/* ===== Modals ===== */
+.lp-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  backdrop-filter: blur(4px);
+}
+
+.lp-modal {
+  background: #1A0101;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 2rem;
+  animation: fadeInUp 0.25s ease-out;
+}
+
+.lp-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.lp-modal-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.lp-modal-close {
+  background: rgba(255,255,255,0.08);
+  border: none;
+  color: rgba(255,255,255,0.7);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.lp-modal-close:hover {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+}
+
+.lp-modal-rating-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.lp-modal-rating-num {
+  font-size: 0.95rem;
+  color: #fff;
+  font-weight: 600;
+  margin-left: 0.25rem;
+}
+
+.lp-modal-rating-count {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.5);
+}
+
+.lp-modal-reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.lp-modal-review-item {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+}
+
+.lp-modal-review-top {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.lp-modal-review-stars {
+  display: flex;
+  gap: 0.15rem;
+}
+
+.lp-modal-review-author {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+}
+
+.lp-modal-review-date {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.4);
+  margin-left: auto;
+}
+
+.lp-modal-review-text {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.lp-modal-empty {
+  text-align: center;
+  color: rgba(255,255,255,0.45);
+  font-size: 0.9rem;
+  padding: 2rem 0;
+}
+
+.lp-modal-synopsis-text {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.75;
+  margin: 0;
+  white-space: pre-wrap;
 }
