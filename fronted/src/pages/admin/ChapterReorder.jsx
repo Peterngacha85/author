@@ -16,7 +16,7 @@ import {
   useSortable
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Save, ArrowLeft, Headphones, Book, Edit2, Check, Plus, Trash2 } from 'lucide-react';
+import { GripVertical, Save, ArrowLeft, Headphones, Book, Edit2, Check, Plus, Trash2, AlertTriangle } from 'lucide-react';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
 
@@ -130,6 +130,7 @@ export default function ChapterReorder() {
   const [chapters, setChapters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -180,8 +181,13 @@ export default function ChapterReorder() {
     }
   }
 
-  const handleDelete = async (itemId) => {
-    if (!window.confirm('Delete this file/chapter? This cannot be undone.')) return;
+  const handleDelete = (itemId) => {
+    setConfirmDeleteId(itemId);
+  };
+
+  const confirmDelete = async () => {
+    const itemId = confirmDeleteId;
+    setConfirmDeleteId(null);
     try {
       if (book?.type === 'ebook') {
         await API.delete(`/books/ebook-file/${id}/${itemId}`);
@@ -190,8 +196,8 @@ export default function ChapterReorder() {
       }
       setChapters(prev => prev.filter(ch => ch._id !== itemId));
       toast.success('Deleted successfully');
-    } catch {
-      toast.error('Failed to delete');
+    } catch (err) {
+      toast.error(err.response?.data?.msg || 'Failed to delete');
     }
   };
 
@@ -319,13 +325,55 @@ export default function ChapterReorder() {
               />
             ));
           })()}
-          ))}
         </SortableContext>
       </DndContext>
 
       {chapters.length === 0 && (
         <div style={{ textAlign: 'center', padding: '3rem', border: '2px dashed var(--border-color)', borderRadius: 'var(--radius-lg)', color: 'var(--text-muted)' }}>
           {book?.type === 'ebook' ? 'No files found for this eBook.' : 'No chapters found for this audiobook.'}
+        </div>
+      )}
+
+      {/* Delete confirmation modal */}
+      {confirmDeleteId && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 1000,
+          background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '1rem'
+        }}>
+          <div className="glass-card fade-in" style={{ maxWidth: 400, width: '100%', padding: '2rem', textAlign: 'center' }}>
+            <div style={{
+              width: 56, height: 56, borderRadius: '50%',
+              background: 'rgba(220,38,38,0.1)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              margin: '0 auto 1.25rem'
+            }}>
+              <AlertTriangle size={26} color="var(--danger)" />
+            </div>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
+              Delete {book?.type === 'ebook' ? 'File' : 'Chapter'}?
+            </h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginBottom: '1.75rem', lineHeight: 1.5 }}>
+              This action cannot be undone. The {book?.type === 'ebook' ? 'file' : 'chapter'} will be permanently removed.
+            </p>
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button
+                onClick={() => setConfirmDeleteId(null)}
+                className="btn btn-outline"
+                style={{ flex: 1 }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="btn btn-danger"
+                style={{ flex: 1 }}
+              >
+                <Trash2 size={15} /> Delete
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
