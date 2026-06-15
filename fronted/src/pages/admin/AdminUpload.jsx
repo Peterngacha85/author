@@ -317,30 +317,49 @@ export default function AdminUpload({ type = 'ebook' }) {
                 </div>
               ) : (
                 <div style={{ display: 'grid', gap: '1rem' }}>
-                  {ebookFiles.map(file => (
-                    <div key={file._id} style={{ padding: '1rem', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', display: 'grid', gridTemplateColumns: '1fr auto', gap: '1rem' }}>
-                      <div>
-                        <div style={{ fontWeight: 600 }}>{file.title || `File ${file.order + 1}`}</div>
-                        <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.25rem' }}>
-                          {file.format?.toUpperCase() || 'file'} • {file.isSample ? 'Free sample' : 'Paid'}
+                  {(() => {
+                    const defaultFileId = ebookFiles.find(f => !f.isSample)?._id;
+                    return ebookFiles.map(file => {
+                      const isDefault = file._id === defaultFileId;
+                      return (
+                        <div key={file._id} style={{ padding: '1rem', border: `1px solid ${isDefault ? 'var(--color-primary)' : 'var(--border-color)'}`, borderRadius: 'var(--radius-md)', display: 'grid', gridTemplateColumns: '1fr auto', gap: '1rem' }}>
+                          <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
+                              {file.title || `File ${file.order + 1}`}
+                              {isDefault && (
+                                <span style={{ fontSize: '0.7rem', background: 'var(--color-primary)', color: 'white', borderRadius: '10px', padding: '0.1rem 0.5rem', fontWeight: 700 }}>
+                                  Default
+                                </span>
+                              )}
+                            </div>
+                            <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.25rem' }}>
+                              {file.format?.toUpperCase() || 'file'} • {file.isSample ? 'Free sample' : 'Paid'}
+                            </div>
+                            <a href={file.url} target="_blank" rel="noreferrer" style={{ display: 'inline-block', marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--color-primary)' }}>
+                              View file
+                            </a>
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', justifyContent: 'flex-start' }}>
+                            <button onClick={() => {
+                              setSelectedReplaceFileId(file._id);
+                              document.getElementById('replace-ebook-file-input')?.click();
+                            }} className="btn btn-sm btn-outline">
+                              Replace
+                            </button>
+                            <button
+                              onClick={() => handleFileDelete(file._id)}
+                              className="btn btn-sm btn-danger"
+                              disabled={isDefault}
+                              title={isDefault ? 'Cannot delete the default file — use Replace instead' : 'Delete'}
+                              style={isDefault ? { opacity: 0.4, cursor: 'not-allowed' } : {}}
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </div>
-                        <a href={file.url} target="_blank" rel="noreferrer" style={{ display: 'inline-block', marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--color-primary)' }}>
-                          View file
-                        </a>
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', justifyContent: 'flex-start' }}>
-                        <button onClick={() => {
-                          setSelectedReplaceFileId(file._id);
-                          document.getElementById('replace-ebook-file-input')?.click();
-                        }} className="btn btn-sm btn-outline">
-                          Replace
-                        </button>
-                        <button onClick={() => handleFileDelete(file._id)} className="btn btn-sm btn-danger">
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                      );
+                    });
+                  })()}
                 </div>
               )}
               <input id="replace-ebook-file-input" type="file" accept=".pdf,.epub" hidden onChange={handleReplaceEbookFile} />

@@ -93,19 +93,31 @@ exports.addEbookFile = async (req, res) => {
     const originalFile = req.file.originalname;
     const extension = path.extname(originalFile).toLowerCase().replace('.', '');
 
+    book.ebookFiles = book.ebookFiles || [];
+
+    const isFileSample = isSample === 'true';
+
+    if (!isFileSample) {
+      // Replace existing non-sample (default) file — remove all non-samples first
+      book.ebookFiles = book.ebookFiles.filter(f => f.isSample);
+    }
+
     const newEbookFile = {
       title: title || originalFile,
       url: req.file.path,
       public_id: req.file.filename,
       format: extension,
-      isSample: isSample === 'true',
-      order: book.ebookFiles ? book.ebookFiles.length : 0
+      isSample: isFileSample,
+      order: isFileSample ? book.ebookFiles.length : 0
     };
 
-    book.ebookFiles = book.ebookFiles || [];
-    book.ebookFiles.push(newEbookFile);
-    await book.save();
+    if (!isFileSample) {
+      book.ebookFiles.unshift(newEbookFile); // default always first
+    } else {
+      book.ebookFiles.push(newEbookFile);
+    }
 
+    await book.save();
     res.status(201).json(book);
   } catch (err) {
     console.error(err);
@@ -154,8 +166,7 @@ exports.deleteChapter = async (req, res) => {
     const chapter = book.chapters.id(chapterId);
     if (!chapter) return res.status(404).json({ msg: 'Chapter not found' });
 
-    chapter.remove();
-    book.markModified('chapters');
+    book.chapters.pull({ _id: chapterId });
     await book.save();
 
     res.json({ msg: 'Chapter removed successfully', chapters: book.chapters });
@@ -177,8 +188,14 @@ exports.deleteEbookFile = async (req, res) => {
     const file = book.ebookFiles.id(fileId);
     if (!file) return res.status(404).json({ msg: 'eBook file not found' });
 
-    file.remove();
-    book.markModified('ebookFiles');
+    // The default file is the first non-sample file — protect it from deletion
+    const nonSamples = book.ebookFiles.filter(f => !f.isSample);
+    const isDefault = nonSamples.length > 0 && nonSamples[0]._id.toString() === fileId;
+    if (isDefault) {
+      return res.status(400).json({ msg: 'Cannot delete the default file. Use Replace to swap it out.' });
+    }
+
+    book.ebookFiles.pull({ _id: fileId });
     await book.save();
 
     res.json({ msg: 'eBook file removed successfully', ebookFiles: book.ebookFiles });

@@ -20,7 +20,7 @@ import { GripVertical, Save, ArrowLeft, Headphones, Book, Edit2, Check, Plus, Tr
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
 
-function SortableItem({ id, chapter, onUpdate, onDelete }) {
+function SortableItem({ id, chapter, onUpdate, onDelete, isDefault }) {
   const [isEditing, setIsEditing] = useState(false);
   const [tempTitle, setTempTitle] = useState(chapter.title);
 
@@ -68,7 +68,7 @@ function SortableItem({ id, chapter, onUpdate, onDelete }) {
       </div>
       <div style={{ flex: 1 }}>
         {isEditing ? (
-          <input 
+          <input
             className="form-input"
             value={tempTitle}
             onChange={(e) => setTempTitle(e.target.value)}
@@ -76,7 +76,14 @@ function SortableItem({ id, chapter, onUpdate, onDelete }) {
             autoFocus
           />
         ) : (
-          <div style={{ fontWeight: 600 }}>{chapter.title}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
+            {chapter.title}
+            {isDefault && (
+              <span style={{ fontSize: '0.68rem', background: 'var(--color-primary)', color: 'white', borderRadius: '10px', padding: '0.1rem 0.45rem', fontWeight: 700, flexShrink: 0 }}>
+                Default
+              </span>
+            )}
+          </div>
         )}
       </div>
 
@@ -105,8 +112,9 @@ function SortableItem({ id, chapter, onUpdate, onDelete }) {
         <button
           onClick={() => onDelete(id)}
           className="btn btn-sm"
-          style={{ padding: '0.4rem', border: 'none', background: 'transparent', color: 'var(--danger)' }}
-          title="Delete"
+          disabled={isDefault}
+          title={isDefault ? 'Cannot delete the default file — use Replace instead' : 'Delete'}
+          style={{ padding: '0.4rem', border: 'none', background: 'transparent', color: isDefault ? 'var(--text-muted)' : 'var(--danger)', opacity: isDefault ? 0.35 : 1, cursor: isDefault ? 'not-allowed' : 'pointer' }}
         >
           <Trash2 size={16} />
         </button>
@@ -294,16 +302,23 @@ export default function ChapterReorder() {
           items={chapters.map(ch => ch._id)}
           strategy={verticalListSortingStrategy}
         >
-          {chapters.map((chapter) => (
-            <SortableItem
-              key={chapter._id}
-              id={chapter._id}
-              chapter={chapter}
-              onUpdate={(id, updates) => {
-                setChapters(prev => prev.map(ch => ch._id === id ? { ...ch, ...updates } : ch));
-              }}
-              onDelete={handleDelete}
-            />
+          {(() => {
+            const defaultFileId = book?.type === 'ebook'
+              ? chapters.find(ch => !ch.isSample)?._id
+              : null; // audiobook chapters can all be deleted
+            return chapters.map((chapter) => (
+              <SortableItem
+                key={chapter._id}
+                id={chapter._id}
+                chapter={chapter}
+                isDefault={chapter._id === defaultFileId}
+                onUpdate={(id, updates) => {
+                  setChapters(prev => prev.map(ch => ch._id === id ? { ...ch, ...updates } : ch));
+                }}
+                onDelete={handleDelete}
+              />
+            ));
+          })()}
           ))}
         </SortableContext>
       </DndContext>
