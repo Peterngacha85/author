@@ -263,8 +263,8 @@ export default function LandingPage() {
           <div className="landing-hero-book">
             <Link to={user ? dashboardPath : "/register"} className="landing-book-wrapper">
               <img
-                src="/images/african-touch-image.jpeg"
-                alt="African touch hero image"
+                src="/images/just one text hero.jpeg"
+                alt="Just One Text hero image"
                 className="landing-book-image"
               />
               <div className="landing-book-badge">🔥 Get the message!</div>
