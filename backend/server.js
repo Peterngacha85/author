@@ -32,7 +32,7 @@ app.use((req, res, next) => {
 // Middleware
 app.use(express.json());
 
-// DB Connection
+// DB Connection..
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
     console.log('MongoDB Connected...');

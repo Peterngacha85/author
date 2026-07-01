@@ -133,14 +133,21 @@ export default function LandingPage() {
     API.get('/books')
       .then(res => {
         if (!res.data.length) return;
-        const book = res.data[0];
-        setHeroBook(book);
-        API.get(`/books/${book._id}/reviews`)
-          .then(r => setHeroReviews(r.data))
-          .catch(() => {});
+        setHeroBook(res.data[0]);
+        Promise.all(
+          res.data.map(b => API.get(`/books/${b._id}/reviews`).then(r => r.data).catch(() => []))
+        ).then(allReviews => {
+          const merged = allReviews.flat().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          setHeroReviews(merged);
+        });
       })
       .catch(() => {});
   }, []);
+
+  const heroReviewCount = heroReviews.length;
+  const heroAvgRating = heroReviewCount
+    ? heroReviews.reduce((sum, r) => sum + r.rating, 0) / heroReviewCount
+    : 0;
 
   const dashboardPath = user?.role === 'admin' ? '/admin' : '/dashboard';
 
@@ -281,14 +288,14 @@ export default function LandingPage() {
                     <Star
                       key={i}
                       size={18}
-                      fill={i <= Math.round(heroBook.avgRating || 0) ? '#FFB800' : 'none'}
-                      color={i <= Math.round(heroBook.avgRating || 0) ? '#FFB800' : '#555'}
+                      fill={i <= Math.round(heroAvgRating) ? '#FFB800' : 'none'}
+                      color={i <= Math.round(heroAvgRating) ? '#FFB800' : '#555'}
                     />
                   ))}
                 </div>
                 <span className="landing-hero-rating-label">
-                  {heroBook.avgRating ? heroBook.avgRating.toFixed(1) : '—'}&nbsp;
-                  ({heroBook.reviewCount || 0} {heroBook.reviewCount === 1 ? 'review' : 'reviews'})
+                  {heroReviewCount ? heroAvgRating.toFixed(1) : '—'}&nbsp;
+                  ({heroReviewCount} {heroReviewCount === 1 ? 'review' : 'reviews'})
                 </span>
                 <span className="landing-hero-rating-cta">See all reviews →</span>
               </button>
@@ -532,15 +539,15 @@ export default function LandingPage() {
                   <Star
                     key={i}
                     size={22}
-                    fill={i <= Math.round(heroBook.avgRating || 0) ? '#FFB800' : 'none'}
-                    color={i <= Math.round(heroBook.avgRating || 0) ? '#FFB800' : '#555'}
+                    fill={i <= Math.round(heroAvgRating) ? '#FFB800' : 'none'}
+                    color={i <= Math.round(heroAvgRating) ? '#FFB800' : '#555'}
                   />
                 ))}
                 <span className="lp-modal-rating-num">
-                  {heroBook.avgRating ? heroBook.avgRating.toFixed(1) : '—'} out of 5
+                  {heroReviewCount ? heroAvgRating.toFixed(1) : '—'} out of 5
                 </span>
                 <span className="lp-modal-rating-count">
-                  ({heroBook.reviewCount || 0} {heroBook.reviewCount === 1 ? 'review' : 'reviews'})
+                  ({heroReviewCount} {heroReviewCount === 1 ? 'review' : 'reviews'})
                 </span>
               </div>
             )}
