@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BookOpen, Users, CreditCard, TrendingUp, Trash2 } from 'lucide-react';
+import { BookOpen, Users, CreditCard, TrendingUp, Trash2, Eye, EyeOff } from 'lucide-react';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../../components/common/ConfirmModal';
@@ -10,6 +10,15 @@ export default function AdminHome() {
   const [loading, setLoading] = useState(true);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [txToDelete, setTxToDelete] = useState(null);
+  const [statsHidden, setStatsHidden] = useState(() => localStorage.getItem('adminStatsHidden') === 'true');
+
+  const toggleStatsHidden = () => {
+    setStatsHidden(prev => {
+      const next = !prev;
+      localStorage.setItem('adminStatsHidden', String(next));
+      return next;
+    });
+  };
 
   useEffect(() => {
     Promise.all([
@@ -54,9 +63,20 @@ export default function AdminHome() {
   return (
     <div className="fade-in">
       {/* Header */}
-      <div style={{ marginBottom: '1.75rem' }}>
-        <h1 style={{ fontSize: '1.6rem' }}>Admin <span className="gradient-text">Overview</span></h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>Welcome back. Here's your system summary.</p>
+      <div style={{ marginBottom: '1.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
+        <div>
+          <h1 style={{ fontSize: '1.6rem' }}>Admin <span className="gradient-text">Overview</span></h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>Welcome back. Here's your system summary.</p>
+        </div>
+        <button
+          onClick={toggleStatsHidden}
+          className="btn btn-outline btn-sm"
+          style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}
+          title={statsHidden ? 'Show stats' : 'Hide stats'}
+        >
+          {statsHidden ? <Eye size={15} /> : <EyeOff size={15} />}
+          {statsHidden ? 'Show Stats' : 'Hide Stats'}
+        </button>
       </div>
 
       {/* Stats */}
@@ -70,7 +90,7 @@ export default function AdminHome() {
               </div>
               <div>
                 <div className="stat-label">{s.label}</div>
-                <div className="stat-value">{loading ? '…' : s.value}</div>
+                <div className="stat-value">{loading ? '…' : statsHidden ? '••••' : s.value}</div>
               </div>
             </div>
           );
