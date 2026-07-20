@@ -91,6 +91,16 @@ export default function CurrencySelector({ style }) {
               <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>{c.currency}</span>
             </button>
           ))}
+          <div style={{
+            marginTop: '0.3rem',
+            padding: '0.5rem 0.6rem',
+            borderTop: '1px solid var(--border-color)',
+            fontSize: '0.7rem',
+            color: 'var(--text-muted)',
+            lineHeight: 1.4
+          }}>
+            Prices convert for reference only — you're always charged in <strong>KES</strong> at checkout.
+          </div>
         </div>
       )}
     </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Copy, Check, Smartphone, FileText, ArrowRight, CreditCard } from 'lucide-react';
+import { X, Copy, Check, Smartphone, FileText, ArrowRight, CreditCard, Info } from 'lucide-react';
 import { usePaystackPayment } from 'react-paystack';
 import API from '../api/axios';
 import toast from 'react-hot-toast';
@@ -203,15 +203,19 @@ export default function PaymentModal({ book, onClose }) {
         ) : (
           <>
             {/* Price Tag */}
-            <div style={{ background: 'var(--bg-base)', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ background: 'var(--bg-base)', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', marginBottom: currency.currency !== 'KES' ? '0.6rem' : '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Total to Pay</span>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '1.25rem', fontWeight: 800 }}>{formatPrice(book.price)}</div>
-                {currency.currency !== 'KES' && (
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Charged as KES {book.price?.toLocaleString()}</div>
-                )}
-              </div>
+              <span style={{ fontSize: '1.25rem', fontWeight: 800 }}>{formatPrice(book.price)}</span>
             </div>
+
+            {currency.currency !== 'KES' && (
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', background: 'rgba(255,180,0,0.12)', border: '1px solid rgba(255,180,0,0.35)', borderRadius: 'var(--radius-md)', padding: '0.65rem 0.8rem', marginBottom: '1.5rem' }}>
+                <Info size={16} style={{ color: '#B27E00', flexShrink: 0, marginTop: '0.1rem' }} />
+                <span style={{ fontSize: '0.78rem', color: '#7A5A00', fontWeight: 600, lineHeight: 1.4 }}>
+                  You'll be charged <strong>KES {book.price?.toLocaleString()}</strong> at checkout — the {currency.currency} price above is for reference only.
+                </span>
+              </div>
+            )}
 
             {/* Method Toggle */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.5rem' }}>
