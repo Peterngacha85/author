@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { BookOpen, Headphones, ShieldCheck, Lock, ArrowRight, Star, Menu, X, LayoutDashboard, Facebook, Youtube, Instagram, CheckCircle, Smartphone, Heart, Zap, Play, Pause, Volume2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useCurrency } from '../../context/CurrencyContext';
 import API from '../../api/axios';
 import CurrencySelector from '../../components/CurrencySelector';
 import './LandingPage.css';
@@ -116,6 +117,7 @@ function AudioSamplePlayer({ chapters }) {
 
 export default function LandingPage() {
   const { user } = useAuth();
+  const { currency, convert, formatPrice } = useCurrency();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [samples, setSamples] = useState([]);
@@ -244,11 +246,11 @@ export default function LandingPage() {
             <div className="landing-hero-buttons">
               <Link to={user ? dashboardPath : "/register"} className="landing-cta-primary">
                 <BookOpen size={20} />
-                Read Now — KES 150
+                Read Now — {formatPrice(150)}
               </Link>
               <Link to={user ? dashboardPath : "/register"} className="landing-cta-secondary">
                 <Headphones size={20} />
-                Listen — KES 200
+                Listen — {formatPrice(200)}
               </Link>
             </div>
 
@@ -387,7 +389,7 @@ export default function LandingPage() {
             <div className="landing-price-card-type">eBook</div>
             <div className="landing-price-card-name">Read It</div>
             <div className="landing-price-amount">
-              150 <span className="landing-price-currency">KES</span>
+              {Math.round(convert(150)).toLocaleString()} <span className="landing-price-currency">{currency.currency}</span>
             </div>
             <div className="landing-price-note">One-time payment • Yours forever</div>
             
@@ -415,7 +417,7 @@ export default function LandingPage() {
             <div className="landing-price-card-name">Feel It</div>
             <div className="landing-price-narrator">Narrated by: Guy Barnes</div>
             <div className="landing-price-amount">
-              200 <span className="landing-price-currency">KES</span>
+              {Math.round(convert(200)).toLocaleString()} <span className="landing-price-currency">{currency.currency}</span>
             </div>
             <div className="landing-price-note">One-time payment • Listen anywhere</div>
             
