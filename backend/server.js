@@ -37,6 +37,12 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
     console.log('MongoDB Connected...');
     require('./utils/seeder')(); // Seed Admin
+
+    // Rebuild indexes that no longer match the schema (e.g. mpesaCode went from
+    // required+unique to optional+sparse — the old non-sparse index has to be dropped).
+    require('./models/Transaction').syncIndexes()
+      .then(() => console.log('Transaction indexes synced'))
+      .catch(err => console.error('Transaction index sync error:', err));
   })
   .catch(err => console.log('MongoDB Connection Error:', err));
 
