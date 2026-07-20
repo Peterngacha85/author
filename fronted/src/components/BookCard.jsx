@@ -1,5 +1,6 @@
 import { Lock, BookOpen, Headphones, Star } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useCurrency } from '../context/CurrencyContext';
 import { useNavigate } from 'react-router-dom';
 
 export default function BookCard({ book, isPurchased, onBuy, onRead, onListen }) {
@@ -7,6 +8,7 @@ export default function BookCard({ book, isPurchased, onBuy, onRead, onListen })
   const navigate = useNavigate();
 
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
 
   const handleCardClick = () => {
     if (book.comingSoon) {
@@ -91,7 +93,7 @@ export default function BookCard({ book, isPurchased, onBuy, onRead, onListen })
           {book.comingSoon ? (
             <span style={{ background: 'rgba(0, 0, 0, 0.08)', padding: '0.2rem 0.6rem', borderRadius: '1rem', fontSize: '0.75rem', fontWeight: 600, color: '#444' }}>Coming Soon</span>
           ) : (
-            <span className="book-card-price" style={{ fontSize: '0.9rem' }}>KES {book.price?.toLocaleString()}</span>
+            <span className="book-card-price" style={{ fontSize: '0.9rem' }}>{formatPrice(book.price)}</span>
           )}
           {isPurchased && !book.comingSoon ? (
             <button

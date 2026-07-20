@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useCurrency } from '../../context/CurrencyContext';
 import { ArrowLeft, BookOpen, Headphones, Star } from 'lucide-react';
 import API from '../../api/axios';
 import ReviewSection from '../../components/ReviewSection';
@@ -10,7 +11,8 @@ export default function BookDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  
+  const { formatPrice } = useCurrency();
+
   const [book, setBook] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -71,7 +73,7 @@ export default function BookDetails() {
               {book.comingSoon ? (
                 <span style={{ background: 'rgba(0, 0, 0, 0.08)', padding: '0.2rem 0.6rem', borderRadius: '1rem', fontSize: '0.9rem', fontWeight: 600, color: '#444' }}>Coming Soon</span>
               ) : (
-                `KES ${book.price?.toLocaleString()}`
+                formatPrice(book.price)
               )}
             </div>
 

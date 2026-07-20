@@ -4,6 +4,7 @@ import UserSidebar from './UserSidebar';
 import AdminSidebar from './AdminSidebar';
 import { useAuth } from '../../context/AuthContext';
 import { Menu } from 'lucide-react';
+import CurrencySelector from '../CurrencySelector';
 
 export default function DashboardLayout({ role = 'user' }) {
   const { user } = useAuth();
@@ -40,6 +41,7 @@ export default function DashboardLayout({ role = 'user' }) {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            {role === 'user' && <CurrencySelector />}
             <div style={{ textAlign: 'right', display: 'none', '@media(min-width:600px)': { display: 'block' } }} className="user-info-text">
               <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-primary)' }}>{user?.name}</div>
               <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>

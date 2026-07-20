@@ -11,12 +11,22 @@ const TransactionSchema = new mongoose.Schema({
     ref: 'Book',
     required: true
   },
+  provider: {
+    type: String,
+    enum: ['mpesa', 'paystack'],
+    default: 'mpesa'
+  },
   mpesaCode: {
     type: String,
-    required: true,
-    unique: true
+    unique: true,
+    sparse: true
   },
   checkoutRequestId: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
+  paystackReference: {
     type: String,
     unique: true,
     sparse: true
@@ -25,6 +35,10 @@ const TransactionSchema = new mongoose.Schema({
   amount: {
     type: Number,
     required: true
+  },
+  currency: {
+    type: String,
+    default: 'KES'
   },
   status: {
     type: String,

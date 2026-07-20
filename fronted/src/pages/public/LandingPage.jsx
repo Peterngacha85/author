@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { BookOpen, Headphones, ShieldCheck, Lock, ArrowRight, Star, Menu, X, LayoutDashboard, Facebook, Youtube, Instagram, CheckCircle, Smartphone, Heart, Zap, Play, Pause, Volume2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import API from '../../api/axios';
+import CurrencySelector from '../../components/CurrencySelector';
 import './LandingPage.css';
 
 function AudioSamplePlayer({ chapters }) {
@@ -174,6 +175,7 @@ export default function LandingPage() {
         </button>
 
         <div className={`landing-nav-links ${menuOpen ? 'open' : ''}`}>
+          <CurrencySelector style={{ marginRight: '0.25rem' }} />
           {user ? (
             <Link 
               to={dashboardPath}

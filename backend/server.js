@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 });
 
 // Middleware
-app.use(express.json());
+app.use(express.json({ verify: (req, res, buf) => { req.rawBody = buf; } }));
 
 // DB Connection..
 mongoose.connect(process.env.MONGODB_URI)
@@ -52,6 +52,7 @@ app.use('/api/payments', require('./routes/payments'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/coupons', require('./routes/coupons'));
 app.use('/api/analytics', require('./routes/analytics'));
+app.use('/api/geo', require('./routes/geo'));
 
 // Swagger Documentation
 const swaggerUi = require('swagger-ui-express');

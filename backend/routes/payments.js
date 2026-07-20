@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { submitPayment, verifyPayment, stkPush, getAllPayments, handleCallback, checkStatus, deletePayment } = require('../controllers/paymentController');
+const { initializePayment, verifyPayment: verifyPaystackPayment, webhook: paystackWebhook } = require('../controllers/paystackController');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 
@@ -64,6 +65,11 @@ router.delete('/:id', [auth, admin], deletePayment);
 router.post('/callback', handleCallback);
 router.get('/status/:checkoutRequestId', auth, checkStatus);
 router.post('/simulate', auth, require('../controllers/paymentController').simulateSTKSuccess);
+
+// Paystack (card payments)
+router.post('/paystack/initialize', auth, initializePayment);
+router.post('/paystack/verify', auth, verifyPaystackPayment);
+router.post('/paystack/webhook', paystackWebhook);
 
 module.exports = router;
 

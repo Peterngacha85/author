@@ -61,7 +61,7 @@ export default function AdminPayments() {
       <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h2>💳 Payment Verification</h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginTop: '0.25rem' }}>Review and manage M-Pesa payments</p>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginTop: '0.25rem' }}>Review and manage M-Pesa and card payments</p>
         </div>
       </div>
 
@@ -82,18 +82,19 @@ export default function AdminPayments() {
           <table className="data-table">
             <thead>
               <tr>
-                <th style={{ width: '20%' }}>User</th>
-                <th style={{ width: '25%' }}>Book</th>
-                <th style={{ width: '15%' }}>M-Pesa Code</th>
+                <th style={{ width: '18%' }}>User</th>
+                <th style={{ width: '20%' }}>Book</th>
+                <th style={{ width: '10%' }}>Method</th>
+                <th style={{ width: '14%' }}>Reference</th>
                 <th style={{ width: '12%' }}>Amount</th>
                 <th style={{ width: '10%' }}>Status</th>
-                <th style={{ width: '15%' }}>Admin Note</th>
+                <th style={{ width: '11%' }}>Admin Note</th>
                 <th style={{ width: '10%' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredTransactions.length === 0 && (
-                <tr><td colSpan={7} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>No {tab} transactions</td></tr>
+                <tr><td colSpan={8} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>No {tab} transactions</td></tr>
               )}
               {filteredTransactions.map(tx => (
                 <tr key={tx._id}>
@@ -103,8 +104,13 @@ export default function AdminPayments() {
                   </td>
                   <td>{tx.bookId?.title || '—'}</td>
                   <td>
+                    <span className={`badge ${tx.provider === 'paystack' ? 'badge-purple' : 'badge-green'}`}>
+                      {tx.provider === 'paystack' ? 'Card' : 'M-Pesa'}
+                    </span>
+                  </td>
+                  <td>
                     <div style={{ wordBreak: 'break-all', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                      {tx.mpesaCode}
+                      {tx.provider === 'paystack' ? tx.paystackReference : tx.mpesaCode}
                     </div>
                   </td>
                   <td style={{ fontWeight: 700, color: 'var(--color-accent)' }}>KES {tx.amount?.toLocaleString()}</td>

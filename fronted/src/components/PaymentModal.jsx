@@ -1,20 +1,44 @@
 import { useState, useEffect } from 'react';
-import { X, Copy, Check, Smartphone, FileText, ArrowRight } from 'lucide-react';
+import { X, Copy, Check, Smartphone, FileText, ArrowRight, CreditCard } from 'lucide-react';
+import { usePaystackPayment } from 'react-paystack';
 import API from '../api/axios';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
+import { useCurrency } from '../context/CurrencyContext';
 
 const MPESA_TILL = '7200145';
 
 export default function PaymentModal({ book, onClose }) {
   const { user } = useAuth();
-  const [method, setMethod] = useState('stk'); // 'stk' or 'manual'
+  const { currency, formatPrice } = useCurrency();
+  const [method, setMethod] = useState('stk'); // 'stk', 'card' or 'manual'
   const [phone, setPhone] = useState(user?.phone || '');
+  const [email, setEmail] = useState(user?.email || '');
   const [mpesaCode, setMpesaCode] = useState('');
   const [loading, setLoading]     = useState(false);
   const [copied, setCopied]       = useState(false);
   const [status, setStatus] = useState('idle'); // 'idle', 'pending', 'success', 'failed'
   const [checkoutId, setCheckoutId] = useState(null);
+  const [pendingPaystack, setPendingPaystack] = useState(null); // { reference, amount, email, publicKey }
+
+  const paystackConfig = {
+    reference: pendingPaystack?.reference || '',
+    email: pendingPaystack?.email || '',
+    amount: Math.round((pendingPaystack?.amount || 0) * 100),
+    publicKey: pendingPaystack?.publicKey || import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || '',
+    currency: 'KES'
+  };
+  const initializePaystackPopup = usePaystackPayment(paystackConfig);
+
+  // Once the backend has created a pending Paystack transaction, open the popup
+  useEffect(() => {
+    if (!pendingPaystack) return;
+    initializePaystackPopup({
+      onSuccess: (ref) => handlePaystackSuccess(ref.reference),
+      onClose: () => { setPendingPaystack(null); setLoading(false); }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingPaystack]);
 
   // Poll for status
   useEffect(() => {
@@ -63,6 +87,40 @@ export default function PaymentModal({ book, onClose }) {
       toast.error(err.response?.data?.msg || 'STK Push failed. Please try again or contact support.');
       setStatus('idle');
     } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePaystackSuccess = async (reference) => {
+    try {
+      await API.post('/payments/paystack/verify', { reference });
+      toast.success('Payment verified! Access granted.');
+      setTimeout(() => { onClose(); window.location.reload(); }, 1500);
+    } catch (err) {
+      toast.error(err.response?.data?.msg || 'Payment verification failed. Contact support with reference: ' + reference);
+    } finally {
+      setPendingPaystack(null);
+      setLoading(false);
+    }
+  };
+
+  const handleCardPayment = async (e) => {
+    e.preventDefault();
+    if (!email.trim()) return toast.error('Please enter your email for the card receipt');
+    setLoading(true);
+    try {
+      const res = await API.post('/payments/paystack/initialize', {
+        bookId: book._id,
+        email: email.trim()
+      });
+      setPendingPaystack({
+        reference: res.data.reference,
+        amount: res.data.amount,
+        email: res.data.email,
+        publicKey: res.data.publicKey
+      });
+    } catch (err) {
+      toast.error(err.response?.data?.msg || 'Could not start card payment');
       setLoading(false);
     }
   };
@@ -147,22 +205,34 @@ export default function PaymentModal({ book, onClose }) {
             {/* Price Tag */}
             <div style={{ background: 'var(--bg-base)', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Total to Pay</span>
-              <span style={{ fontSize: '1.25rem', fontWeight: 800 }}>KES {book.price?.toLocaleString()}</span>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: '1.25rem', fontWeight: 800 }}>{formatPrice(book.price)}</div>
+                {currency.currency !== 'KES' && (
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Charged as KES {book.price?.toLocaleString()}</div>
+                )}
+              </div>
             </div>
 
             {/* Method Toggle */}
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
-              <button 
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.5rem' }}>
+              <button
                 onClick={() => setMethod('stk')}
                 className={`btn btn-sm ${method === 'stk' ? 'btn-primary' : 'btn-outline'}`}
-                style={{ flex: 1, display: 'flex', gap: '0.4rem', justifyContent: 'center' }}
+                style={{ flex: 1, minWidth: '9rem', display: 'flex', gap: '0.4rem', justifyContent: 'center' }}
               >
                 <Smartphone size={16} /> M-Pesa Express
               </button>
-              <button 
+              <button
+                onClick={() => setMethod('card')}
+                className={`btn btn-sm ${method === 'card' ? 'btn-primary' : 'btn-outline'}`}
+                style={{ flex: 1, minWidth: '9rem', display: 'flex', gap: '0.4rem', justifyContent: 'center' }}
+              >
+                <CreditCard size={16} /> Pay with Card
+              </button>
+              <button
                 onClick={() => toast('We are sorry, manual payment has been disabled at the moment', { icon: 'ℹ️' })}
                 className={`btn btn-sm btn-outline`}
-                style={{ flex: 1, display: 'flex', gap: '0.4rem', justifyContent: 'center', opacity: 0.6 }}
+                style={{ flex: 1, minWidth: '9rem', display: 'flex', gap: '0.4rem', justifyContent: 'center', opacity: 0.6 }}
               >
                 <FileText size={16} /> Manual Input
               </button>
@@ -185,6 +255,26 @@ export default function PaymentModal({ book, onClose }) {
                 </div>
                 <button type="submit" className="btn btn-primary btn-full shadow-lg" disabled={loading} style={{ height: '3rem', fontSize: '1rem' }}>
                   {loading ? <span className="spinner" /> : <>Pay Fast with M-Pesa <ArrowRight size={18} /></>}
+                </button>
+              </form>
+            ) : method === 'card' ? (
+              <form onSubmit={handleCardPayment} className="fade-in">
+                <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+                  <label className="form-label" style={{ fontSize: '0.8rem' }}>Email (for your card receipt)</label>
+                  <input
+                    className="form-input"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    required
+                  />
+                  <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.4rem' }}>
+                    A secure Paystack window will open to complete your card payment.
+                  </p>
+                </div>
+                <button type="submit" className="btn btn-primary btn-full shadow-lg" disabled={loading} style={{ height: '3rem', fontSize: '1rem' }}>
+                  {loading ? <span className="spinner" /> : <>Pay with Card <CreditCard size={18} /></>}
                 </button>
               </form>
             ) : (
