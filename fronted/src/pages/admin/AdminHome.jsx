@@ -86,6 +86,7 @@ export default function AdminHome() {
               <tr>
                 <th>User</th>
                 <th>Book</th>
+                <th>Method</th>
                  <th>Amount</th>
                 <th>Status</th>
                 <th>Date</th>
@@ -94,12 +95,17 @@ export default function AdminHome() {
             </thead>
             <tbody>
               {recentTx.length === 0 && (
-                <tr><td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>No transactions yet</td></tr>
+                <tr><td colSpan={7} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>No transactions yet</td></tr>
               )}
               {recentTx.map(tx => (
                 <tr key={tx._id}>
                   <td>{tx.userId?.name || 'Unknown'}</td>
                   <td>{tx.bookId?.title || '—'}</td>
+                  <td>
+                    <span className={`badge ${tx.provider === 'paystack' ? 'badge-purple' : 'badge-green'}`}>
+                      {tx.provider === 'paystack' ? 'Card' : 'M-Pesa'}
+                    </span>
+                  </td>
                   <td style={{ fontWeight: 700, color: 'var(--color-accent)' }}>KES {tx.amount?.toLocaleString()}</td>
                   <td>{statusBadge(tx.status)}</td>
                   <td style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
