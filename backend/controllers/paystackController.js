@@ -39,8 +39,8 @@ exports.initializePayment = async (req, res) => {
       publicKey: process.env.PAYSTACK_PUBLIC_KEY
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: 'Server error during Paystack initialization' });
+    console.error('Paystack Initialize Error:', err);
+    res.status(500).json({ msg: 'Server error during Paystack initialization', details: err.message });
   }
 };
 
@@ -90,8 +90,9 @@ exports.verifyPayment = async (req, res) => {
     await transaction.save();
     return res.status(400).json({ msg: 'Payment could not be verified' });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: 'Server error during Paystack verification' });
+    console.error('Paystack Verify Error:', err);
+    const errorData = err.response ? err.response.data : null;
+    res.status(500).json({ msg: 'Server error during Paystack verification', details: errorData?.message || err.message });
   }
 };
 
