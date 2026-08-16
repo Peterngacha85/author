@@ -17,7 +17,7 @@ export default function CouponPage() {
       const res = await API.post('/coupons/redeem', { code: couponCode.trim() });
       updateUser(res.data.user);
       setCouponCode('');
-      toast.success('Coupon redeemed! You now have access to all books.');
+      toast.success(res.data.msg || 'Coupon redeemed!');
     } catch (err) {
       toast.error(err.response?.data?.msg || 'Failed to redeem coupon');
     } finally {
@@ -29,7 +29,7 @@ export default function CouponPage() {
     <div className="fade-in" style={{ maxWidth: 480 }}>
       <h2 style={{ marginBottom: '0.5rem' }}>🎫 Redeem Coupon</h2>
       <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '2rem' }}>
-        Enter a one-time coupon code from the admin to unlock all books instantly.
+        Enter a one-time coupon code from the admin to unlock the book it was issued for.
       </p>
 
       <div className="glass-card" style={{ padding: '2rem' }}>

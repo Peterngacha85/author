@@ -31,6 +31,14 @@ const CouponSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  books: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Book'
+  }],
+  bookTitle: {
+    type: String,
+    default: ''
+  },
   createdAt: {
     type: Date,
     default: Date.now

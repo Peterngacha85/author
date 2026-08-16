@@ -5,6 +5,8 @@ import toast from 'react-hot-toast';
 
 export default function AdminCoupons() {
   const [coupons, setCoupons] = useState([]);
+  const [titleOptions, setTitleOptions] = useState([]);
+  const [selectedBookId, setSelectedBookId] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
@@ -21,15 +23,34 @@ export default function AdminCoupons() {
     }
   };
 
+  const fetchTitleOptions = async () => {
+    try {
+      const res = await API.get('/books');
+      // Collapse the ebook + audiobook entries of the same title into one option —
+      // generating a coupon for either one scopes it to both formats.
+      const byTitle = new Map();
+      res.data.forEach(book => {
+        if (!byTitle.has(book.title)) byTitle.set(book.title, book._id);
+      });
+      const options = Array.from(byTitle, ([title, bookId]) => ({ title, bookId }));
+      setTitleOptions(options);
+      if (options.length > 0) setSelectedBookId(prev => prev || options[0].bookId);
+    } catch (err) {
+      toast.error('Failed to load books');
+    }
+  };
+
   useEffect(() => {
     fetchCoupons();
+    fetchTitleOptions();
   }, []);
 
   const handleGenerate = async () => {
     if (!quantity || quantity < 1) return toast.error('Enter a valid quantity');
+    if (!selectedBookId) return toast.error('Select a book for these coupons');
     setGenerating(true);
     try {
-      const res = await API.post('/coupons/generate', { quantity });
+      const res = await API.post('/coupons/generate', { quantity, bookId: selectedBookId });
       setCoupons(prev => [...res.data, ...prev]);
       toast.success(`${res.data.length} coupon${res.data.length !== 1 ? 's' : ''} created`);
       setQuantity(1);
@@ -62,10 +83,21 @@ export default function AdminCoupons() {
         <div>
           <h2>🎟️ Coupon Codes</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginTop: '0.25rem' }}>
-            Create one-time coupon codes and track whether they have been used.
+            Create one-time coupon codes for a specific book and track whether they have been used.
           </p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <select
+            value={selectedBookId}
+            onChange={e => setSelectedBookId(e.target.value)}
+            className="form-input"
+            style={{ minWidth: 180 }}
+          >
+            {titleOptions.length === 0 && <option value="">No books available</option>}
+            {titleOptions.map(opt => (
+              <option key={opt.bookId} value={opt.bookId}>{opt.title}</option>
+            ))}
+          </select>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <input
               type="number"
@@ -77,7 +109,7 @@ export default function AdminCoupons() {
             />
             <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>codes</span>
           </div>
-          <button onClick={handleGenerate} className="btn btn-primary" disabled={generating}>
+          <button onClick={handleGenerate} className="btn btn-primary" disabled={generating || !selectedBookId}>
             <Plus size={16} /> Generate
           </button>
         </div>
@@ -98,6 +130,7 @@ export default function AdminCoupons() {
             <thead>
               <tr>
                 <th>Code</th>
+                <th>Book</th>
                 <th>Status</th>
                 <th>Generated</th>
                 <th>Used By</th>
@@ -109,6 +142,7 @@ export default function AdminCoupons() {
               {coupons.map(coupon => (
                 <tr key={coupon._id}>
                   <td style={{ fontFamily: 'monospace', letterSpacing: '0.1em' }}>{coupon.code}</td>
+                  <td>{coupon.bookTitle || <span style={{ color: 'var(--text-muted)' }}>Unscoped</span>}</td>
                   <td>
                     <span className={`badge ${coupon.status === 'used' ? 'badge-red' : 'badge-green'}`}>
                       {coupon.status === 'used' ? 'Used' : 'Unused'}

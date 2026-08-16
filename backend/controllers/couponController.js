@@ -7,6 +7,8 @@ const createCouponCode = () => {
   return crypto.randomBytes(5).toString('hex').toUpperCase();
 };
 
+const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 const generateUniqueCode = async () => {
   let code;
   while (true) {
@@ -22,7 +24,8 @@ exports.getCoupons = async (req, res) => {
     const coupons = await Coupon.find()
       .sort({ createdAt: -1 })
       .populate('generatedBy', 'name email')
-      .populate('usedBy', 'name email');
+      .populate('usedBy', 'name email')
+      .populate('books', 'title type');
 
     res.json(coupons);
   } catch (err) {
@@ -37,10 +40,21 @@ exports.generateCoupons = async (req, res) => {
     const description = req.body.description?.trim() || '';
     const generatedBy = req.user.id;
 
+    const bookId = req.body.bookId;
+    if (!bookId) return res.status(400).json({ msg: 'Please select a book for these coupons' });
+
+    const selectedBook = await Book.findById(bookId, 'title');
+    if (!selectedBook) return res.status(404).json({ msg: 'Book not found' });
+
+    // Grab every format (ebook + audiobook) that shares this title so one coupon unlocks both.
+    const titleRegex = new RegExp(`^${escapeRegex(selectedBook.title.trim())}$`, 'i');
+    const matchingBooks = await Book.find({ title: titleRegex }, '_id');
+    const bookIds = matchingBooks.map(b => b._id);
+
     const coupons = [];
     for (let i = 0; i < quantity; i += 1) {
       const code = await generateUniqueCode();
-      coupons.push({ code, generatedBy, description });
+      coupons.push({ code, generatedBy, description, books: bookIds, bookTitle: selectedBook.title });
     }
 
     const created = await Coupon.insertMany(coupons);
@@ -71,6 +85,9 @@ exports.redeemCoupon = async (req, res) => {
     const coupon = await Coupon.findOne({ code });
     if (!coupon) return res.status(404).json({ msg: 'Coupon not found' });
     if (coupon.status === 'used') return res.status(400).json({ msg: 'This coupon has already been used' });
+    if (!coupon.books || coupon.books.length === 0) {
+      return res.status(400).json({ msg: 'This coupon is not assigned to a book. Contact the admin.' });
+    }
 
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ msg: 'User not found' });
@@ -81,17 +98,15 @@ exports.redeemCoupon = async (req, res) => {
     coupon.usedAt = new Date();
     await coupon.save();
 
-    const books = await Book.find({}, '_id');
     const existingIds = new Set((user.purchasedItems || []).map(id => id.toString()));
-    books.forEach(book => existingIds.add(book._id.toString()));
+    coupon.books.forEach(id => existingIds.add(id.toString()));
     user.purchasedItems = Array.from(existingIds);
-    user.allAccess = true;
     await user.save();
 
     const updatedUser = user.toObject();
     delete updatedUser.password;
 
-    res.json({ msg: 'Coupon redeemed successfully', user: updatedUser, coupon });
+    res.json({ msg: `Coupon redeemed — "${coupon.bookTitle}" unlocked`, user: updatedUser, coupon });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Server error' });
