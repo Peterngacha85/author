@@ -12,7 +12,7 @@ export default function AdminBooks({ filter }) {
 
   // Edit Modal State
   const [editingBook, setEditingBook] = useState(null);
-  const [editForm, setEditForm] = useState({ title: '', author: '', price: '', description: '' });
+  const [editForm, setEditForm] = useState({ title: '', author: '', price: '', description: '', comingSoon: false });
   const [coverFile, setCoverFile] = useState(null);
   const [coverPreview, setCoverPreview] = useState(null);
   const [savingEdit, setSavingEdit] = useState(false);
@@ -65,7 +65,8 @@ export default function AdminBooks({ filter }) {
       title: book.title || '',
       author: book.author || '',
       price: book.price || '',
-      description: book.description || ''
+      description: book.description || '',
+      comingSoon: Boolean(book.comingSoon)
     });
     setCoverFile(null);
     setCoverPreview(book.coverImage?.url || book.coverImage || null);
@@ -91,6 +92,7 @@ export default function AdminBooks({ filter }) {
       formData.append('author', editForm.author);
       formData.append('price', editForm.price);
       formData.append('description', editForm.description);
+      formData.append('comingSoon', editForm.comingSoon);
       if (coverFile) {
         formData.append('coverImage', coverFile);
       }
@@ -165,6 +167,7 @@ export default function AdminBooks({ filter }) {
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
                           {book.title}
+                          {book.comingSoon && <span className="badge badge-yellow" style={{ fontSize: '0.65rem' }}>Coming Soon</span>}
                         </div>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{book.author}</div>
                       </div>
@@ -289,6 +292,16 @@ export default function AdminBooks({ filter }) {
                   style={{ resize: 'vertical' }}
                 />
               </div>
+
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.9rem' }}>
+                <input
+                  type="checkbox"
+                  checked={editForm.comingSoon}
+                  onChange={e => setEditForm(prev => ({ ...prev, comingSoon: e.target.checked }))}
+                  style={{ accentColor: 'var(--color-primary-light)', width: 16, height: 16 }}
+                />
+                Mark as "Coming Soon" (uncheck to make it available)
+              </label>
 
               <div className="form-group">
                 <label className="form-label">Cover Image</label>

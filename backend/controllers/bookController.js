@@ -73,6 +73,7 @@ exports.addChapter = async (req, res) => {
     };
 
     book.chapters.push(newChapter);
+    if (!newChapter.isSample) book.comingSoon = false; // full content uploaded — book is now available
     await book.save();
     res.json(book);
   } catch (err) {
@@ -113,6 +114,7 @@ exports.addEbookFile = async (req, res) => {
 
     if (!isFileSample) {
       book.ebookFiles.unshift(newEbookFile); // default always first
+      book.comingSoon = false; // full file uploaded — book is now available
     } else {
       book.ebookFiles.push(newEbookFile);
     }
@@ -353,7 +355,7 @@ exports.reorderChapters = async (req, res) => {
 // Update Book details (Admin only)
 exports.updateBook = async (req, res) => {
   try {
-    const { title, description, price, author } = req.body;
+    const { title, description, price, author, comingSoon } = req.body;
     const book = await Book.findById(req.params.id);
 
     if (!book) return res.status(404).json({ msg: 'Book not found' });
@@ -362,6 +364,7 @@ exports.updateBook = async (req, res) => {
     if (description) book.description = description;
     if (price) book.price = price;
     if (author) book.author = author;
+    if (typeof comingSoon !== 'undefined') book.comingSoon = comingSoon === 'true' || comingSoon === true;
 
     if (req.file) {
       book.coverImage = {
