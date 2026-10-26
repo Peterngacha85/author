@@ -256,6 +256,7 @@ exports.getBooks = async (req, res) => {
         $project: {
           'chapters.url': 0,
           'fileUrl.url': 0,
+          'ebookFiles.url': 0,
           'reviews': 0
         }
       }
@@ -280,7 +281,8 @@ exports.getBook = async (req, res) => {
         isPurchased = true;
       } else {
         const user = await User.findById(req.user.id);
-        isPurchased = user && (user.allAccess || user.purchasedItems.some(id => id.toString() === book._id.toString()));
+        // allAccess is a legacy flag from the old unlock-everything coupons — access is per-book via purchasedItems only
+        isPurchased = user && user.purchasedItems.some(id => id.toString() === book._id.toString());
       }
     }
 
