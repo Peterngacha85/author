@@ -72,7 +72,13 @@ export default function Register() {
       toast.success('Welcome! Account created successfully.');
       navigate(registeredUser.role === 'admin' ? '/admin' : '/dashboard');
     } catch (err) {
-      toast.error(err.response?.data?.msg || 'Registration failed');
+      if (err.response?.data?.msg) {
+        toast.error(err.response.data.msg);
+      } else if (!err.response) {
+        toast.error('Could not reach the server. Check your internet connection and try again.');
+      } else {
+        toast.error(`Registration failed (error ${err.response.status}). Please try again.`);
+      }
     } finally {
       setIsSubmitting(false);
     }

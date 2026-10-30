@@ -7,6 +7,25 @@ export default function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, userId: null });
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+
+  // Strip phone numbers down to the local part so 07..., 2547... and +2547... all match
+  const phoneDigits = (p) => (p || '').replace(/\D/g, '').replace(/^(254|0)/, '');
+
+  const nonAdmins = users.filter(u => u.role !== 'admin');
+  const query = search.trim().toLowerCase();
+  const queryDigits = phoneDigits(query);
+  const filteredUsers = nonAdmins.filter(u => {
+    if (statusFilter === 'active' && u.disabled) return false;
+    if (statusFilter === 'disabled' && !u.disabled) return false;
+    if (!query) return true;
+    return (
+      u.name?.toLowerCase().includes(query) ||
+      u.email?.toLowerCase().includes(query) ||
+      (queryDigits.length >= 3 && phoneDigits(u.phone).includes(queryDigits))
+    );
+  });
 
   useEffect(() => {
     API.get('/admin/users')
@@ -46,8 +65,28 @@ export default function AdminUsers() {
       <div style={{ marginBottom: '1.5rem' }}>
         <h2>👥 Users</h2>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginTop: '0.25rem' }}>
-          {users.length} registered user{users.length !== 1 ? 's' : ''}
+          {nonAdmins.length} registered user{nonAdmins.length !== 1 ? 's' : ''}
+          {(query || statusFilter !== 'all') && ` · ${filteredUsers.length} shown`}
         </p>
+      </div>
+
+      <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+        <input
+          className="form-input"
+          style={{ flex: '1 1 240px' }}
+          placeholder="Search by name, phone or email..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
+        <select
+          className="form-input"
+          style={{ flex: '0 0 auto', width: 'auto' }}
+          value={statusFilter}
+          onChange={e => setStatusFilter(e.target.value)}>
+          <option value="all">All statuses</option>
+          <option value="active">Active</option>
+          <option value="disabled">Disabled</option>
+        </select>
       </div>
 
       {loading ? (
@@ -68,10 +107,12 @@ export default function AdminUsers() {
               </tr>
             </thead>
             <tbody>
-              {users.length === 0 && (
-                <tr><td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>No users registered yet</td></tr>
+              {filteredUsers.length === 0 && (
+                <tr><td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
+                  {nonAdmins.length === 0 ? 'No users registered yet' : 'No users match your search'}
+                </td></tr>
               )}
-              {users.filter(u => u.role !== 'admin').map(u => (
+              {filteredUsers.map(u => (
                 <tr key={u._id}>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
