@@ -7,7 +7,7 @@ export const FEATURED = [
   {
     key: 'myvows',
     title: 'My Vows, My Will',
-    label: 'Novel',
+    label: 'eBook',
     theme: 'green',
     blurb: 'Njoki’s father has planned her future. When she falls for Okoth, she must decide how far she’ll go to choose a life of her own.',
     cover: '/images/my-vows.jpeg', // new cover always wins over the stored one
@@ -55,6 +55,32 @@ function groupByTitle(books) {
 
 export function findGroup(groups, key) {
   return groups.find(g => g.key === key || g.key.includes(key));
+}
+
+function describe(group, formatPrice) {
+  const formats = [group.ebook && 'eBook', group.audiobook && 'Audiobook'].filter(Boolean).join(' & ');
+  if (group.comingSoon) return `${formats} · In development`;
+  const prices = [group.ebook, group.audiobook].filter(r => r && !r.comingSoon).map(r => formatPrice(r.price));
+  return `${formats} · ${prices.join(' / ')}`;
+}
+
+// Non-featured titles as list rows, plus UPCOMING placeholders not yet in the database.
+export function buildRows(others, loaded, formatPrice) {
+  return [
+    ...others.map(g => {
+      const preset = UPCOMING.find(u => g.key.includes(u.key));
+      return {
+        key: g.key,
+        title: g.title,
+        comingSoon: g.comingSoon,
+        subtitle: (g.comingSoon && preset?.subtitle) || describe(g, formatPrice),
+        // Short placeholder blurbs like "In the pipeline" read worse than the preset copy.
+        description: (g.description || '').length > 40 ? g.description : (preset?.description || g.description),
+        cover: g.coverUrl,
+      };
+    }),
+    ...(loaded ? UPCOMING.filter(u => !others.some(g => g.key.includes(u.key))).map(u => ({ ...u, comingSoon: true })) : []),
+  ];
 }
 
 export function useCatalog() {

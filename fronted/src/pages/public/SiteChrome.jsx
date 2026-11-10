@@ -75,6 +75,35 @@ export function Modal({ title, onClose, children }) {
   );
 }
 
+// Compact row for non-featured / upcoming titles.
+export function BookRow({ item }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="jb-strip jb-row">
+      {item.cover && (
+        <button type="button" className="jb-row-cover" onClick={() => setOpen(true)} aria-label={`About ${item.title}`}>
+          <img src={item.cover} alt={`${item.title} cover`} loading="lazy" />
+        </button>
+      )}
+      <div className="jb-row-body">
+        {item.comingSoon && <span className="jb-eyebrow">Coming soon</span>}
+        <h3 className="jb-strip-title">{item.title}</h3>
+        <p className="jb-muted">{item.subtitle}</p>
+      </div>
+      <button type="button" className="jb-btn jb-btn-outline" onClick={() => setOpen(true)}>About the story</button>
+
+      {open && (
+        <Modal title={item.title} onClose={() => setOpen(false)}>
+          <div className="jb-about">
+            {item.cover && <img src={item.cover} alt="" />}
+            <p>{item.description}</p>
+          </div>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
 // One featured title. `group` holds its eBook/audiobook records (undefined while loading).
 export function BookFeatureCard({ config, group, loaded }) {
   const { user } = useAuth();
