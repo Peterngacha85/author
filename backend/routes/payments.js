@@ -64,7 +64,7 @@ router.delete('/:id', [auth, admin], deletePayment);
 
 router.post('/callback', handleCallback);
 router.get('/status/:checkoutRequestId', auth, checkStatus);
-router.post('/simulate', auth, require('../controllers/paymentController').simulateSTKSuccess);
+router.post('/simulate', [auth, admin], require('../controllers/paymentController').simulateSTKSuccess);
 
 // Paystack (card payments)
 router.post('/paystack/initialize', auth, initializePayment);

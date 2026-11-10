@@ -21,14 +21,7 @@ exports.submitPayment = async (req, res) => {
 
     await newTransaction.save();
 
-    // Requirement: Immediate access (Manual revocation later by admin)
-    const user = await User.findById(req.user.id);
-    if (!user.purchasedItems.includes(bookId)) {
-      user.purchasedItems.push(bookId);
-      await user.save();
-    }
-
-    res.status(201).json({ msg: 'Payment submitted. Access granted. Pending admin verification.', transaction: newTransaction });
+    res.status(201).json({ msg: 'Payment submitted. Access will be granted once an admin verifies your M-Pesa code.', transaction: newTransaction });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Server error' });
@@ -47,12 +40,23 @@ exports.verifyPayment = async (req, res) => {
     transaction.adminComment = adminComment;
     await transaction.save();
 
-    // If rejected, remove access
     if (status === 'rejected') {
+      // Remove access
       const user = await User.findById(transaction.userId);
       if (user) {
         user.purchasedItems = user.purchasedItems.filter(id => id.toString() !== transaction.bookId.toString());
         await user.save();
+      }
+    } else if (status === 'verified' || status === 'confirmed') {
+      // Grant access now that an admin has confirmed the manual code
+      const user = await User.findById(transaction.userId);
+      if (user) {
+        const bookIdStr = transaction.bookId.toString();
+        const alreadyPurchased = user.purchasedItems.some(id => id.toString() === bookIdStr);
+        if (!alreadyPurchased) {
+          user.purchasedItems.push(transaction.bookId);
+          await user.save();
+        }
       }
     }
 
@@ -205,9 +209,12 @@ exports.checkStatus = async (req, res) => {
   }
 };
 
-// SIMULATION: Manually approve the last pending STK for testing
+// SIMULATION: Manually approve the last pending STK for testing (sandbox only, admin only)
 exports.simulateSTKSuccess = async (req, res) => {
     try {
+        if (process.env.MPESA_ENV !== 'sandbox') {
+          return res.status(403).json({ msg: 'Simulation is disabled outside sandbox mode' });
+        }
         const transaction = await Transaction.findOne({ userId: req.user.id, status: 'pending' }).sort({ createdAt: -1 });
         if (!transaction) return res.status(404).json({ msg: 'No pending STK transaction found for your user' });
 
