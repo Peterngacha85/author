@@ -282,7 +282,7 @@ export default function AudioPlayer() {
                     justifyContent: 'space-between',
                     padding: '1rem',
                     borderRadius: 'var(--radius-md)',
-                    background: isActive ? 'rgba(255,56,92,0.08)' : 'var(--bg-card)',
+                    background: isActive ? 'rgba(169,70,42,0.08)' : 'var(--bg-card)',
                     border: isActive ? '1px solid var(--color-primary)' : '1px solid var(--border-color)',
                     cursor: 'pointer',
                     textAlign: 'left',

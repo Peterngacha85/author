@@ -61,7 +61,7 @@ function SortableItem({ id, book }) {
 
       <div style={{ flex: 1 }}>
         <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          {book.type === 'ebook' ? <Book size={14} color="#FF385C" /> : <Headphones size={14} color="#008489" />}
+          {book.type === 'ebook' ? <Book size={14} color="#A9462A" /> : <Headphones size={14} color="#255A3F" />}
           {book.title}
         </div>
         <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{book.author}</div>

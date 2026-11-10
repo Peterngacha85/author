@@ -25,23 +25,23 @@ export default function UserHome() {
   const purchasedIds = user?.purchasedItems || [];
 
   const stats = [
-    { icon: '📚', label: 'Total eBooks',     value: ebooks.length,     color: 'rgba(255,56,92,0.1)' },
-    { icon: '🎧', label: 'Audiobooks',       value: audiobooks.length, color: 'rgba(0,132,137,0.1)' },
-    { icon: '✅', label: 'My Collection',    value: purchasedIds.length, color: 'rgba(0,166,153,0.1)' },
-    { icon: '⭐', label: 'Staff Picks',      value: Math.min(books.length, 3), color: 'rgba(255,180,0,0.1)' },
+    { icon: '📚', label: 'Total eBooks',     value: ebooks.length,     color: 'rgba(169,70,42,0.1)' },
+    { icon: '🎧', label: 'Audiobooks',       value: audiobooks.length, color: 'rgba(37,90,63,0.1)' },
+    { icon: '✅', label: 'My Collection',    value: purchasedIds.length, color: 'rgba(47,122,79,0.1)' },
+    { icon: '⭐', label: 'Staff Picks',      value: Math.min(books.length, 3), color: 'rgba(201,138,27,0.1)' },
   ];
 
   return (
     <div className="fade-in">
       {/* Welcome Banner */}
       <div style={{
-        background: 'linear-gradient(135deg, var(--color-primary) 0%, #C2006A 100%)',
+        background: 'linear-gradient(135deg, var(--color-primary) 0%, #8E3A22 100%)',
         borderRadius: 'var(--radius-xl)',
         padding: '2.5rem',
         marginBottom: '2rem',
         position: 'relative',
         overflow: 'hidden',
-        boxShadow: '0 10px 30px rgba(255,56,92,0.15)',
+        boxShadow: '0 10px 30px rgba(169,70,42,0.15)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',

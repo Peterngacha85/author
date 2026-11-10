@@ -41,7 +41,7 @@ export default function AdminSidebar({ open, setOpen }) {
         </div>
 
         {/* Admin info */}
-        <div style={{ padding: '0.75rem', marginBottom: '1rem', background: 'rgba(194,0,106,0.12)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(194,0,106,0.25)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div style={{ padding: '0.75rem', marginBottom: '1rem', background: 'rgba(142,58,34,0.12)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(142,58,34,0.25)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div className="avatar avatar-sm avatar-initials" style={{ minWidth: 36, borderColor: 'var(--color-secondary)' }}>
             {user?.profilePhoto
               ? <img src={user.profilePhoto} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />

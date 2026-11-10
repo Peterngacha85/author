@@ -74,8 +74,8 @@ export default function DashboardLayout({ role = 'user' }) {
         <main className="dashboard-content">
           {user?.disabled && (
             <div style={{ 
-              background: 'rgba(225, 44, 50, 0.1)', 
-              border: '1px solid rgba(225, 44, 50, 0.2)', 
+              background: 'rgba(179,38,30, 0.1)', 
+              border: '1px solid rgba(179,38,30, 0.2)', 
               borderRadius: 'var(--radius-md)', 
               padding: '1rem', 
               marginBottom: '1.5rem',

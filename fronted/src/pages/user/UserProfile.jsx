@@ -142,11 +142,11 @@ export default function UserProfile() {
 
       {/* Stats Summary (Added for Alignment) */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-        <div className="glass-card" style={{ padding: '1.25rem', background: 'rgba(255,56,92,0.05)', border: '1px solid rgba(255,56,92,0.1)' }}>
+        <div className="glass-card" style={{ padding: '1.25rem', background: 'rgba(169,70,42,0.05)', border: '1px solid rgba(169,70,42,0.1)' }}>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>Account Status</div>
           <div style={{ fontWeight: 700, color: 'var(--color-primary)' }}>ACTIVE MEMBER</div>
         </div>
-        <div className="glass-card" style={{ padding: '1.25rem', background: 'rgba(0,132,137,0.05)', border: '1px solid rgba(0,132,137,0.1)' }}>
+        <div className="glass-card" style={{ padding: '1.25rem', background: 'rgba(37,90,63,0.05)', border: '1px solid rgba(37,90,63,0.1)' }}>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>Security</div>
           <div style={{ fontWeight: 700, color: 'var(--color-secondary)' }}>PROTECTED</div>
         </div>
@@ -242,7 +242,7 @@ export default function UserProfile() {
         </form>
       </div>
 
-      <div className="glass-card" style={{ padding: '1.5rem', marginTop: '1.5rem', border: '1px solid rgba(225, 44, 50, 0.2)', backgroundColor: 'rgba(225, 44, 50, 0.02)' }}>
+      <div className="glass-card" style={{ padding: '1.5rem', marginTop: '1.5rem', border: '1px solid rgba(179,38,30, 0.2)', backgroundColor: 'rgba(179,38,30, 0.02)' }}>
         <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--danger)' }}>Danger Zone</h3>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1rem' }}>
           Deleting your account is permanent. This action will remove all your data and access to purchased books.

@@ -295,7 +295,7 @@ export default function ChapterReorder() {
         </div>
       </div>
 
-      <div style={{ background: 'rgba(0,166,153,0.05)', padding: '1rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', color: '#007A70', fontSize: '0.9rem' }}>
+      <div style={{ background: 'rgba(47,122,79,0.05)', padding: '1rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', color: '#007A70', fontSize: '0.9rem' }}>
         💡 Drag the handles on the left to rearrange {book?.type === 'ebook' ? 'files' : 'chapters'}.
       </div>
 

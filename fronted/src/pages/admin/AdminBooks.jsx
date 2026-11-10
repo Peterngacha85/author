@@ -175,7 +175,7 @@ export default function AdminBooks({ filter }) {
                   </td>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      {book.type === 'ebook' ? <Book size={14} color="#FF385C" /> : <Headphones size={14} color="#008489" />}
+                      {book.type === 'ebook' ? <Book size={14} color="#A9462A" /> : <Headphones size={14} color="#255A3F" />}
                       <span style={{ textTransform: 'capitalize' }}>{book.type}</span>
                     </div>
                   </td>

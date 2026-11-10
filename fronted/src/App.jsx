@@ -55,8 +55,8 @@ export default function App() {
               fontSize: '0.95rem',
               boxShadow: '0 6px 16px rgba(0,0,0,0.12)'
             },
-            success: { iconTheme: { primary: '#00A699', secondary: '#fff' } },
-            error:   { iconTheme: { primary: '#E12C32', secondary: '#fff' } },
+            success: { iconTheme: { primary: '#2F7A4F', secondary: '#fff' } },
+            error:   { iconTheme: { primary: '#B3261E', secondary: '#fff' } },
           }}
         />
 

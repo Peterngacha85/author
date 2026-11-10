@@ -58,7 +58,7 @@ const TrafficAnalytics = () => {
 
   const { summary, visitsTimeline, referrers, devices } = data;
 
-  const COLORS = ['#C2006A', '#00A699', '#FFB400', '#484848', '#767676'];
+  const COLORS = ['#8E3A22', '#2F7A4F', '#C98A1B', '#4A3F39', '#8A7466'];
 
   return (
     <div className="analytics-container" style={{ paddingBottom: '2rem' }}>
@@ -89,13 +89,13 @@ const TrafficAnalytics = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="analytics-card" 
-          style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #f0f0f0' }}
+          style={{ background: 'var(--bg-card)', padding: '1.5rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #EEE5DC' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-            <div style={{ background: 'rgba(194,0,106,0.1)', padding: '0.75rem', borderRadius: '12px' }}>
-              <Users size={24} color="#C2006A" />
+            <div style={{ background: 'rgba(142,58,34,0.1)', padding: '0.75rem', borderRadius: '12px' }}>
+              <Users size={24} color="#8E3A22" />
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', color: '#10b981', fontSize: '0.75rem', fontWeight: 600 }}>
+            <div style={{ display: 'flex', alignItems: 'center', color: '#2F7A4F', fontSize: '0.75rem', fontWeight: 600 }}>
               <ChevronUp size={16} /> 12%
             </div>
           </div>
@@ -108,13 +108,13 @@ const TrafficAnalytics = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           className="analytics-card" 
-          style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #f0f0f0' }}
+          style={{ background: 'var(--bg-card)', padding: '1.5rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #EEE5DC' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-            <div style={{ background: 'rgba(0,166,153,0.1)', padding: '0.75rem', borderRadius: '12px' }}>
-              <MousePointer2 size={24} color="#00A699" />
+            <div style={{ background: 'rgba(47,122,79,0.1)', padding: '0.75rem', borderRadius: '12px' }}>
+              <MousePointer2 size={24} color="#2F7A4F" />
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', color: '#10b981', fontSize: '0.75rem', fontWeight: 600 }}>
+            <div style={{ display: 'flex', alignItems: 'center', color: '#2F7A4F', fontSize: '0.75rem', fontWeight: 600 }}>
               <ChevronUp size={16} /> 8.2%
             </div>
           </div>
@@ -127,11 +127,11 @@ const TrafficAnalytics = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className="analytics-card" 
-          style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #f0f0f0' }}
+          style={{ background: 'var(--bg-card)', padding: '1.5rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #EEE5DC' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-            <div style={{ background: 'rgba(255,180,0,0.1)', padding: '0.75rem', borderRadius: '12px' }}>
-              <TrendingUp size={24} color="#FFB400" />
+            <div style={{ background: 'rgba(201,138,27,0.1)', padding: '0.75rem', borderRadius: '12px' }}>
+              <TrendingUp size={24} color="#C98A1B" />
             </div>
             <div style={{ display: 'flex', alignItems: 'center', color: '#ef4444', fontSize: '0.75rem', fontWeight: 600 }}>
               <ChevronDown size={16} /> 2.1%
@@ -148,7 +148,7 @@ const TrafficAnalytics = () => {
         padding: '1.5rem', 
         borderRadius: '16px', 
         boxShadow: '0 4px 20px rgba(0,0,0,0.05)', 
-        border: '1px solid #f0f0f0',
+        border: '1px solid #EEE5DC',
         marginBottom: '2rem'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
@@ -165,18 +165,18 @@ const TrafficAnalytics = () => {
             <AreaChart data={visitsTimeline}>
               <defs>
                 <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#C2006A" stopOpacity={0.1}/>
-                  <stop offset="95%" stopColor="#C2006A" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#8E3A22" stopOpacity={0.1}/>
+                  <stop offset="95%" stopColor="#8E3A22" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EEE5DC" />
               <XAxis dataKey="_id" stroke="#999" fontSize={12} tickLine={false} axisLine={false} />
               <YAxis stroke="#999" fontSize={12} tickLine={false} axisLine={false} />
               <Tooltip 
                 contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                itemStyle={{ color: '#C2006A', fontWeight: 600 }}
+                itemStyle={{ color: '#8E3A22', fontWeight: 600 }}
               />
-              <Area type="monotone" dataKey="count" stroke="#C2006A" strokeWidth={3} fillOpacity={1} fill="url(#colorCount)" />
+              <Area type="monotone" dataKey="count" stroke="#8E3A22" strokeWidth={3} fillOpacity={1} fill="url(#colorCount)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -184,7 +184,7 @@ const TrafficAnalytics = () => {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem' }}>
         {/* Referrers */}
-        <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #f0f0f0' }}>
+        <div style={{ background: 'var(--bg-card)', padding: '1.5rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #EEE5DC' }}>
           <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1.5rem' }}>Top Referral Sources</h3>
           <div className="referrer-list">
             {referrers.length > 0 ? referrers.map((ref, idx) => (
@@ -212,7 +212,7 @@ const TrafficAnalytics = () => {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                   <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{ref.count}</span>
-                  <div style={{ width: 60, height: 6, background: '#f0f0f0', borderRadius: 3 }}>
+                  <div style={{ width: 60, height: 6, background: '#EEE5DC', borderRadius: 3 }}>
                     <div style={{ 
                       width: `${(ref.count / summary.totalVisits) * 100}%`, 
                       height: '100%', 
@@ -229,7 +229,7 @@ const TrafficAnalytics = () => {
         </div>
 
         {/* Devices */}
-        <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #f0f0f0' }}>
+        <div style={{ background: 'var(--bg-card)', padding: '1.5rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #EEE5DC' }}>
           <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1.5rem' }}>Device Distribution</h3>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 250 }}>
              {devices.length > 0 ? (

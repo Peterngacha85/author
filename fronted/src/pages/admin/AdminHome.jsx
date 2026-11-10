@@ -49,10 +49,10 @@ export default function AdminHome() {
   };
 
   const STATS = [
-    { icon: BookOpen,    label: 'Total Books',     value: stats.books,    color: 'rgba(255,56,92,0.1)',   textColor: 'var(--color-primary)' },
-    { icon: Users,       label: 'Registered Users', value: stats.users,   color: 'rgba(0,132,137,0.1)', textColor: 'var(--color-secondary)' },
-    { icon: CreditCard,  label: 'Transactions',    value: stats.payments, color: 'rgba(255,180,0,0.1)', textColor: '#B27E00' },
-    { icon: TrendingUp,  label: 'Revenue (KES)',    value: `${stats.revenue.toLocaleString()}`, color: 'rgba(0,166,153,0.1)',   textColor: 'var(--success)' },
+    { icon: BookOpen,    label: 'Total Books',     value: stats.books,    color: 'rgba(169,70,42,0.1)',   textColor: 'var(--color-primary)' },
+    { icon: Users,       label: 'Registered Users', value: stats.users,   color: 'rgba(37,90,63,0.1)', textColor: 'var(--color-secondary)' },
+    { icon: CreditCard,  label: 'Transactions',    value: stats.payments, color: 'rgba(201,138,27,0.1)', textColor: '#8A6212' },
+    { icon: TrendingUp,  label: 'Revenue (KES)',    value: `${stats.revenue.toLocaleString()}`, color: 'rgba(47,122,79,0.1)',   textColor: 'var(--success)' },
   ];
 
   const statusBadge = (s) => {

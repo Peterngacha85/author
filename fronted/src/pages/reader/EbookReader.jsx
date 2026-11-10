@@ -155,7 +155,7 @@ export default function EbookReader() {
       </header>
 
       {book?.ebookFiles?.length > 1 && (
-        <div style={{ padding: '0.75rem 1rem', display: 'flex', alignItems: 'center', gap: '0.75rem', background: '#f7f7f7' }}>
+        <div style={{ padding: '0.75rem 1rem', display: 'flex', alignItems: 'center', gap: '0.75rem', background: 'var(--bg-base)' }}>
           <label style={{ fontWeight: 600, color: '#333' }}>Choose file:</label>
           <select
             value={selectedFile?._id || ''}

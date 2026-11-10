@@ -4,40 +4,42 @@
    Design Tokens
    ======================== */
 :root {
-  /* Brand Colors - Airbnb Inspired (Coral & Slate) */
-  --color-primary:        #FF385C;
-  --color-primary-light:  #FF5A79;
-  --color-primary-dark:   #D90B38;
-  --color-secondary:      #008489;
-  --color-accent:         #FF385C;
-  --color-peach:          #FFB4A2;
+  /* Brand Colors - Joe Books (rust, forest green, warm cream) — matches the landing page */
+  --color-primary:        #A9462A;
+  --color-primary-light:  #C2603F;
+  --color-primary-dark:   #8E3A22;
+  --color-primary-rgb:    169,70,42;
+  --color-secondary:      #255A3F;
+  --color-accent:         #A9462A;
+  --color-peach:          #E8C3AE;
 
   /* Basic Gradients for subtle depth */
   --gradient-brand:   var(--color-primary);
-  --gradient-card:    #FFFFFF;
-  --gradient-admin:   #FFFFFF;
-  --gradient-glass:   rgba(255,255,255,0.9);
+  --gradient-card:    #FFFDFA;
+  --gradient-admin:   #FFFDFA;
+  --gradient-glass:   rgba(255,253,250,0.92);
 
-  /* Light Theme (Clean Premium Look) */
-  --bg-base:          #F7F7F7;
-  --bg-surface:       #FFFFFF;
-  --bg-card:          #FFFFFF;
-  --bg-card-hover:    #FAFAFA;
-  --bg-input:         #FFFFFF;
-  --border-color:     #EBEBEB;
-  --border-active:    #222222;
+  /* Light Theme (warm cream) */
+  --bg-base:          #F8F3EE;
+  --bg-surface:       #FFFDFA;
+  --bg-card:          #FFFDFA;
+  --bg-card-hover:    #FBF6F1;
+  --bg-input:         #FFFDFA;
+  --border-color:     #E6DDD4;
+  --border-active:    #231B18;
 
-  /* Text - Dark for Light Theme */
-  --text-primary:     #222222;
-  --text-secondary:   #484848;
-  --text-muted:       #717171;
+  /* Text - warm dark browns */
+  --text-primary:     #231B18;
+  --text-secondary:   #4A3F39;
+  --text-muted:       #6B5E57;
   --text-white:       #FFFFFF;
 
   /* Status Colors */
-  --success:    #00A699;
-  --warning:    #FFB400;
-  --danger:     #E12C32;
-  --info:       #008489;
+  --success:    #2F7A4F;
+  --warning:    #C98A1B;
+  --danger:     #B3261E;
+  --danger-rgb: 179,38,30;
+  --info:       #255A3F;
 
   /* Spacing & Utilities */
   --radius-sm:  8px;
@@ -204,7 +206,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
 
 .form-input {
   background: var(--bg-input);
-  border: 1px solid #B0B0B0;
+  border: 1px solid #CDBFB3;
   border-radius: var(--radius-sm);
   padding: 0.85rem 1rem;
   color: var(--text-primary);
@@ -212,7 +214,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
   width: 100%;
 }
-.form-input::placeholder { color: #767676; }
+.form-input::placeholder { color: #8A7466; }
 .form-input:focus {
   outline: none;
   border-color: var(--text-primary);
@@ -247,11 +249,11 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
-.badge-purple { background: rgba(255,56,92,0.1); color: var(--color-primary); border: 1px solid rgba(255,56,92,0.2); }
-.badge-pink   { background: #EBEBEB; color: var(--text-primary); border: 1px solid #DDDDDD; }
-.badge-green  { background: rgba(0,166,153,0.1);  color: var(--success); border: 1px solid rgba(0,166,153,0.2); }
-.badge-yellow { background: rgba(255,180,0,0.1); color: #B27E00; border: 1px solid rgba(255,180,0,0.2); }
-.badge-red    { background: rgba(225,44,50,0.1);  color: var(--danger); border: 1px solid rgba(225,44,50,0.2); }
+.badge-purple { background: rgba(169,70,42,0.1); color: var(--color-primary); border: 1px solid rgba(169,70,42,0.2); }
+.badge-pink   { background: #EBEBEB; color: var(--text-primary); border: 1px solid #E6DDD4; }
+.badge-green  { background: rgba(47,122,79,0.1);  color: var(--success); border: 1px solid rgba(47,122,79,0.2); }
+.badge-yellow { background: rgba(201,138,27,0.1); color: #8A6212; border: 1px solid rgba(201,138,27,0.2); }
+.badge-red    { background: rgba(179,38,30,0.1);  color: var(--danger); border: 1px solid rgba(179,38,30,0.2); }
 
 /* ========================
    Avatar
@@ -390,11 +392,11 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
   border: 1px solid transparent;
 }
 .sidebar-link:hover {
-  background: rgba(255,56,92,0.05);
+  background: rgba(169,70,42,0.05);
   color: var(--color-primary);
 }
 .sidebar-link.active {
-  background: rgba(255,56,92,0.1);
+  background: rgba(169,70,42,0.1);
   color: var(--color-primary);
   font-weight: 600;
 }
@@ -513,7 +515,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
   width: 100%;
   max-width: 430px;
   background: #FFFFFF;
-  border: 1px solid #DDDDDD;
+  border: 1px solid #E6DDD4;
   border-radius: var(--radius-xl);
   padding: 2.5rem;
   box-shadow: var(--shadow-md);
@@ -634,7 +636,7 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
 
   width: 100%;
   aspect-ratio: 2/3;
-  background: #f0f0f0;
+  background: #EEE5DC;
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-md);
@@ -747,8 +749,8 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
 
 /* Pulse glow effect for CTAs */
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 10px rgba(255,56,92,0.1); }
-  50% { box-shadow: 0 0 20px rgba(255,56,92,0.3); }
+  0%, 100% { box-shadow: 0 0 10px rgba(169,70,42,0.1); }
+  50% { box-shadow: 0 0 20px rgba(169,70,42,0.3); }
 }
 .glow-pulse { animation: pulseGlow 2.5s ease-in-out infinite; }
 
@@ -869,9 +871,9 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
   flex-shrink: 0;
 }
 
-.confirm-icon-bg.danger { background: rgba(255, 56, 92, 0.1); color: var(--danger); }
-.confirm-icon-bg.warning { background: rgba(255, 184, 0, 0.1); color: #FFB800; }
-.confirm-icon-bg.info { background: rgba(0, 132, 137, 0.1); color: var(--color-primary); }
+.confirm-icon-bg.danger { background: rgba(169,70,42, 0.1); color: var(--danger); }
+.confirm-icon-bg.warning { background: rgba(201,138,27, 0.1); color: #C98A1B; }
+.confirm-icon-bg.info { background: rgba(37,90,63, 0.1); color: var(--color-primary); }
 
 .modal-close-btn {
   background: none;

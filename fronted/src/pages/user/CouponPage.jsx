@@ -36,8 +36,8 @@ export default function CouponPage() {
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
           <div style={{
             width: 64, height: 64, borderRadius: '50%',
-            background: 'rgba(194,0,106,0.12)',
-            border: '1px solid rgba(194,0,106,0.25)',
+            background: 'rgba(142,58,34,0.12)',
+            border: '1px solid rgba(142,58,34,0.25)',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
             <Tag size={28} color="var(--color-primary)" />

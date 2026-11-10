@@ -209,8 +209,8 @@ export default function PaymentModal({ book, onClose }) {
             </div>
 
             {currency.currency !== 'KES' && (
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', background: 'rgba(255,180,0,0.12)', border: '1px solid rgba(255,180,0,0.35)', borderRadius: 'var(--radius-md)', padding: '0.65rem 0.8rem', marginBottom: '1.5rem' }}>
-                <Info size={16} style={{ color: '#B27E00', flexShrink: 0, marginTop: '0.1rem' }} />
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', background: 'rgba(201,138,27,0.12)', border: '1px solid rgba(201,138,27,0.35)', borderRadius: 'var(--radius-md)', padding: '0.65rem 0.8rem', marginBottom: '1.5rem' }}>
+                <Info size={16} style={{ color: '#8A6212', flexShrink: 0, marginTop: '0.1rem' }} />
                 <span style={{ fontSize: '0.78rem', color: '#7A5A00', fontWeight: 600, lineHeight: 1.4 }}>
                   You'll be charged <strong>KES {book.price?.toLocaleString()}</strong> at checkout — the {currency.currency} price above is for reference only.
                 </span>
@@ -284,7 +284,7 @@ export default function PaymentModal({ book, onClose }) {
             ) : (
               <form onSubmit={handleManualSubmit} className="fade-in">
                  {/* Manual Instructions */}
-                 <div style={{ background: 'rgba(0,166,153,0.05)', padding: '0.75rem', borderRadius: 'var(--radius-md)', marginBottom: '1rem', border: '1px dashed var(--color-primary)' }}>
+                 <div style={{ background: 'rgba(47,122,79,0.05)', padding: '0.75rem', borderRadius: 'var(--radius-md)', marginBottom: '1rem', border: '1px dashed var(--color-primary)' }}>
                   <p style={{ fontSize: '0.75rem', marginBottom: '0.4rem' }}>Pay to <strong>Buy Goods</strong> Till: 
                     <button type="button" onClick={copyTill} className="btn btn-sm btn-outline" style={{ marginLeft: '0.5rem' }}>{MPESA_TILL} {copied ? <Check size={12}/> : <Copy size={12}/>}</button>
                   </p>

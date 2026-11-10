@@ -121,8 +121,8 @@ export default function BookDetails() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '1.5rem' }}>
             <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', margin: 0 }}>by <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{book.author}</span></p>
             {avgRating && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(255,184,0,0.1)', color: '#FFB800', padding: '0.2rem 0.6rem', borderRadius: '1rem', fontSize: '0.85rem', fontWeight: 600 }}>
-                <Star size={14} fill="#FFB800" /> {avgRating} ({reviews.length} reviews)
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(201,138,27,0.1)', color: '#C98A1B', padding: '0.2rem 0.6rem', borderRadius: '1rem', fontSize: '0.85rem', fontWeight: 600 }}>
+                <Star size={14} fill="#C98A1B" /> {avgRating} ({reviews.length} reviews)
               </div>
             )}
           </div>

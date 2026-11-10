@@ -136,8 +136,8 @@ export default function ReviewSection({ bookId, onReviewAdded }) {
                       <Star
                         key={s}
                         size={14}
-                        fill={rev.rating >= s ? '#FFB800' : 'none'}
-                        color={rev.rating >= s ? '#FFB800' : 'var(--text-muted)'}
+                        fill={rev.rating >= s ? '#C98A1B' : 'none'}
+                        color={rev.rating >= s ? '#C98A1B' : 'var(--text-muted)'}
                       />
                     ))}
                   </div>

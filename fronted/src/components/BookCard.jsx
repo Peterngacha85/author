@@ -77,7 +77,7 @@ export default function BookCard({ book, isPurchased, onBuy, onRead, onListen })
                         width: half ? '50%' : '100%',
                         overflow: 'hidden', display: 'inline-flex'
                       }}>
-                        <Star size={12} fill="#FFB800" color="#FFB800" />
+                        <Star size={12} fill="#C98A1B" color="#C98A1B" />
                       </span>
                     )}
                   </span>
