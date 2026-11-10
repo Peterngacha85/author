@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, X, Facebook, Youtube, Instagram } from 'lucide-react';
+import { X, Facebook, Youtube, Instagram } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 import { useCurrency } from '../../context/CurrencyContext';
@@ -14,7 +14,7 @@ export function SiteNav() {
   return (
     <header className="jb-container jb-nav">
       <Link to="/" className="jb-logo">
-        <span className="jb-logo-icon"><BookOpen size={22} strokeWidth={1.6} /></span>
+        <span className="jb-logo-icon" aria-hidden="true">📚</span>
         <span className="jb-logo-text">Joe Books</span>
       </Link>
       <nav className="jb-nav-links">

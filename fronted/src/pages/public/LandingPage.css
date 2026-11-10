@@ -58,6 +58,8 @@
   color: #fbeee6;
   display: grid; place-items: center;
   flex-shrink: 0;
+  font-size: 1.45rem;
+  line-height: 1;
 }
 .jb-logo-text { font-family: var(--jb-serif); font-weight: 700; font-size: 1.75rem; letter-spacing: -0.01em; }
 .jb-nav-links { display: flex; align-items: center; gap: 20px; }

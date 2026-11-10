@@ -8,3 +8,4 @@ build/
 .gemini/
 .agents/
 brain/
+*.zip
